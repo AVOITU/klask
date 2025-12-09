@@ -1,0 +1,106 @@
+##############################
+#    ENVIRONNEMENT & SENSIBLE
+##############################
+
+# Fichiers sensibles
+.env
+.env.local
+.env.*.backup
+*.secret
+*.key
+
+# Informations de connexion locales
+config/database.php
+config/*.local.php
+
+##############################
+#    PHP / FRAMEWORK
+##############################
+
+# Vendor (si Composer est utilisé)
+vendor/
+
+# Cache PHP
+*.cache
+*.log
+logs/
+cache/
+
+# Sessions
+sessions/
+
+# Fichiers temporaires
+*.tmp
+*.bak
+*.swp
+*.swo
+
+##############################
+#    WAMP / XAMPP / HERD
+##############################
+
+# WAMP logs
+wamp64/tmp/*
+wamp/tmp/*
+
+# Herd cache
+.herd/
+
+##############################
+#    FRONT-END (HTML / CSS / JS)
+##############################
+
+# Build tools (si utilisés un jour)
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# Fichiers compilés
+public/js/build/
+public/css/build/
+
+##############################
+#    IDE / ÉDITEURS
+##############################
+
+# PhpStorm
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Mac OS
+.DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini
+
+##############################
+#    TESTS
+##############################
+
+# PHPUnit / coverage
+coverage/
+.phpunit.result.cache
+
+##############################
+#    SCRIPTS GÉNÉRÉS
+##############################
+
+# Si ton script génère de nouveaux fichiers
+scripts/generated/
+generated/
+
+##############################
+#    Personal files
+##############################
+
+generate_layer.php
