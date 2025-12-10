@@ -7,7 +7,7 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="formulaire_klask.css"> 
+    <link rel="stylesheet" href="public/css/pages/formulaire_klask.css">
 </head>
 <body data-theme="standard"> <div class="sphere sphere-1"></div>
     <div class="sphere sphere-2"></div>
@@ -24,11 +24,9 @@
 
         <?php
         // --- 1. CONNEXION BDD ---
-        $host = 'localhost'; $dbname = 'klask'; $user = 'root'; $pass = '';
-        try {
-            $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $pass);
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $e) { die("Erreur BDD"); }
+        require_once __DIR__ . '/config/database.php';
+        // --- 1. CONNEXION BDD ---
+        $pdo = get_pdo();
 
         // --- 2. TRAITEMENT ---
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
