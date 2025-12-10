@@ -42,7 +42,7 @@
                     $info = $pdo->query("SELECT ecole, nom_classe FROM classe WHERE id_classe = $id_classe")->fetch();
 
                     echo "<div class='resultat success-anim'>";
-                    echo "<h3>🎉 Inscription Validée !</h3>";
+                    echo "<h3>🎉 InscriptionController Validée !</h3>";
                     echo "🏫 " . htmlspecialchars($info['ecole']) . "<br>";
                     echo "📚 " . htmlspecialchars($info['nom_classe']) . "<br>";
                     echo "👤 <strong>$pseudo</strong>";

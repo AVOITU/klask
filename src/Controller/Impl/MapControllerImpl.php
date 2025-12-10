@@ -1,7 +1,9 @@
 <?php
 
-namespace Impl;
+namespace Controller\Impl;
 
-class MapControllerImpl
+use MapController;
+
+class MapControllerImpl implements MapController
 {
 }
