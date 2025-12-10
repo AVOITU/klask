@@ -10,7 +10,7 @@
 *.key
 
 # Informations de connexion locales
-config/database.php
+#config/database.php
 config/*.local.php
 
 ##############################
