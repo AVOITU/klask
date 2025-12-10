@@ -1,0 +1,231 @@
+/* --- 1. VARIABLES & THÈMES --- */
+:root {
+    
+    --bg-color: #F48176;
+    --sphere-1: rgba(255, 255, 255, 0.2);
+    --sphere-2: rgba(255, 215, 0, 0.3);
+    
+    --container-bg: #E6C288; /* Teinte Or/Boisé */
+    --container-border: 2px solid #Cfaa65;
+    
+    --text-main: #3e2723; /* Marron foncé pour aller avec le bois */
+    --text-label: #5d4037;
+    
+    --input-bg: #fff;
+    --input-border: #d7ccc8;
+    
+    --btn-primary: #8B0000; /* Rouge sombre */
+    --btn-primary-hover: #a50000;
+    --btn-text: #fff;
+    
+    --accent: #d35400;
+}
+
+/* Thème Chaud (Filtre Lumière Bleue / Sepia) */
+[data-theme="chaud"] {
+    --bg-color: #f5deb3;
+    --sphere-1: rgba(139, 69, 19, 0.1);
+    --sphere-2: rgba(210, 105, 30, 0.1);
+    --container-bg: #fff8e1;
+    --container-border: 2px solid #ffecb3;
+    --text-main: #4e342e;
+    --text-label: #5d4037;
+    --btn-primary: #bf360c;
+    --btn-primary-hover: #d84315;
+}
+
+/* Thème Négatif (Contraste Élevé pour malvoyants) */
+[data-theme="negatif"] {
+    --bg-color: #000000;
+    --sphere-1: transparent;
+    --sphere-2: transparent; /* Pas de distraction */
+    --container-bg: #1a1a1a;
+    --container-border: 2px solid #fff;
+    --text-main: #ffff00; /* Jaune sur noir = meilleur contraste */
+    --text-label: #ffffff;
+    --input-bg: #000;
+    --input-border: #ffff00;
+    --btn-primary: #ffff00;
+    --btn-primary-hover: #cccc00;
+    --btn-text: #000;
+}
+
+/* --- 2. CONFIGURATION GÉNÉRALE --- */
+body {
+    font-family: 'Open Sans', sans-serif;
+    background-color: var(--bg-color);
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Mieux pour le scroll mobile */
+    overflow-x: hidden;
+    transition: background-color 0.5s ease;
+}
+
+/* --- 3. SPHÈRES D'ARRIÈRE-PLAN --- */
+.sphere {
+    position: fixed;
+    border-radius: 50%;
+    z-index: -1;
+    animation: flotte 20s infinite ease-in-out alternate;
+}
+.sphere-1 { width: 300px; height: 300px; background: var(--sphere-1); top: -50px; left: -50px; }
+.sphere-2 { width: 200px; height: 200px; background: var(--sphere-2); bottom: 10%; right: -20px; animation-duration: 25s; }
+.sphere-3 { width: 100px; height: 100px; background: rgba(255,255,255,0.1); top: 40%; left: 10%; animation-duration: 15s; }
+.sphere-4 { width: 400px; height: 400px; background: rgba(224, 203, 41, 0.432); top: 10%; left: 70%; animation-duration: 15s; }
+
+/* Rajouter des sphères si le groupe en demande, c'est pas très visible en mobile, peut être rendre le formulaire semi transparent ?*/
+
+@keyframes flotte {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    100% { transform: translate(30px, 50px) rotate(20deg); }
+}
+
+/* --- 4. CONTENEUR PRINCIPAL --- */
+.container {
+    background: var(--container-bg);
+    border: var(--container-border);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+h1 { color: var(--text-main); font-weight: 800; text-transform: uppercase; margin-bottom: 30px; }
+
+/* --- 5. FORMULAIRE OPTIMISÉ MOBILE --- */
+.form-group { margin-bottom: 25px; text-align: left; }
+label { display: block; margin-bottom: 10px; color: var(--text-label); font-weight: 700; font-size: 1.1rem; }
+small { display: block; margin-top: 5px; color: var(--text-label); opacity: 0.8; font-style: italic;}
+
+/* Inputs plus gros pour les doigts */
+select, input[type="text"] {
+    width: 100%;
+    height: 55px; /* Zone tactile confortable */
+    padding: 0 15px;
+    border: 2px solid var(--input-border);
+    border-radius: 12px;
+    background-color: var(--input-bg);
+    font-size: 1.1rem;
+    font-family: 'Open Sans', sans-serif;
+    color: var(--text-main);
+    box-sizing: border-box;
+    appearance: none; /* Reset style mobile natif */
+}
+
+/* Flèche perso pour le select */
+.select-wrapper { position: relative; }
+.select-wrapper::after {
+    content: '▼';
+    position: absolute;
+    right: 15px; top: 18px;
+    color: var(--text-label);
+    pointer-events: none;
+}
+
+/* --- 6. IDENTITÉ SECRÈTE --- */
+.identity-box { display: flex; gap: 10px; }
+#pseudo_input { text-align: center; font-weight: bold; background-color: rgba(0,0,0,0.05); border-color: transparent; }
+
+#btn_random {
+    width: 60px; height: 55px;
+    background: var(--btn-primary);
+    color: var(--btn-text);
+    border: none; border-radius: 12px;
+    font-size: 1.8rem; cursor: pointer;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+    transition: transform 0.1s;
+}
+#btn_random:active { transform: translateY(4px); box-shadow: none; }
+
+/* --- 7. BOUTON VALIDER --- */
+input[type="submit"] {
+    background-color: var(--btn-primary);
+    color: var(--btn-text);
+    border: none; padding: 18px;
+    font-size: 1.3rem; border-radius: 12px;
+    cursor: pointer; width: 100%; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 1px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    margin-top: 10px;
+}
+input[type="submit"]:hover { background-color: var(--btn-primary-hover); transform: scale(1.02); }
+
+/* --- 8. BARRE ACCESSIBILITÉ (Optimisée Mobile & Desktop) --- */
+
+.accessibility-bar {
+    position: fixed;
+    z-index: 1000; /* Toujours au-dessus */
+    display: flex;
+    gap: 10px;
+    padding: 5px;
+    background: rgba(255, 255, 255, 0.3); /* Petit fond discret */
+    border-radius: 30px;
+    backdrop-filter: blur(5px); /* Effet verre flouté moderne */
+}
+
+/* --- VERSION MOBILE (Par défaut) --- */
+/* Placée en haut à droite, à l'horizontale */
+.accessibility-bar {
+    top: 10px;
+    right: 10px;
+    flex-direction: row; /* Horizontal */
+}
+
+/* Boutons un peu plus petits sur mobile pour ne pas encombrer */
+.btn-access {
+    width: 40px; 
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid white;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+
+/* On ajoute un peu d'espace en haut du corps pour pas que le titre soit caché par les boutons */
+body {
+    padding-top: 60px; /* Espace réservé pour la barre */
+}
+
+
+/* --- VERSION ORDINATEUR / TABLETTE (Écrans larges) --- */
+@media (min-width: 768px) {
+    .accessibility-bar {
+        top: 50%;
+        right: 20px;
+        transform: translateY(-50%); /* Centré verticalement */
+        flex-direction: column; /* Vertical */
+        background: transparent; /* Pas de fond nécessaire sur PC */
+        backdrop-filter: none;
+    }
+
+    .btn-access {
+        width: 50px; /* Plus gros sur PC */
+        height: 50px;
+        font-size: 1.2rem;
+    }
+
+    body {
+        padding-top: 20px; /* Retour à la normale sur PC */
+    }
+}
+
+/* Couleurs des boutons */
+.btn-standard { background: #F48176; color: white; }
+.btn-warm { background: #f5deb3; color: #5d4037; }
+.btn-negative { background: #000; color: #ff0; border-color: #ff0; }
+
+/* Effet au clic */
+.btn-access:active { transform: scale(0.9); }
