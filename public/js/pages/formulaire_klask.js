@@ -68,7 +68,9 @@ document.addEventListener('DOMContentLoaded', function() {
             'Jaguar', 'Panthère', 'Requin', 'Baleine', 'Orque',
             'Hamster', 'Castor', 'Hérisson', 'Ecureuil', 'Kangourou', 'Lama', 'Zèbre',
             'Dragon', 'Phoenix', 'Griffon', 'Pégase', 'Sphinx', 'Yéti', 'Kraken', 
-            'Chimère', 'Hydre', 'Titan', 'Cyclope', 'Gargouille', 'Licorne'
+            'Chimère', 'Hydre', 'Titan', 'Cyclope', 'Gargouille', 'Licorne', 'Axolotl', 'Scarabée', 'Alpaga',
+            'Pingouin', 'Mouette' , 'Wombat', 'Wapiti', 'Gecko', 'Kangourou', 'Tortue', 'Papillon', 'Girafe',
+            'Anchoix', "Canard", 
         ];
 
 
@@ -82,7 +84,8 @@ document.addEventListener('DOMContentLoaded', function() {
             'Diplomate', 'Pacifique', 'Terrible', 'Redoutable', 'Invincible', 
             'Invisible', 'Mystique', 'Magique', 'Enigmatique', 'Fantastique', 
             'Légendaire', 'Mythique', 'Héroïque', 'Epique', 'Titanesque',
-            'Incroyable', 'Imprévisible', 'Inarrêtable', 'Insaisissable'
+            'Incroyable', 'Imprévisible', 'Inarrêtable', 'Insaisissable', 
+            'Timide', 'Scientifique', 'Altruiste', 'Romantique', 'Chevaleresque', 'Mécanique'
         ];
         btnRandom.addEventListener('click', function(e) {
             e.preventDefault();

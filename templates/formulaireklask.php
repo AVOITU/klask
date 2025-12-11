@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scanner Élève</title>
+    <title>Création de Profil</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;800&display=swap"
           rel="stylesheet">
 
-    <link rel="stylesheet" href="/./formulaireklask.css">
+    <link rel="stylesheet" href="/./formulaire_klask.css">
 </head>
 <body data-theme="standard">
 
@@ -59,7 +59,7 @@
             <label for="choix_classe">2. Ma Classe</label>
             <div class="select-wrapper">
                 <select name="classe_final_id" id="choix_classe" required disabled>
-                    <option value="">🔒 Choisissez d'abord l'école</option>
+                    <optiozn value="">🔒 Choisissez d'abord l'école</option>
                 </select>
             </div>
         </div>

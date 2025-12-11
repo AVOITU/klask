@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scanner Élève</title>
+    <title>Création de profil</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="public/css/pages/formulaire_klask.css">
+    <script src="formulaire"></script>
 </head>
 <body data-theme="standard"> <div class="sphere sphere-1"></div>
     <div class="sphere sphere-2"></div>
@@ -36,16 +37,16 @@
             if ($id_classe > 0) {
                 try {
                     // Insertion
-                    $stmt = $pdo->prepare("INSERT INTO utilisateur (pseudo_utilisateur, role_utilisateur, autorite_utilisateur, id_classe) VALUES (:pseudo, 'Elève', 'Aucune', :id_classe)");
-                    $stmt->execute(['pseudo' => $pseudo, 'id_classe' => $id_classe]);
+                    $stmt = $pdo->prepare("INSERT INTO user(pseudo_user, role_user, autority_user, id_class) VALUES (:pseudo, 'Elève', 'Aucune', :id_classe)");
+                    $stmt->execute(['pseudo' => $pseudo, 'id_class' => $id_classe]);
                     
                     // Récupération infos
-                    $info = $pdo->query("SELECT ecole, nom_classe FROM classe WHERE id_classe = $id_classe")->fetch();
+                    $info = $pdo->query("SELECT school, name_class FROM classes WHERE id_class = $id_classe")->fetch();
 
                     echo "<div class='resultat success-anim'>";
                     echo "<h3>🎉 Inscription Validée !</h3>";
-                    echo "🏫 " . htmlspecialchars($info['ecole']) . "<br>";
-                    echo "📚 " . htmlspecialchars($info['nom_classe']) . "<br>";
+                    echo "🏫 " . htmlspecialchars($info['school']) . "<br>";
+                    echo "📚 " . htmlspecialchars($info['name_class']) . "<br>";
                     echo "👤 <strong>$pseudo</strong>";
                     echo "</div>";
                 } catch (PDOException $e) {
@@ -55,10 +56,10 @@
         }
 
         // --- 3. DONNÉES ---
-        $sql = "SELECT id_classe, ecole, nom_classe FROM classe ORDER BY ecole ASC, nom_classe ASC";
+        $sql = "SELECT id_class, school, name_class FROM classes ORDER BY school ASC, name_class ASC";
         $classes = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
         $ecoles = [];
-        foreach ($classes as $row) { if ($row['ecole']) $ecoles[$row['ecole']] = $row['ecole']; }
+        foreach ($classes as $row) { if ($row['school']) $ecoles[$row['school']] = $row['school']; }
         
         $animaux = ['Loutre', 'Panda', 'Renard', 'Loup', 'Hibou', 'Dauphin', 'Faucon', 'Lynx', 'Salamandre', 'Koala', 'Dragon', 'Phoenix', 'Griffon'];
         $adjectifs = ['Cosmique', 'Solaire', 'Zen', 'Rapide', 'Agile', 'Sage', 'Intrépide', 'Loyal', 'Magique', 'Epique'];
@@ -104,6 +105,6 @@
     </div>
 
     <script>const bddClasses = <?php echo json_encode($classes); ?>;</script>
-    <script src="formulaire_klask.js"></script>
+    <script src="./public/js/pages/formulaire_klask.js"></script>
 </body>
 </html>
