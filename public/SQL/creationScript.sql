@@ -58,39 +58,39 @@ CREATE TABLE validations (
     id_user   INT NOT NULL
 ) ENGINE=InnoDB;
 
-ALTER TABLE category_activities
+ALTER TABLE activity_categories
 ADD CONSTRAINT fk_category_sphere
-FOREIGN KEY (id_sphere) REFERENCES sphere(id_sphere)
+FOREIGN KEY (id_sphere) REFERENCES spheres(id_sphere)
 ON DELETE RESTRICT ON UPDATE CASCADE;
 
 ALTER TABLE users
 ADD CONSTRAINT fk_user_class
-FOREIGN KEY (id_class) REFERENCES classe(id_class)
+FOREIGN KEY (id_class) REFERENCES classes(id_class)
 ON DELETE RESTRICT ON UPDATE CASCADE;
 
 ALTER TABLE activities
 ADD CONSTRAINT fk_activity_category
-FOREIGN KEY (id_categorie) REFERENCES category_activity(id_category)
+FOREIGN KEY (id_categorie) REFERENCES activity_categories(id_category)
 ON DELETE RESTRICT ON UPDATE CASCADE;
 
 ALTER TABLE activities
 ADD CONSTRAINT fk_activity_sphere
-FOREIGN KEY (id_sphere) REFERENCES sphere(id_sphere)
+FOREIGN KEY (id_sphere) REFERENCES spheres(id_sphere)
 ON DELETE RESTRICT ON UPDATE CASCADE;
 
 ALTER TABLE activities
 ADD CONSTRAINT fk_activity_profession
-FOREIGN KEY (id_profession) REFERENCES profession(id_profession)
+FOREIGN KEY (id_profession) REFERENCES professions(id_profession)
 ON DELETE RESTRICT ON UPDATE CASCADE;
 
 ALTER TABLE validations
 ADD CONSTRAINT fk_validation_activity
-FOREIGN KEY (id_activity) REFERENCES activite(id_activite)
+FOREIGN KEY (id_activity) REFERENCES activities(id_activity)
 ON DELETE RESTRICT ON UPDATE CASCADE;
 
 ALTER TABLE validations
 ADD CONSTRAINT fk_validation_user
-FOREIGN KEY (id_user) REFERENCES utilisateur(id_user)
+FOREIGN KEY (id_user) REFERENCES users(id_user)
 ON DELETE RESTRICT ON UPDATE CASCADE;
 
 ALTER TABLE spheres
@@ -100,14 +100,14 @@ ADD CONSTRAINT uq_sphere_color UNIQUE (color_sphere);
 ALTER TABLE activity_categories
 ADD CONSTRAINT uq_category_type UNIQUE (type_category);
 
-ALTER TABLE profession
+ALTER TABLE professions
 ADD CONSTRAINT uq_profession_description UNIQUE (description_profession);
 
 
 ALTER TABLE users
 ADD CONSTRAINT uq_user_pseudo UNIQUE (pseudo_user);
 
-ALTER TABLE activity
+ALTER TABLE activities
 ADD CONSTRAINT uq_activity_nom UNIQUE (name_stand),
 ADD CONSTRAINT uq_activity_qrcode UNIQUE (qrcode_activity),
 ADD CONSTRAINT uq_activity_profession UNIQUE (id_profession);
