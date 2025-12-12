@@ -24,11 +24,11 @@ document.addEventListener('DOMContentLoaded', function() {
             selectClasse.innerHTML = '<option value="">-- Sélectionnez votre classe --</option>';
             selectClasse.disabled = true;
 
-            if (ecoleChoisie !== "") {
+          if (ecoleChoisie !== "") {
                 // FILTRAGE : On cherche les classes qui correspondent au nom de l'école
-                // Attention : On utilise trim() pour nettoyer les espaces invisibles potentiels
+                // CORRECTION ICI : on utilise 'item.school' car c'est le nom dans la BDD
                 const classesFiltrees = bddClasses.filter(function(item) {
-                    return item.ecole.trim() === ecoleChoisie.trim();
+                    return item.school.trim() === ecoleChoisie.trim();
                 });
 
                 console.log("👉 Classes trouvées pour cette école : ", classesFiltrees.length);
@@ -37,19 +37,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (classesFiltrees.length > 0) {
                     classesFiltrees.forEach(function(classe) {
                         const option = document.createElement('option');
-                        option.value = classe.id_classe; 
-                        option.textContent = classe.nom_classe;
+                        
+                        // CORRECTION ICI : on utilise les noms anglais de la BDD
+                        option.value = classe.id_class;     // C'était id_classe
+                        option.textContent = classe.name_class; // C'était nom_classe
+                        
                         selectClasse.appendChild(option);
                     });
                     
                     // ON DÉVERROUILLE LA LISTE ICI
                     selectClasse.disabled = false;
-                    selectClasse.style.backgroundColor = "white"; // Petit bonus visuel
+                    selectClasse.style.backgroundColor = "white"; 
                 } else {
-                    console.warn(" Aucune classe trouvée. Vérifiez l'orthographe exacte dans la BDD.");
+                    console.warn(" Aucune classe trouvée.");
                 }
-            }
-        });
+            }});
 
     } else {
         console.error(" ERREUR : Impossible de trouver les menus déroulants 'choix_ecole' ou 'choix_classe' dans le HTML.");

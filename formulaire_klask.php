@@ -37,7 +37,7 @@
             if ($id_classe > 0) {
                 try {
                     // Insertion
-                    $stmt = $pdo->prepare("INSERT INTO user(pseudo_user, role_user, autority_user, id_class) VALUES (:pseudo, 'Elève', 'Aucune', :id_classe)");
+                    $stmt = $pdo->prepare("INSERT INTO users(pseudo_user, role_user, autority_user, id_class) VALUES (:pseudo, 'Elève', 'Aucune', :id_classe)");
                     $stmt->execute(['pseudo' => $pseudo, 'id_class' => $id_classe]);
                     
                     // Récupération infos
@@ -49,8 +49,11 @@
                     echo "📚 " . htmlspecialchars($info['name_class']) . "<br>";
                     echo "👤 <strong>$pseudo</strong>";
                     echo "</div>";
-                } catch (PDOException $e) {
-                    if ($e->getCode() == 23000) echo "<div class='resultat error'>⚠️ Ce pseudo est déjà pris ! Relancez le dé.</div>";
+                } 
+                // catch (PDOException $e) {
+                //     if ($e->getCode() == 23000) echo "<div class='resultat error'>⚠️ Ce pseudo est déjà pris ! Relancez le dé.</div>";
+                    catch (PDOException $e) {
+            die($e->getMessage());
                 }
             }
         }
