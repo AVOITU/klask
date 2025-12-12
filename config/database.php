@@ -27,13 +27,8 @@ function get_pdo(): PDO
                 $pass,
                 [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
             );
-        } catch (Throwable $e) {
-            Logger::error('DB connection failed', [
-                'dsn' => $_ENV['DB_DSN'] ?? null,
-                'user' => $_ENV['DB_USER'] ?? null,
-                'error' => $e->getMessage(),
-            ]);
-            throw $e;
+        } catch (PDOException $e) {
+    die("Erreur BDD : " . $e->getMessage());
         }
     }
     return $pdo;

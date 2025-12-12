@@ -55,7 +55,7 @@
         }
 
         // --- 3. DONNÉES ---
-        $sql = "SELECT id_classe, ecole, nom_classe FROM classe ORDER BY ecole ASC, nom_classe ASC";
+        $sql = "SELECT id_class, school, name_class FROM classes ORDER BY school ASC, name_classe ASC";
         $classes = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
         $ecoles = [];
         foreach ($classes as $row) { if ($row['ecole']) $ecoles[$row['ecole']] = $row['ecole']; }
