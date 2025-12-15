@@ -2,14 +2,12 @@
 
 namespace Model;
 
-class Validation
+final class Validation
 {
-    public ?int $validationId = null;
-    public string $validationTime; // Y-m-d H:i:s
-
-    public int $activityId;      // FK
-    public int $userId;          // FK
-
-    public ?Activity $activity = null;
-    public ?User $user = null;
+    public function __construct(
+        public int $idValidation,
+        public string $hourValidation,
+        public Activity $activity, // ENREGISTRE (1,1)
+        public User $user,         // VALIDE (1,1)
+    ) {}
 }

@@ -2,12 +2,15 @@
 
 namespace Model;
 
-class Profession
+final class Profession
 {
-    public ?int $professionId = null;
-    public ?string $professionDescription = null;
-    public string $romCode;
-
-    /** @var Activity[] */
-    public array $activities = [];
+    /**
+     * @param Activity[] $activities
+     */
+    public function __construct(
+        public int $idProfession,
+        public string $descriptionProfession,
+        public string $codeRom,
+        public array $activities = [], // APPARTIENT (1,N)
+    ) {}
 }

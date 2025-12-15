@@ -4,16 +4,13 @@ namespace Model;
 
 class ClassRoom
 {
-    public ?int $categoryId = null;
-    /** 'stand' | 'conference' | 'other' */
-    public string $categoryType;
-    public int $maxDuration;
-    public int $points;
-    public ?int $maxStudents = null;
-
-    public int $sphereId;           // FK raw
-    public ?Sphere $sphere = null;  // linked object
-
-    /** @var Activity[] */
-    public array $activities = [];
+    /**
+     * @param User[] $users
+     */
+    public function __construct(
+        public int $idClass,
+        public string $school,
+        public string $nameClass,
+        public array $users = [], // APPARTIENT (1,N)
+    ) {}
 }

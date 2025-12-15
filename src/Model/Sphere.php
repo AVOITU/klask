@@ -1,15 +1,18 @@
 <?php
 
 namespace Model;
-class Sphere
+final class Sphere
 {
-    public ?int $sphereId = null;
-    public string $sphereName;
-    public string $sphereColor;
-
-    /** @var ActivityCategory[] */
-    public array $categories = [];
-
-    /** @var Activity[] */
-    public array $activities = [];
+    /**
+     * @param ActivityCategory[] $activityCategories
+     * @param Activity[]         $activities
+     */
+    public function __construct(
+        public int $idSphere,
+        public string $nameSphere,
+        public string $colorSphere,
+        public array $activityCategories = [],
+        public array $activities = [],
+    ) {}
 }
+

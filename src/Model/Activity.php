@@ -2,23 +2,21 @@
 
 namespace Model;
 
-class Activity
+final class Activity
 {
-    public ?int $activityId = null;
-    public string $activityName;
-    public ?string $activityDescription = null;
-    public string $qrCode;
-    public int $posX;
-    public int $posY;
-
-    public int $categoryId;           // FK
-    public int $sphereId;             // FK
-    public int $professionId;         // FK
-
-    public ?ActivityCategory $category = null;
-    public ?Sphere $sphere = null;
-    public ?Profession $profession = null;
-
-    /** @var Validation[] */
-    public array $validations = [];
+    /**
+     * @param Validation[] $validations
+     */
+    public function __construct(
+        public int $idActivity,
+        public string $nameActivity,
+        public string $descriptionActivity,
+        public string $qrcodeActivity,
+        public float $pointX,
+        public float $pointY,
+        public Sphere $sphere,                    // AFFICHE (1,1)
+        public ActivityCategory $activityCategory, // REGROUPE (1,1)
+        public Profession $profession,            // APPARTIENT (1,1)
+        public array $validations = [],           // ENREGISTRE (1,N)
+    ) {}
 }

@@ -2,16 +2,17 @@
 
 namespace Model;
 
-class User
+final class User
 {
-    public ?int $userId = null;
-    public string $username;
-    public string $role;
-    public string $authority;
-
-    public int $classId;              // FK raw
-    public ?ClassRoom $classRoom = null;  // linked object
-
-    /** @var Validation[] */
-    public array $validations = [];
+    /**
+     * @param Validation[] $validations
+     * @param Authority[]  $authorities
+     */
+    public function __construct(
+        public int $idUser,
+        public string $pseudoUser,
+        public ClassRoom $class,            // APPARTIENT (1,1)
+        public array $validations = [],   // VALIDE (1,N)
+        public array $authorities = [],   // (1,N)
+    ) {}
 }
