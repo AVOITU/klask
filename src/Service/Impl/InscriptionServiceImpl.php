@@ -62,9 +62,11 @@ class InscriptionServiceImpl implements InscriptionService
             }
 
             $student = new User(
+                validations: [],
+                authorities: [],
                 idUser: (int)null,
                 pseudoUser: $pseudo,
-                class: $classRoom
+                classe: $classRoom
             );
 
             $this->userRepo->insertStudent($student);
@@ -73,7 +75,7 @@ class InscriptionServiceImpl implements InscriptionService
             $messageSuccess = [
                 'ecole'  => $classRoom->getSchool(),
                 'classe' => $classRoom->getNameClass(),
-                'pseudo' => $student->getPseudo(),
+                'pseudo' => $student->getPseudoUser(),
             ];
 
         } catch (PDOException $e) {

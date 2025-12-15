@@ -12,7 +12,7 @@ final class User
 
     private int $idUser;
     private string $pseudoUser;
-    private ClassRoom $classe;
+    private ClassRoom $classRoom;
 
     /**
      * @param Validation[] $validations
@@ -27,7 +27,7 @@ final class User
         $this->authorities = $authorities;
         $this->idUser = $idUser;
         $this->pseudoUser = $pseudoUser;
-        $this->classe = $classe;
+        $this->classRoom = $classe;
     }
 
     public function getValidations(): array
@@ -70,15 +70,13 @@ final class User
         $this->pseudoUser = $pseudoUser;
     }
 
-    public function getClasse(): ClassRoom
+    public function getClassRoom(): ClassRoom
     {
-        return $this->classe;
+        return $this->classRoom;
     }
 
-    public function setClasse(ClassRoom $classe): void
+    public function setClassRoom(ClassRoom $classRoom): void
     {
-        $this->classe = $classe;
+        $this->classRoom = $classRoom;
     }
-
-
 }
