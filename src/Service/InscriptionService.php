@@ -7,5 +7,5 @@ interface InscriptionService
 
     public function generateDefaultNickname(): string;
 
-    public function handleRegistration(array $post): array;
+    public function registerStudent(array $post): array;
 }

@@ -2,6 +2,8 @@
 
 namespace Service\Impl;
 
+use Model\ClassRoom;
+use Model\User;
 use Service\InscriptionService;
 use PDOException;
 use Repository\ClassRoomRepository;
@@ -27,10 +29,7 @@ class InscriptionServiceImpl implements InscriptionService
         private UserRepository      $userRepo,
     ) { }
 
-    public function getClassAndStudent(): array
-    {
-        return $this->classeRepo->findAll();
-    }
+    public function getClassAndStudent(): array { return $this->classeRepo->findAll(); }
 
     public function generateDefaultNickname(): string
     {
@@ -39,7 +38,7 @@ class InscriptionServiceImpl implements InscriptionService
         return $animal . ' ' . $adjectif;
     }
 
-    public function handleRegistration(array $post): array
+    public function registerStudent(array $post): array
     {
         $messageSuccess = null;
         $messageError   = null;
@@ -50,29 +49,39 @@ class InscriptionServiceImpl implements InscriptionService
             : 'Anonyme';
 
         if ($classId <= 0) {
-            $messageError = 'Classe invalide.';
-            return [$messageSuccess, $messageError];
+            return [null, 'Classe invalide.'];
         }
 
         try {
-            $this->userRepo->insertStudent($pseudo, $classId);
+            // 1) on récupère la classe en OBJET (Model)
+            /** @var ClassRoom|null $classRoom */
+            $classRoom = $this->classeRepo->findById($classId);
 
-            $classInfo = $this->classeRepo->findById($classId);
-
-            if ($classInfo) {
-                $messageSuccess = [
-                    'ecole' => $classInfo['ecole'],
-                    'classe' => $classInfo['nom_classe'],
-                    'pseudo' => $pseudo,
-                ];
+            if ($classRoom === null) {
+                return [null, 'Classe introuvable.'];
             }
+
+            $student = new User(
+                idUser: (int)null,
+                pseudoUser: $pseudo,
+                class: $classRoom
+            );
+
+            $this->userRepo->insertStudent($student);
+
+            // 3) messageSuccess construit depuis getters
+            $messageSuccess = [
+                'ecole'  => $classRoom->getSchool(),
+                'classe' => $classRoom->getNameClass(),
+                'pseudo' => $student->getPseudo(),
+            ];
+
         } catch (PDOException $e) {
-            if ($e->getCode() === '23000') {
-                $messageError = '⚠️ Ce pseudo est déjà pris ! Relancez le dé.';
-            } else {
-                $messageError = 'Erreur lors de l’inscription.';
-            }
+            $messageError = ($e->getCode() === '23000')
+                ? '⚠️ Ce pseudo est déjà pris ! Relancez le dé.'
+                : 'Erreur lors de l’inscription.';
         }
+
         return [$messageSuccess, $messageError];
     }
 }

@@ -24,6 +24,7 @@
 
     <?php
     // TRAITEMENT PHP
+    // TODO : enlever ce script avant déploiement
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_reset'])) {
         
         // 1. Connexion BDD (Indépendante pour ce fichier)

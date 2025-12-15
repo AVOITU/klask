@@ -13,11 +13,11 @@ class ClassRoomRepositoryImpl implements ClassRoomRepository
 
     public function findAll(): array
     {
-        $sql = "SELECT id_classe, ecole, nom_classe 
+        $SQL = "SELECT id_classe, ecole, nom_classe 
                 FROM classe 
                 ORDER BY ecole , nom_classe";
 
-        return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        return $this->pdo->query($SQL)->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function findById(int $id_classe): ?array
