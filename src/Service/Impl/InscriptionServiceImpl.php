@@ -2,7 +2,7 @@
 
 namespace Service\Impl;
 
-use InscriptionService;
+use Service\InscriptionService;
 use PDOException;
 use Repository\ClassRoomRepository;
 use Repository\UserRepository;

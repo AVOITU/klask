@@ -1,5 +1,6 @@
 <?php
 
+namespace Service;
 interface InscriptionService
 {
     public function getClassAndStudent(): array;

@@ -16,13 +16,14 @@ function get_pdo(): PDO
 
     if ($pdo === null) {
         $host   = $_ENV['DB_HOST']     ?? '127.0.0.1';
+        $port   = $_ENV['DB_PORT']     ?? '';
         $dbname = $_ENV['DB_NAME']     ?? '';
         $user   = $_ENV['DB_USER']     ?? '';
         $pass   = $_ENV['DB_PASSWORD'] ?? '';
 
         try {
             $pdo = new PDO(
-                "mysql:host=$host;dbname=$dbname;charset=utf8",
+                "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4",
                 $user,
                 $pass,
                 [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]

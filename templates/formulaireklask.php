@@ -6,10 +6,12 @@
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Scanner Élève</title>
 
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;800&display=swap"
           rel="stylesheet">
 
-    <link rel="stylesheet" href="/./formulaireklask.css">
+    <link rel="stylesheet" href="/css/pages/formulaireklask.css">
 </head>
 <body data-theme="standard">
 
@@ -81,6 +83,6 @@
 <script>
     const bddClasses = <?= json_encode($classes, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG); ?>;
 </script>
-<script src="/formulaireklask.js"></script>
+<script src="/js/formulaireklask.js"></script>
 </body>
 </html>
