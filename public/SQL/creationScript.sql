@@ -13,7 +13,7 @@ CREATE TABLE activity_categories (
     type_category    VARCHAR(255) NOT NULL,
     time_max         INT NOT NULL,
     nbr_point        INT NOT NULL,
-    nbr_max_student  INT  NULL,
+    nbr_max_activity  INT  NULL,
     id_sphere        INT NOT NULL
 ) ENGINE=InnoDB;
 
