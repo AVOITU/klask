@@ -11,13 +11,13 @@ require_once __DIR__ . '/../InscriptionService.php';
 
 class InscriptionServiceImpl implements InscriptionService
 {
-    private array $animaux = [
+    private array $ANIMALS = [
         'Loutre', 'Panda', 'Renard', 'Loup', 'Hibou',
         'Dauphin', 'Faucon', 'Lynx', 'Salamandre', 'Koala',
         'Dragon', 'Phoenix', 'Griffon'
     ];
 
-    private array $adjectifs = [
+    private array $ADJECTIVES = [
         'Cosmique', 'Solaire', 'Zen', 'Rapide', 'Agile',
         'Sage', 'Intrépide', 'Loyal', 'Magique', 'Epique'
     ];
@@ -29,22 +29,13 @@ class InscriptionServiceImpl implements InscriptionService
 
     public function getClassAndStudent(): array
     {
-        $classes = $this->classeRepo->findAll();
-        $ecoles = [];
-
-        foreach ($classes as $row) {
-            if (!empty($row['ecole'])) {
-                $ecoles[$row['ecole']] = $row['ecole'];
-            }
-        }
-
-        return [$classes, $ecoles];
+        return $this->classeRepo->findAll();
     }
 
     public function generateDefaultNickname(): string
     {
-        $animal = $this->animaux[array_rand($this->animaux)];
-        $adjectif = $this->adjectifs[array_rand($this->adjectifs)];
+        $animal = $this->ANIMALS[array_rand($this->ANIMALS)];
+        $adjectif = $this->ADJECTIVES[array_rand($this->ADJECTIVES)];
         return $animal . ' ' . $adjectif;
     }
 
