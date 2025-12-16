@@ -67,7 +67,7 @@ class InscriptionServiceImpl implements InscriptionService
                 authorities: [],
                 idUser: (int)null,
                 pseudoUser: $pseudo,
-                classe: $classRoom
+                classRoom: $classRoom
             );
 
             $this->userRepo->insertStudent($student);

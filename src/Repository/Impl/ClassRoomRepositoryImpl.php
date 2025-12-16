@@ -34,9 +34,11 @@ class ClassRoomRepositoryImpl implements ClassRoomRepository
 
     public function findById(int $id_classe): ?ClassRoom
     {
-        $stmt = $this->pdo->prepare(
-            "SELECT ecole, nom_classe FROM classe WHERE id_classe = :id"
-        );
+        $SQL = "SELECT ecole, nom_classe FROM classe WHERE id_classe = :id";
+
+        $stmt = $this->pdo->prepare($SQL);
+
+        $stmt->execute(['id' => $id_classe]);
 
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$row) {

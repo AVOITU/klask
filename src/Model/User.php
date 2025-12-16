@@ -19,15 +19,15 @@ final class User
      * @param Authority[] $authorities
      * @param int $idUser
      * @param string $pseudoUser
-     * @param ClassRoom $classe
+     * @param ClassRoom $classRoom
      */
-    public function __construct(array $validations, array $authorities, int $idUser, string $pseudoUser, ClassRoom $classe)
+    public function __construct(array $validations, array $authorities, int $idUser, string $pseudoUser, ClassRoom $classRoom)
     {
         $this->validations = $validations;
         $this->authorities = $authorities;
         $this->idUser = $idUser;
         $this->pseudoUser = $pseudoUser;
-        $this->classRoom = $classe;
+        $this->classRoom = $classRoom;
     }
 
     public function getValidations(): array
