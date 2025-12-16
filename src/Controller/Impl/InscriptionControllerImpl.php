@@ -17,23 +17,19 @@ require_once __DIR__ . '/../../../src/Controller/Impl/InscriptionControllerImpl.
 
 class InscriptionControllerImpl implements InscriptionController
 {
-    public function __construct(private InscriptionService $service) {}
+    public function __construct(private InscriptionService $inscriptionService) {}
 
-    public function handleRequest(): void
+    public function showForm(): void
     {
-        [$classes, $schools] = $this->service->getClassAndStudent();
-
-        $messageSuccess = null;
-        $messageError   = null;
-
-        $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-
-        if ($method === 'POST') {
-            [$messageSuccess, $messageError] = $this->service->handleRegistration($_POST);
-        }
-
-        $nom_depart = $this->service->generateDefaultNickname();
-
+        [$classes, $schools] = $this->inscriptionService->getAllSchoolsAndClasses();
+        $nom_depart = $this->inscriptionService->generateDefaultNickname();
         require __DIR__ . '/../../../templates/formulaireklask.php';
+    }
+
+    public function submit(): void
+    {
+        [$messageSuccess, $messageError] =
+            $this->inscriptionService->registerStudent($_POST);
+        $this->showForm();
     }
 }

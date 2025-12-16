@@ -3,7 +3,7 @@
 namespace Service;
 interface InscriptionService
 {
-    public function getClassAndStudent(): array;
+    public function getAllSchoolsAndClasses(): array;
 
     public function generateDefaultNickname(): string;
 

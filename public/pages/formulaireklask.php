@@ -18,4 +18,4 @@ $utilisateurRepo = new UserRepositoryImpl($pdo);
 $service         = new InscriptionServiceImpl($classeRepo, $utilisateurRepo);
 $controller      = new InscriptionControllerImpl($service);
 
-$controller->handleRequest();
+$controller->showForm();

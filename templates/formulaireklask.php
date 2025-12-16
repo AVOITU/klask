@@ -48,7 +48,7 @@
             <div class="select-wrapper">
                 <select id="choix_ecole" required>
                     <option value="">👇 Touchez pour choisir</option>
-                    <?php foreach ($ecoles as $nom): ?>
+                    <?php foreach ($schools as $nom): ?>
                         <option value="<?= htmlspecialchars($nom) ?>">
                             <?= htmlspecialchars($nom) ?>
                         </option>

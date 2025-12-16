@@ -9,20 +9,20 @@ class ClassRoom
 
     private int $idClass;
     private string $school;
-    private string $nameClass;
+    private string $className;
 
     /**
      * @param User[] $users
      * @param int $idClass
      * @param string $school
-     * @param string $nameClass
+     * @param string $className
      */
-    public function __construct(array $users, int $idClass, string $school, string $nameClass)
+    public function __construct(array $users, int $idClass, string $school, string $className)
     {
         $this->users = $users;
         $this->idClass = $idClass;
         $this->school = $school;
-        $this->nameClass = $nameClass;
+        $this->className = $className;
     }
 
     public function getUsers(): array
@@ -55,14 +55,14 @@ class ClassRoom
         $this->school = $school;
     }
 
-    public function getNameClass(): string
+    public function getClassName(): string
     {
-        return $this->nameClass;
+        return $this->className;
     }
 
-    public function setNameClass(string $nameClass): void
+    public function setClassName(string $className): void
     {
-        $this->nameClass = $nameClass;
+        $this->className = $className;
     }
 
 }

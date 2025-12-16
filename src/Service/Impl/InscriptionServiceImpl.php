@@ -4,9 +4,9 @@ namespace Service\Impl;
 
 use Model\ClassRoom;
 use Model\User;
+use Service\ClassRoomService;
 use Service\InscriptionService;
 use PDOException;
-use Repository\ClassRoomRepository;
 use Repository\UserRepository;
 
 require_once __DIR__ . '/../InscriptionService.php';
@@ -25,11 +25,13 @@ class InscriptionServiceImpl implements InscriptionService
     ];
 
     public function __construct(
-        private ClassRoomRepository $classeRepo,
-        private UserRepository      $userRepo,
+        private ClassRoomService $classRoomService,
+        private UserRepository   $userRepo,
     ) { }
 
-    public function getClassAndStudent(): array { return $this->classeRepo->findAll(); }
+    public function getAllSchoolsAndClasses(): array {
+        return $this->classRoomService->getAllSchoolsAndClasses();
+    }
 
     public function generateDefaultNickname(): string
     {
@@ -53,9 +55,8 @@ class InscriptionServiceImpl implements InscriptionService
         }
 
         try {
-            // 1) on récupère la classe en OBJET (Model)
             /** @var ClassRoom|null $classRoom */
-            $classRoom = $this->classeRepo->findById($classId);
+            $classRoom = $this->classRoomService->findById($classId);
 
             if ($classRoom === null) {
                 return [null, 'Classe introuvable.'];
@@ -71,10 +72,9 @@ class InscriptionServiceImpl implements InscriptionService
 
             $this->userRepo->insertStudent($student);
 
-            // 3) messageSuccess construit depuis getters
             $messageSuccess = [
                 'ecole'  => $classRoom->getSchool(),
-                'classe' => $classRoom->getNameClass(),
+                'classe' => $classRoom->getClassName(),
                 'pseudo' => $student->getPseudoUser(),
             ];
 
@@ -83,7 +83,6 @@ class InscriptionServiceImpl implements InscriptionService
                 ? '⚠️ Ce pseudo est déjà pris ! Relancez le dé.'
                 : 'Erreur lors de l’inscription.';
         }
-
         return [$messageSuccess, $messageError];
     }
 }
