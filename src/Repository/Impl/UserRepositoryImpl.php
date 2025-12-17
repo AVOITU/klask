@@ -14,7 +14,16 @@ class UserRepositoryImpl implements UserRepository
 
     public function findById(int $id_user): ?User
     {
-        $SQL = "SELECT id_utilisateur, pseudo_utilisateur, id_classe FROM utilisateur WHERE id_classe = :id";
+        $SQL = "
+        SELECT 
+            u.id_utilisateur, u.pseudo_utilisateur, u.id_classe,
+            COALESCE(JSON_ARRAYAGG(a.nom_autorite), JSON_ARRAY()) AS authorities
+        FROM utilisateur u
+        LEFT JOIN utilisateur_autorite ua ON ua.id_utilisateur = u.id_utilisateur
+        LEFT JOIN autorite a ON a.id_autorite = ua.id_autorite
+        WHERE u.id_utilisateur = :id
+        GROUP BY u.id_utilisateur
+    ";
         $stmt = $this->pdo->prepare($SQL);
 
         $stmt->execute(['id' => $id_user]);
@@ -35,20 +44,21 @@ class UserRepositoryImpl implements UserRepository
 
     public function insertStudent(User $user): User
     {
-        $id_classe = $user->getIdUser();
+        $id_user =$user->getIdUser();
         $pseudo = $user->getPseudoUser();
+        $id_classe = $user->getClassRoom()->getIdClass();
 
         $stmt = $this->pdo->prepare(
             "INSERT INTO utilisateur 
-             (pseudo_utilisateur, role_utilisateur, autorite_utilisateur, id_classe)
-             VALUES (:pseudo, 'Elève', 'Aucune', :id_classe)"
+             (id_utilisateur,pseudo_utilisateur, id_classe)
+             VALUES (:id_utilisateur, :pseudo, :id_classe)"
         );
 
         $stmt->execute(
-            ['id_classe' => $id_classe,
-            'pseudo' => $pseudo]
+            ['id_utilisateur' => $id_user,
+            'pseudo' => $pseudo,
+            'id_classe' => $id_classe]
         );
-
         return $this->findById($id_classe);
     }
 }
