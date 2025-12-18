@@ -30,9 +30,7 @@ function get_pdo(): PDO
             );
         } catch (Throwable $e) {
             Logger::error('DB connection failed', [
-                'dsn' => $_ENV['DB_DSN'] ?? null,
-                'user' => $_ENV['DB_USER'] ?? null,
-                'error' => $e->getMessage(),
+                'error' => $_ENV['APP_ENV'] === 'dev' ? $e->getMessage() : 'Database error'
             ]);
             throw $e;
         }
