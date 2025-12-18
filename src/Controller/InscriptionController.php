@@ -3,5 +3,7 @@
 namespace Controller;
 interface InscriptionController
 {
-    public function handleRequest(): void;
+    public function showForm(): void;
+
+    public function submit(): void;
 }

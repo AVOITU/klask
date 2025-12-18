@@ -68,7 +68,7 @@ public/css/build/
 # PhpStorm
 .idea/
 *.iml
-*.xml
+composer.phar
 
 # VS Code
 .vscode/

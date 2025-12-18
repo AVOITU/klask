@@ -1,7 +1,9 @@
 <?php
 
 namespace Repository;
+use Model\User;
+
 interface UserRepository
 {
-    public function insertStudent(string $pseudo, int $id_classe): void;
+    public function insertStudent(User $user): User;
 }
