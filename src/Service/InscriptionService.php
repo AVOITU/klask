@@ -3,9 +3,8 @@
 namespace Service;
 interface InscriptionService
 {
-    public function getAllSchoolsAndClasses(): array;
-
+    public function getAllSchools(): array;
+    public function getClassesBySchool($school): array;
     public function generateDefaultNickname(): string;
-
     public function registerStudent(array $post): array;
 }

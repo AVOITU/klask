@@ -14,15 +14,37 @@ class InscriptionControllerImpl implements InscriptionController
 
     public function showForm(): void
     {
-        [$classes, $schools] = $this->inscriptionService->getAllSchoolsAndClasses();
-        $nom_depart = $this->inscriptionService->generateDefaultNickname();
+        $schools = $this->inscriptionService->getAllSchools();
+
+        $selectedSchool = trim($_POST['ecole'] ?? '');
+        $filteredClasses = ($selectedSchool !== '')
+            ? $this->inscriptionService->getClassesBySchool($selectedSchool)
+            : [];
+
+        $pseudo = trim($_POST['pseudo_choisi'] ?? '');
+        $nom_depart = ($pseudo !== '') ? $pseudo : $this->inscriptionService->generateDefaultNickname();
+
+        $messageSuccess = $messageSuccess ?? null;
+        $messageError   = $messageError ?? null;
+
         require __DIR__ . '/../../../templates/formulaireklask.php';
     }
 
     public function submit(): void
     {
-        [$messageSuccess, $messageError] =
-            $this->inscriptionService->registerStudent($_POST);
+        if (($_POST['action'] ?? '') === 'regen') {
+            $_POST['pseudo_choisi'] = $this->inscriptionService->generateDefaultNickname();
+            $this->showForm();
+            return;
+        }
+
+        // si POST déclenché juste par le changement d'école
+        if (isset($_POST['ecole']) && !isset($_POST['classe_final_id'])) {
+            $this->showForm();
+            return;
+        }
+
+        [$messageSuccess, $messageError] = $this->inscriptionService->registerStudent($_POST);
         $this->showForm();
     }
 }

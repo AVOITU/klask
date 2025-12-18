@@ -42,33 +42,26 @@
         </div>
     <?php endif; ?>
 
-    <form action="" method="POST">
+    <form action="<?= htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'UTF-8') ?>" method="POST">
 
-        <!-- 1) ECOLE -->
+    <!-- 1) ECOLE -->
         <div class="form-group">
             <label for="choix_ecole">1. Mon Établissement</label>
 
             <div class="select-wrapper">
-                <select
-                        id="choix_ecole"
-                        name="ecole"
-                        required
-                        onchange="this.form.submit()"
-                >
+                <select id="choix_ecole" name="ecole" required onchange="this.form.submit()">
                     <option value="">👇 Touchez pour choisir</option>
 
                     <?php foreach ($schools as $nom): ?>
                         <option
                                 value="<?= htmlspecialchars($nom, ENT_QUOTES, 'UTF-8') ?>"
-                                <?= (!empty($selectedSchool) && $selectedSchool === $nom) ? 'selected' : '' ?>
+                                <?= ($selectedSchool !== '' && $selectedSchool === $nom) ? 'selected' : '' ?>
                         >
                             <?= htmlspecialchars($nom, ENT_QUOTES, 'UTF-8') ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
             </div>
-
-            <small>Choisir l’école recharge la page pour charger les classes.</small>
         </div>
 
         <!-- 2) CLASSE -->
@@ -76,28 +69,18 @@
             <label for="choix_classe">2. Ma Classe</label>
 
             <div class="select-wrapper">
-                <select
-                        name="classe_final_id"
-                        id="choix_classe"
-                        required
-                        <?= empty($filteredClasses) ? 'disabled' : '' ?>
-                >
+                <select name="classe_final_id" id="choix_classe" required <?= empty($filteredClasses) ? 'disabled' : '' ?>>
                     <?php if (empty($filteredClasses)): ?>
                         <option value="">🔒 Choisissez d'abord l'école</option>
                     <?php else: ?>
                         <option value="">👇 Choisir la classe</option>
 
+                        <?php $selectedClassId = isset($_POST['classe_final_id']) ? (int)$_POST['classe_final_id'] : 0; ?>
+
                         <?php foreach ($filteredClasses as $c): ?>
-                            <?php
-                            $idClasse = (int)$c['id_classe'];
-                            $nomClasse = (string)$c['nom_classe'];
-                            $selectedClassId = isset($_POST['classe_final_id']) ? (int)$_POST['classe_final_id'] : 0;
-                            ?>
-                            <option
-                                    value="<?= $idClasse ?>"
-                                    <?= ($selectedClassId === $idClasse) ? 'selected' : '' ?>
-                            >
-                                <?= htmlspecialchars($nomClasse, ENT_QUOTES, 'UTF-8') ?>
+                            <?php $id = (int)$c['id_classe']; ?>
+                            <option value="<?= $id ?>" <?= ($selectedClassId === $id) ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($c['nom_classe'], ENT_QUOTES, 'UTF-8') ?>
                             </option>
                         <?php endforeach; ?>
                     <?php endif; ?>
@@ -119,7 +102,7 @@
                 >
 
                 <!-- si tu as un JS qui change le pseudo, ok. Sinon ce bouton ne fera rien -->
-                <button type="button" id="btn_random" aria-label="Changer de nom">🎲</button>
+                <button type="submit" name="action" value="regen" id="btn_random">🎲</button>
             </div>
 
             <small>Touchez le dé pour changer</small>
@@ -129,9 +112,6 @@
     </form>
 </div>
 
-<script>
-    const bddClasses = <?= json_encode($classes, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG); ?>;
-</script>
 <script src="/js/formulaireklask.js"></script>
 </body>
 </html>

@@ -15,14 +15,25 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 class InscriptionServiceImpl implements InscriptionService
 {
     private array $ANIMALS = [
-        'Loutre', 'Panda', 'Renard', 'Loup', 'Hibou',
+        'Tardigrade', 'Loutre', 'Panda', 'Aigle', 'Renard', 'Loup', 'Hibou',
         'Dauphin', 'Faucon', 'Lynx', 'Salamandre', 'Koala',
-        'Dragon', 'Phoenix', 'Griffon'
+        'Suricate', 'Ours', 'Lémurien', 'Ornithorynque', 'Caméléon', 'Iguane',
+        'Jaguar', 'Panthère', 'Requin', 'Baleine', 'Orque',
+        'Hamster', 'Castor', 'Hérisson', 'Ecureuil', 'Kangourou', 'Lama', 'Zèbre',
+        'Dragon', 'Phoenix', 'Griffon', 'Pégase', 'Sphinx', 'Yéti', 'Kraken',
+        'Chimère', 'Hydre', 'Titan', 'Cyclope', 'Gargouille', 'Licorne'
     ];
 
     private array $ADJECTIVES = [
-        'Cosmique', 'Solaire', 'Zen', 'Rapide', 'Agile',
-        'Sage', 'Intrépide', 'Loyal', 'Magique', 'Epique'
+        'Cosmique', 'Galactique', 'Solaire', 'Lunaire', 'Stellaire', 'Polaire',
+        'Volcanique', 'Aquatique', 'Electrique', 'Magnétique', 'Bionique', 'Cyber',
+        'Intrépide', 'Brave', 'Sage', 'Zen', 'Fidèle', 'Rebelle', 'Sauvage',
+        'Libre', 'Solitaire', 'Sympathique', 'Drôle', 'Excentrique', 'Artiste',
+        'Habile', 'Agile', 'Rapide', 'Véloce', 'Tenace', 'Robuste', 'Stoïque',
+        'Diplomate', 'Pacifique', 'Terrible', 'Redoutable', 'Invincible',
+        'Invisible', 'Mystique', 'Magique', 'Enigmatique', 'Fantastique',
+        'Légendaire', 'Mythique', 'Héroïque', 'Epique', 'Titanesque',
+        'Incroyable', 'Imprévisible', 'Inarrêtable', 'Insaisissable'
     ];
 
     public function __construct(
@@ -30,8 +41,12 @@ class InscriptionServiceImpl implements InscriptionService
         private UserService $userService,
     ) { }
 
-    public function getAllSchoolsAndClasses(): array {
-        return $this->classRoomService->getAllSchoolsAndClasses();
+    public function getAllSchools(): array {
+        return $this->classRoomService->findAllSchools();
+    }
+
+    public function getClassesBySchool($school): array {
+        return $this->classRoomService->findClassesBySchool($school);
     }
 
     public function generateDefaultNickname(): string

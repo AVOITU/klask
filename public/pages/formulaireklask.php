@@ -19,4 +19,8 @@ $userService        = new UserServiceImpl($userRepo);
 $inscriptionService = new InscriptionServiceImpl($classRoomService, $userService);
 $controller         = new InscriptionControllerImpl($inscriptionService);
 
-$controller->showForm();
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $controller->submit();
+} else {
+    $controller->showForm();
+}

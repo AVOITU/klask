@@ -14,16 +14,11 @@ class ClassRoomServiceImpl implements ClassRoomService
         private ClassRoomRepository $classeRepo
     ) {}
 
-    public function findAll(): array { return $this->classeRepo->findAll(); }
+    public function findAllSchools(): array { return $this->classeRepo->findAllSchools(); }
+
+    public function findClassesBySchool($school): array { return $this->classeRepo->findClassesBySchool($school); }
 
     public function findById($classId) : ?ClassRoom{
         return $this->classeRepo->findById($classId);
-    }
-
-    public function getAllSchoolsAndClasses(): array {
-        $schoolsAndClassNames =$this->findAll();
-        $schools = array_map(fn($classRoom) => $classRoom->getSchool(), $schoolsAndClassNames);
-        $classes = array_map(fn($classRoom) => $classRoom->getNameClass(), $schoolsAndClassNames);
-        return [$schools, $classes];
     }
 }

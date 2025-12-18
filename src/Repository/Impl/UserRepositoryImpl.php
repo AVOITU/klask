@@ -3,6 +3,7 @@
 
 namespace Repository\Impl;
 
+use Model\ClassRoom;
 use Model\User;
 use PDO;
 use Repository\UserRepository;
@@ -15,15 +16,20 @@ class UserRepositoryImpl implements UserRepository
     public function findById(int $id_user): ?User
     {
         $SQL = "
-        SELECT 
-            u.id_utilisateur, u.pseudo_utilisateur, u.id_classe,
-            COALESCE(JSON_ARRAYAGG(a.nom_autorite), JSON_ARRAY()) AS authorities
-        FROM utilisateur u
-        LEFT JOIN utilisateur_autorite ua ON ua.id_utilisateur = u.id_utilisateur
-        LEFT JOIN autorite a ON a.id_autorite = ua.id_autorite
-        WHERE u.id_utilisateur = :id
-        GROUP BY u.id_utilisateur
-    ";
+                SELECT 
+                  u.id_utilisateur,
+                  u.pseudo_utilisateur,
+                  c.id_classe,
+                  c.ecole,
+                  c.nom_classe,
+                  COALESCE(JSON_ARRAYAGG(a.nom_autorite), JSON_ARRAY()) AS authorities
+                FROM utilisateur u
+                JOIN classe c ON c.id_classe = u.id_classe
+                LEFT JOIN utilisateur_autorite ua ON ua.id_utilisateur = u.id_utilisateur
+                LEFT JOIN autorite a ON a.id_autorite = ua.id_autorite
+                WHERE u.id_utilisateur = :id
+                GROUP BY u.id_utilisateur, c.id_classe, c.ecole, c.nom_classe
+            ";
         $stmt = $this->pdo->prepare($SQL);
 
         $stmt->execute(['id' => $id_user]);
@@ -33,32 +39,35 @@ class UserRepositoryImpl implements UserRepository
             return null;
         }
 
+        $classRoom = new ClassRoom(
+            users: [],
+            idClass: (int)$row['id_classe'],
+            school: $row['ecole'],
+            className: $row['nom_classe']
+        );
+
         return new User(
-            [],
-            [],
-            (int)$row['id_utilisateur'],
-            $row['pseudo_utilisateur'],
-            $row['id_classe'],
+            validations: [],
+            authorities: [],
+            idUser: (int)$row['id_utilisateur'],
+            pseudoUser: $row['pseudo_utilisateur'],
+            classRoom: $classRoom
         );
     }
 
     public function insertStudent(User $user): User
     {
-        $id_user =$user->getIdUser();
-        $pseudo = $user->getPseudoUser();
-        $id_classe = $user->getClassRoom()->getIdClass();
-
         $stmt = $this->pdo->prepare(
-            "INSERT INTO utilisateur 
-             (id_utilisateur,pseudo_utilisateur, id_classe)
-             VALUES (:id_utilisateur, :pseudo, :id_classe)"
+            "INSERT INTO utilisateur (pseudo_utilisateur, id_classe)
+         VALUES (:pseudo, :id_classe)"
         );
 
-        $stmt->execute(
-            ['id_utilisateur' => $id_user,
-            'pseudo' => $pseudo,
-            'id_classe' => $id_classe]
-        );
-        return $this->findById($id_classe);
+        $stmt->execute([
+            'pseudo'    => $user->getPseudoUser(),
+            'id_classe' => $user->getClassRoom()->getIdClass(),
+        ]);
+
+        $newId = (int)$this->pdo->lastInsertId();
+        return $this->findById($newId);
     }
 }
