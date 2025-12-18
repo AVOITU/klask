@@ -8,6 +8,7 @@ use Service\ClassRoomService;
 use Service\InscriptionService;
 use PDOException;
 use Repository\UserRepository;
+use Service\UserService;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
@@ -26,7 +27,7 @@ class InscriptionServiceImpl implements InscriptionService
 
     public function __construct(
         private ClassRoomService $classRoomService,
-        private UserRepository   $userRepo,
+        private UserService $userService,
     ) { }
 
     public function getAllSchoolsAndClasses(): array {
@@ -70,7 +71,7 @@ class InscriptionServiceImpl implements InscriptionService
                 classRoom: $classRoom
             );
 
-            $this->userRepo->insertStudent($student);
+            $this->userService->insertStudent($student);
 
             $messageSuccess = [
                 'ecole'  => $classRoom->getSchool(),

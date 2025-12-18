@@ -21,14 +21,16 @@ class ClassRoomRepositoryImpl implements ClassRoomRepository
         $stmt = $this->pdo->query($SQL);
         // Doit retourner un tableau d'objets donc on boucle sur le résultat pour remplir le tableau de Classes
         $classRooms = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($rows as $row) {
             $classRooms[] = new ClassRoom(
-                $row[],
+                [],
                 $row['id_classe'],
                 $row['ecole'],
                 $row['nom_classe']
             );
         }
+
         return $classRooms;
     }
 
