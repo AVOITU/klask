@@ -9,7 +9,7 @@ use Service\InscriptionService;
 use PDOException;
 use Repository\UserRepository;
 
-require_once __DIR__ . '/../InscriptionService.php';
+require_once __DIR__ . '/../../../vendor/autoload.php';
 
 class InscriptionServiceImpl implements InscriptionService
 {

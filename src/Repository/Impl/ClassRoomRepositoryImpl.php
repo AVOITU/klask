@@ -6,7 +6,7 @@ use Model\ClassRoom;
 use PDO;
 use Repository\ClassRoomRepository;
 
-require_once __DIR__ . '/../ClassRoomRepository.php';
+require_once __DIR__ . '/../../../vendor/autoload.php';
 
 class ClassRoomRepositoryImpl implements ClassRoomRepository
 {

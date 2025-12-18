@@ -6,6 +6,8 @@ use Model\ClassRoom;
 use Repository\ClassRoomRepository;
 use Service\ClassRoomService;
 
+
+require_once __DIR__ . '/../../../vendor/autoload.php';
 class ClassRoomServiceImpl implements ClassRoomService
 {
     public function __construct(

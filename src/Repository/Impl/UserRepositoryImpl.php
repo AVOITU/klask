@@ -7,7 +7,7 @@ use Model\User;
 use PDO;
 use Repository\UserRepository;
 
-require_once __DIR__ . '/../UserRepository.php';
+require_once __DIR__ . '/../../../vendor/autoload.php';
 class UserRepositoryImpl implements UserRepository
 {
     public function __construct(private PDO $pdo) {}
