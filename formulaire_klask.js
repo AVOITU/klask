@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             'Cosmique', 'Galactique', 'Solaire', 'Lunaire', 'Stellaire', 'Polaire', 
             'Volcanique', 'Aquatique', 'Electrique', 'Magnétique', 'Bionique', 'Cyber',
-            'Intrépide', 'Brave', 'Sage', 'Zen', 'Fidèle', 'Rebelle', 'Sauvage', 
+            'Intrépide', 'Brave', 'Sage', 'Zen', 'Fidèle', 'Rebelle', 'Sauvage', 'Anarchiste' ,
             'Libre', 'Solitaire', 'Sympathique', 'Drôle', 'Excentrique', 'Artiste',
             'Habile', 'Agile', 'Rapide', 'Véloce', 'Tenace', 'Robuste', 'Stoïque',
             'Diplomate', 'Pacifique', 'Terrible', 'Redoutable', 'Invincible', 

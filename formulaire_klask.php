@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -7,7 +7,7 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="formulaireklask.css"> 
+    <link rel="stylesheet" href="public/css/pages/formulaire_klask.css">
 </head>
 <body data-theme="standard"> <div class="sphere sphere-1"></div>
     <div class="sphere sphere-2"></div>
@@ -23,6 +23,7 @@
     <div class="container">
 
         <?php
+        // --- 1. CONNEXION BDD ---
         require_once __DIR__ . '/config/database.php';
         // --- 1. CONNEXION BDD ---
         $pdo = get_pdo();
@@ -42,7 +43,7 @@
                     $info = $pdo->query("SELECT ecole, nom_classe FROM classe WHERE id_classe = $id_classe")->fetch();
 
                     echo "<div class='resultat success-anim'>";
-                    echo "<h3>🎉 InscriptionController Validée !</h3>";
+                    echo "<h3>🎉 Inscription Validée !</h3>";
                     echo "🏫 " . htmlspecialchars($info['ecole']) . "<br>";
                     echo "📚 " . htmlspecialchars($info['nom_classe']) . "<br>";
                     echo "👤 <strong>$pseudo</strong>";
@@ -54,7 +55,7 @@
         }
 
         // --- 3. DONNÉES ---
-        $sql = "SELECT id_classe, ecole, nom_classe FROM classe ORDER BY ecole ASC, nom_classe ASC";
+        $sql = "SELECT id_class, school, name_class FROM classes ORDER BY school ASC, name_classe ASC";
         $classes = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
         $ecoles = [];
         foreach ($classes as $row) { if ($row['ecole']) $ecoles[$row['ecole']] = $row['ecole']; }
@@ -103,6 +104,6 @@
     </div>
 
     <script>const bddClasses = <?php echo json_encode($classes); ?>;</script>
-    <script src="formulaireklask.js"></script>
+    <script src="formulaire_klask.js"></script>
 </body>
 </html>
