@@ -6,10 +6,12 @@
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Scanner Élève</title>
 
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;800&display=swap"
           rel="stylesheet">
 
-    <link rel="stylesheet" href="/./formulaireklask.css">
+    <link rel="stylesheet" href="/css/pages/formulaireklask.css">
 </head>
 <body data-theme="standard">
 
@@ -40,37 +42,69 @@
         </div>
     <?php endif; ?>
 
-    <form action="" method="POST">
+    <form action="<?= htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'UTF-8') ?>" method="POST">
+
+    <!-- 1) ECOLE -->
         <div class="form-group">
             <label for="choix_ecole">1. Mon Établissement</label>
+
             <div class="select-wrapper">
-                <select id="choix_ecole" required>
+                <select id="choix_ecole" name="ecole" required onchange="this.form.submit()">
                     <option value="">👇 Touchez pour choisir</option>
-                    <?php foreach ($ecoles as $nom): ?>
-                        <option value="<?= htmlspecialchars($nom) ?>">
-                            <?= htmlspecialchars($nom) ?>
+
+                    <?php foreach ($schools as $nom): ?>
+                        <option
+                                value="<?= htmlspecialchars($nom, ENT_QUOTES, 'UTF-8') ?>"
+                                <?= ($selectedSchool !== '' && $selectedSchool === $nom) ? 'selected' : '' ?>
+                        >
+                            <?= htmlspecialchars($nom, ENT_QUOTES, 'UTF-8') ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
             </div>
         </div>
 
+        <!-- 2) CLASSE -->
         <div class="form-group">
             <label for="choix_classe">2. Ma Classe</label>
+
             <div class="select-wrapper">
-                <select name="classe_final_id" id="choix_classe" required disabled>
-                    <option value="">🔒 Choisissez d'abord l'école</option>
+                <select name="classe_final_id" id="choix_classe" required <?= empty($filteredClasses) ? 'disabled' : '' ?>>
+                    <?php if (empty($filteredClasses)): ?>
+                        <option value="">🔒 Choisissez d'abord l'école</option>
+                    <?php else: ?>
+                        <option value="">👇 Choisir la classe</option>
+
+                        <?php $selectedClassId = isset($_POST['classe_final_id']) ? (int)$_POST['classe_final_id'] : 0; ?>
+
+                        <?php foreach ($filteredClasses as $c): ?>
+                            <?php $id = (int)$c['id_classe']; ?>
+                            <option value="<?= $id ?>" <?= ($selectedClassId === $id) ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($c['nom_classe'], ENT_QUOTES, 'UTF-8') ?>
+                            </option>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </select>
             </div>
         </div>
 
+        <!-- 3) PSEUDO -->
         <div class="form-group">
             <label>3. Mon identité secrète</label>
+
             <div class="identity-box">
-                <input type="text" name="pseudo_choisi" id="pseudo_input"
-                       value="<?= htmlspecialchars($nom_depart) ?>" readonly>
-                <button type="button" id="btn_random" aria-label="Changer de nom">🎲</button>
+                <input
+                        type="text"
+                        name="pseudo_choisi"
+                        id="pseudo_input"
+                        value="<?= htmlspecialchars($nom_depart, ENT_QUOTES, 'UTF-8') ?>"
+                        readonly
+                >
+
+                <!-- si tu as un JS qui change le pseudo, ok. Sinon ce bouton ne fera rien -->
+                <button type="submit" name="action" value="regen" id="btn_random">🎲</button>
             </div>
+
             <small>Touchez le dé pour changer</small>
         </div>
 
@@ -78,9 +112,6 @@
     </form>
 </div>
 
-<script>
-    const bddClasses = <?= json_encode($classes, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG); ?>;
-</script>
-<script src="/formulaireklask.js"></script>
+<script src="/js/formulaireklask.js"></script>
 </body>
 </html>
