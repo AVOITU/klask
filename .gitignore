@@ -68,7 +68,8 @@ public/css/build/
 # PhpStorm
 .idea/
 *.iml
-*.xml
++ composer.phar
++ config/database.php
 
 # VS Code
 .vscode/
