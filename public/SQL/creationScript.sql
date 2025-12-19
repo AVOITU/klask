@@ -38,7 +38,7 @@ CREATE TABLE users (
     id_user        INT AUTO_INCREMENT PRIMARY KEY,
     pseudo_user    VARCHAR(100) NOT NULL,
     role_user      VARCHAR(50) NOT NULL,
-    autority_user  VARCHAR(50) NOT NULL,
+    authority_user  VARCHAR(50) NOT NULL,
     id_class       INT NOT NULL
 ) ENGINE=InnoDB;
 
