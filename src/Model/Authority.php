@@ -8,20 +8,20 @@ final class Authority
     private int $idAuthority;
     private string $roleUser;
     private string $authorityUser;
-    private User $user;
+    private array $user;
 
     /**
+     * @param User[] $users
      * @param int $idAuthority
      * @param string $roleUser
      * @param string $authorityUser
-     * @param User $user
      */
-    public function __construct(int $idAuthority, string $roleUser, string $authorityUser, User $user)
+    public function __construct(array $users, int $idAuthority, string $roleUser, string $authorityUser)
     {
         $this->idAuthority = $idAuthority;
         $this->roleUser = $roleUser;
         $this->authorityUser = $authorityUser;
-        $this->user = $user;
+        $this->user = $users;
     }
 
     public function getIdAuthority(): int
@@ -44,6 +44,16 @@ final class Authority
         $this->roleUser = $roleUser;
     }
 
+    public function getUser(): array
+    {
+        return $this->user;
+    }
+
+    public function setUser(array $user): void
+    {
+        $this->user = $user;
+    }
+
     public function getAuthorityUser(): string
     {
         return $this->authorityUser;
@@ -52,15 +62,5 @@ final class Authority
     public function setAuthorityUser(string $authorityUser): void
     {
         $this->authorityUser = $authorityUser;
-    }
-
-    public function getUser(): User
-    {
-        return $this->user;
-    }
-
-    public function setUser(User $user): void
-    {
-        $this->user = $user;
     }
 }

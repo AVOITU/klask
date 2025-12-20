@@ -42,15 +42,19 @@
         </div>
     <?php endif; ?>
 
-    <form action="<?= htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'UTF-8') ?>" method="POST">
+    <form action="/pages/formulaireklask.php" method="POST">
+        <input type="hidden" name="form_action" value="save">
 
-    <!-- 1) ECOLE -->
+        <!-- 1) ECOLE -->
         <div class="form-group">
             <label for="choix_ecole">1. Mon Établissement</label>
 
             <div class="select-wrapper">
-                <select id="choix_ecole" name="ecole" required onchange="this.form.submit()">
-                    <option value="">👇 Touchez pour choisir</option>
+                <select id="choix_ecole" name="ecole"
+                        onchange="this.form.form_action.value='schoolChange'; this.form.submit()">
+
+
+                <option value="">👇 Touchez pour choisir</option>
 
                     <?php foreach ($schools as $nom): ?>
                         <option
@@ -69,18 +73,20 @@
             <label for="choix_classe">2. Ma Classe</label>
 
             <div class="select-wrapper">
-                <select name="classe_final_id" id="choix_classe" required <?= empty($filteredClasses) ? 'disabled' : '' ?>>
+                <select name="classe_final_id" id="choix_classe" required>
                     <?php if (empty($filteredClasses)): ?>
-                        <option value="">🔒 Choisissez d'abord l'école</option>
+                        <option value="" selected disabled>🔒 Choisissez d'abord l'école</option>
                     <?php else: ?>
-                        <option value="">👇 Choisir la classe</option>
+                        <?php $selectedClassId = (int)($_POST['classe_final_id'] ?? 0); ?>
 
-                        <?php $selectedClassId = isset($_POST['classe_final_id']) ? (int)$_POST['classe_final_id'] : 0; ?>
+                        <option value="" disabled <?= $selectedClassId === 0 ? 'selected' : '' ?>>
+                            👇 Choisir la classe
+                        </option>
 
-                        <?php foreach ($filteredClasses as $c): ?>
-                            <?php $id = (int)$c['id_classe']; ?>
+                        <?php foreach ($filteredClasses as $classes): ?>
+                            <?php $id = (int)$classes['id_class']; ?>
                             <option value="<?= $id ?>" <?= ($selectedClassId === $id) ? 'selected' : '' ?>>
-                                <?= htmlspecialchars($c['nom_classe'], ENT_QUOTES, 'UTF-8') ?>
+                                <?= htmlspecialchars($classes['name_class'], ENT_QUOTES, 'UTF-8') ?>
                             </option>
                         <?php endforeach; ?>
                     <?php endif; ?>
@@ -93,6 +99,7 @@
             <label>3. Mon identité secrète</label>
 
             <div class="identity-box">
+                <label for="pseudo_input"></label>
                 <input
                         type="text"
                         name="pseudo_choisi"
@@ -102,7 +109,7 @@
                 >
 
                 <!-- si tu as un JS qui change le pseudo, ok. Sinon ce bouton ne fera rien -->
-                <button type="submit" name="action" value="regen" id="btn_random">🎲</button>
+                <button type="submit" name="form_action" value="regen" id="btn_random">🎲</button>
             </div>
 
             <small>Touchez le dé pour changer</small>

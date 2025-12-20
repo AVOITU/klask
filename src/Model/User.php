@@ -7,27 +7,36 @@ final class User
     /** @var Validation[] */
     private array $validations;
 
-    /** @var Authority[] */
-    private array $authorities;
-
     private int $idUser;
     private string $pseudoUser;
     private ClassRoom $classRoom;
+    private Authority $authority;
 
     /**
      * @param Validation[] $validations
-     * @param Authority[] $authorities
      * @param int $idUser
      * @param string $pseudoUser
      * @param ClassRoom $classRoom
+     * @param Authority $authority
      */
-    public function __construct(array $validations, array $authorities, int $idUser, string $pseudoUser, ClassRoom $classRoom)
+    public function __construct(array $validations, Authority $authority,
+                                int $idUser, string $pseudoUser, ClassRoom $classRoom)
     {
         $this->validations = $validations;
-        $this->authorities = $authorities;
+        $this->authority = $authority;
         $this->idUser = $idUser;
         $this->pseudoUser = $pseudoUser;
         $this->classRoom = $classRoom;
+    }
+
+    public function getAuthority(): Authority
+    {
+        return $this->authority;
+    }
+
+    public function setAuthority(Authority $authority): void
+    {
+        $this->authority = $authority;
     }
 
     public function getValidations(): array
@@ -38,16 +47,6 @@ final class User
     public function setValidations(array $validations): void
     {
         $this->validations = $validations;
-    }
-
-    public function getAuthorities(): array
-    {
-        return $this->authorities;
-    }
-
-    public function setAuthorities(array $authorities): void
-    {
-        $this->authorities = $authorities;
     }
 
     public function getIdUser(): int

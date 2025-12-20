@@ -40,3 +40,9 @@ INSERT INTO classes (school, name_class) VALUES
 ('Lycée Pierre Guéguin - Concarneau', 'Première'),
 ('Lycée Saint-Joseph - Concarneau', 'Première'),
 ('Lycée Jean-Marie Le Bris - Douarnenez', 'Première');
+
+INSERT INTO authorities (role_user, authority_user)
+VALUES
+    ('ADMIN', 'ROLE_ADMIN'),
+    ('ACCOMPANYING', 'ROLE_ACCOMPANYING'),
+    ('STUDENT', 'ROLE_STUDENT');

@@ -32,14 +32,15 @@ class InscriptionControllerImpl implements InscriptionController
 
     public function submit(): void
     {
-        if (($_POST['action'] ?? '') === 'regen') {
+        $formAction = $_POST['form_action'] ?? 'save';
+
+        if ($formAction === 'regen') {
             $_POST['pseudo_choisi'] = $this->inscriptionService->generateDefaultNickname();
             $this->showForm();
             return;
         }
 
-        // si POST déclenché juste par le changement d'école
-        if (isset($_POST['ecole']) && !isset($_POST['classe_final_id'])) {
+        if ($formAction === 'schoolChange') {
             $this->showForm();
             return;
         }

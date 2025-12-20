@@ -4,10 +4,11 @@ namespace Service\Impl;
 
 use Model\ClassRoom;
 use Model\User;
+use PDOException;
+use Security\Role;
+use Service\AuthorityService;
 use Service\ClassRoomService;
 use Service\InscriptionService;
-use PDOException;
-use Repository\UserRepository;
 use Service\UserService;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
@@ -39,6 +40,7 @@ class InscriptionServiceImpl implements InscriptionService
     public function __construct(
         private ClassRoomService $classRoomService,
         private UserService $userService,
+        private AuthorityService $authorityService
     ) { }
 
     public function getAllSchools(): array {
@@ -78,9 +80,11 @@ class InscriptionServiceImpl implements InscriptionService
                 return [null, 'Classe introuvable.'];
             }
 
+            $authority =  $this->authorityService->findByRole(Role::STUDENT->value);
+
             $student = new User(
                 validations: [],
-                authorities: [],
+                authority: $authority,
                 idUser: (int)null,
                 pseudoUser: $pseudo,
                 classRoom: $classRoom
