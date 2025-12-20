@@ -27,7 +27,7 @@ class InscriptionControllerImpl implements InscriptionController
         $messageSuccess = $messageSuccess ?? null;
         $messageError   = $messageError ?? null;
 
-        require __DIR__ . '/../../../templates/formulaireklask.php';
+        require __DIR__ . '/../../../templates/inscription.php';
     }
 
     public function submit(): void

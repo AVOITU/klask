@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;800&display=swap"
           rel="stylesheet">
 
-    <link rel="stylesheet" href="/css/pages/formulaireklask.css">
+    <link rel="stylesheet" href="/css/pages/inscription.css">
 </head>
 <body data-theme="standard">
 
@@ -42,7 +42,7 @@
         </div>
     <?php endif; ?>
 
-    <form action="/pages/formulaireklask.php" method="POST">
+    <form action="/pages/inscription.php" method="POST">
         <input type="hidden" name="form_action" value="save">
 
         <!-- 1) ECOLE -->
@@ -119,6 +119,6 @@
     </form>
 </div>
 
-<script src="/js/formulaireklask.js"></script>
+<script src="/js/inscription.js"></script>
 </body>
 </html>
