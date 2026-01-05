@@ -14,17 +14,17 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 
 $pdo = get_pdo();
 
-$classeRepo         = new ClassRoomRepositoryImpl($pdo);
-$userRepo           = new UserRepositoryImpl($pdo);
-$authorityRepo      = new AuthorityRepositoryImpl($pdo);
-$classRoomService   = new ClassRoomServiceImpl($classeRepo);
-$userService        = new UserServiceImpl($userRepo);
-$authorityService   = new AuthorityServiceImpl($authorityRepo);
-$inscriptionService = new InscriptionServiceImpl($classRoomService, $userService, $authorityService);
-$controller         = new InscriptionControllerImpl($inscriptionService);
+$classeRepo             = new ClassRoomRepositoryImpl($pdo);
+$userRepo               = new UserRepositoryImpl($pdo);
+$authorityRepo          = new AuthorityRepositoryImpl($pdo);
+$classRoomService       = new ClassRoomServiceImpl($classeRepo);
+$userService            = new UserServiceImpl($userRepo);
+$authorityService       = new AuthorityServiceImpl($authorityRepo);
+$inscriptionService     = new InscriptionServiceImpl($classRoomService, $userService, $authorityService);
+$inscriptionController  = new InscriptionControllerImpl($inscriptionService);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $controller->submit();
+    $inscriptionController->submit();
 } else {
-    $controller->showForm();
+    $inscriptionController->showForm();
 }

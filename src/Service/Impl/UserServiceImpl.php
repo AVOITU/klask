@@ -12,7 +12,5 @@ class UserServiceImpl implements UserService
     public function __construct( private UserRepository $userRepo) {}
 
     public function insertStudent($student): User
-    {
-        return $this->userRepo->insertStudent($student);
-    }
+    { return $this->userRepo->insertStudent($student); }
 }
