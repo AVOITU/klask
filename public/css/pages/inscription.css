@@ -2,8 +2,8 @@
 :root {
     
     --bg-color: #F48176;
-    --sphere-1: rgba(255, 255, 255, 0.2);
-    --sphere-2: rgba(255, 215, 0, 0.3);
+    --sphere-1: #f5deb3;
+    --sphere-2: #931a0fb7   ;
     
     --container-bg: #E6C288; /* Teinte Or/Boisé */
     --container-border: 2px solid #Cfaa65;
@@ -24,8 +24,8 @@
 /* Thème Chaud (Filtre Lumière Bleue / Sepia) */
 [data-theme="chaud"] {
     --bg-color: #f5deb3;
-    --sphere-1: rgba(139, 69, 19, 0.1);
-    --sphere-2: rgba(210, 105, 30, 0.1);
+    --sphere-1: #371a193f;
+    --sphere-2: #371a193f;
     --container-bg: #fff8e1;
     --container-border: 2px solid #ffecb3;
     --text-main: #4e342e;
@@ -36,23 +36,23 @@
 
 /* Thème Négatif (Contraste Élevé pour malvoyants) */
 [data-theme="negatif"] {
-    --bg-color: #000000;
-    --sphere-1: transparent;
-    --sphere-2: transparent; /* Pas de distraction */
+    --bg-color: #371A19;
+    --sphere-1: #931a0fb7;
+    --sphere-2: #931a0fb7; /* Pas de distraction */
     --container-bg: #1a1a1a;
-    --container-border: 2px solid #fff;
-    --text-main: #ffff00; /* Jaune sur noir = meilleur contraste */
+    --container-border: 3px solid #f5deb3;
+    --text-main: #f5deb3; 
     --text-label: #ffffff;
     --input-bg: #000;
-    --input-border: #ffff00;
-    --btn-primary: #ffff00;
+    --input-border: #f5deb3;
+    --btn-primary: #f5deb3;
     --btn-primary-hover: #cccc00;
     --btn-text: #000;
 }
 
 /* --- 2. CONFIGURATION GÉNÉRALE --- */
 body {
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Open Sans', sans-serif, bold;
     background-color: var(--bg-color);
     margin: 0;
     padding: 20px;
@@ -73,8 +73,8 @@ body {
 }
 .sphere-1 { width: 300px; height: 300px; background: var(--sphere-1); top: -50px; left: -50px; }
 .sphere-2 { width: 200px; height: 200px; background: var(--sphere-2); bottom: 10%; right: -20px; animation-duration: 25s; }
-.sphere-3 { width: 100px; height: 100px; background: rgba(255,255,255,0.1); top: 40%; left: 10%; animation-duration: 15s; }
-.sphere-4 { width: 400px; height: 400px; background: rgba(224, 203, 41, 0.432); top: 10%; left: 70%; animation-duration: 15s; }
+.sphere-3 { width: 100px; height: 100px; background: #931a0fb7 ; top: 40%; left: 10%; animation-duration: 15s; }
+.sphere-4 { width: 400px; height: 400px; background: #ff00006e; top: 10%; left: 70%; animation-duration: 15s; }
 
 /* Rajouter des sphères si le groupe en demande, c'est pas très visible en mobile, peut être rendre le formulaire semi transparent ?*/
 
@@ -225,7 +225,7 @@ body {
 /* Couleurs des boutons */
 .btn-standard { background: #F48176; color: white; }
 .btn-warm { background: #f5deb3; color: #5d4037; }
-.btn-negative { background: #000; color: #ff0; border-color: #ff0; }
+.btn-negative { background: #000; color: #f5deb3; border-color: #f5deb3; }
 
 /* Effet au clic */
 .btn-access:active { transform: scale(0.9); }

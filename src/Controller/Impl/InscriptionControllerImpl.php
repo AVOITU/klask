@@ -3,37 +3,49 @@
 namespace Controller\Impl;
 
 use Controller\InscriptionController;
-use InscriptionService;
+use Service\InscriptionService;
 
 require_once __DIR__ . '/../../../config/database.php';
-require_once __DIR__ . '/../../../src/Repository/ClassRoomRepository.php';
-require_once __DIR__ . '/../../../src/Repository/Impl/ClassRoomRepositoryImpl.php';
-require_once __DIR__ . '/../../../src/Repository/UserRepository.php';
-require_once __DIR__ . '/../../../src/Repository/Impl/UserRepositoryImpl.php';
-require_once __DIR__ . '/../../../src/Service/InscriptionService.php';
-require_once __DIR__ . '/../../../src/Service/Impl/InscriptionServiceImpl.php';
-require_once __DIR__ . '/../../../src/Controller/InscriptionController.php';
-require_once __DIR__ . '/../../../src/Controller/Impl/InscriptionControllerImpl.php';
+require_once __DIR__ . '/../../../vendor/autoload.php';
 
 class InscriptionControllerImpl implements InscriptionController
 {
-    public function __construct(private InscriptionService $service) {}
+    public function __construct(private InscriptionService $inscriptionService) {}
 
-    public function handleRequest(): void
+    public function showForm(): void
     {
-        [$classes, $schools] = $this->service->getClassAndStudent();
+        $schools = $this->inscriptionService->getAllSchools();
 
-        $messageSuccess = null;
-        $messageError   = null;
+        $selectedSchool = trim($_POST['ecole'] ?? '');
+        $filteredClasses = ($selectedSchool !== '')
+            ? $this->inscriptionService->getClassesBySchool($selectedSchool)
+            : [];
 
-        $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+        $pseudo = trim($_POST['pseudo_choisi'] ?? '');
+        $nom_depart = ($pseudo !== '') ? $pseudo : $this->inscriptionService->generateDefaultNickname();
 
-        if ($method === 'POST') {
-            [$messageSuccess, $messageError] = $this->service->handleRegistration($_POST);
+        $messageSuccess = $messageSuccess ?? null;
+        $messageError   = $messageError ?? null;
+
+        require __DIR__ . '/../../../templates/inscription.php';
+    }
+
+    public function submit(): void
+    {
+        $formAction = $_POST['form_action'] ?? 'save';
+
+        if ($formAction === 'regen') {
+            $_POST['pseudo_choisi'] = $this->inscriptionService->generateDefaultNickname();
+            $this->showForm();
+            return;
         }
 
-        $nom_depart = $this->service->generateDefaultNickname();
+        if ($formAction === 'schoolChange') {
+            $this->showForm();
+            return;
+        }
 
-        require __DIR__ . '/../../../templates/formulaireklask.php';
+        [$messageSuccess, $messageError] = $this->inscriptionService->registerStudent($_POST);
+        $this->showForm();
     }
 }

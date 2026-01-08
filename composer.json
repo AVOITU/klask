@@ -1,7 +1,20 @@
 {
-  "require": {
-    "ext-mysqli": "*",
-    "ext-readline": "*",
-    "ext-pdo": "*"
-  }
+    "name": "avoit/klask",
+    "description": "klask project",
+    "autoload": {
+        "psr-4": {
+            "Controller\\": "src/Controller/",
+            "Service\\": "src/Service/",
+            "Repository\\": "src/Repository/",
+            "Utils\\": "src/Utils/",
+            "Security\\": "src/Security/",
+            "Model\\": "src/Model/"
+        }
+    },
+    "require": {
+        "ext-mysqli": "*",
+        "ext-readline": "*",
+        "ext-pdo": "*",
+        "ext-xdebug": "*"
+    }
 }
