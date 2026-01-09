@@ -6,7 +6,6 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 
 use Controller\SidebarUserMapController;
 use Service\SidebarUserMapService;
-use Model\User;
 
 /**
  * Controller :
@@ -33,6 +32,6 @@ class SidebarUserMapControllerImpl implements SidebarUserMapController
             $currentUser = $this->sidebarUserMapService->getUserById($userId);
         }
     
-        include __DIR__ . '$/../../../templates/sidebar-user-map.php';
+        include __DIR__ . '$/../../../templates/sidebar_user_map.php';
     }
 }

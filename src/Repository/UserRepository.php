@@ -6,5 +6,5 @@ use Model\User;
 interface UserRepository
 {
     public function insertStudent(User $user): User;
-    public function findById(int $user): ?User;
+    public function findById(int $idUser): ?User;
 }

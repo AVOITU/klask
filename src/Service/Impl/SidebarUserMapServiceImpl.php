@@ -5,6 +5,7 @@ namespace Service\Impl;
 use Service\SidebarUserMapService;
 use Repository\UserRepository;
 use Model\User;
+use Service\UserService;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
@@ -14,22 +15,20 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
  */
 class SidebarUserMapServiceImpl implements SidebarUserMapService
 {
-    public function getAll(): array
-    { return []; }
 
     // 1. On déclare la propriété pour le Repository
-    private UserRepository $userRepository;
+    private UserService $userService;
 
     // 2. On injecte le Repository via le constructeur
-    public function __construct(UserRepository $userRepository)
+    public function __construct(UserService $userService)
     {
-        $this->userRepository = $userRepository;
+        $this->userService = $userService;
     }
 
     // 3. La méthode qui fait le lien
-    public function getUserById(int $id_user): ?User
+    public function getUserById(int $idUser): ?User
     {
         // On délègue le travail au Repository existant
-        return $this->userRepository->findById($id_user);
+        return $this->userService->findById($idUser);
     }
 }

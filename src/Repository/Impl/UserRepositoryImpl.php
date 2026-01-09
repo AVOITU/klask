@@ -14,7 +14,7 @@ class UserRepositoryImpl implements UserRepository
 {
     public function __construct(private PDO $pdo) {}
 
-    public function findById(int $id_user): ?User
+    public function findById(int $idUser): ?User
     {
         $SQL = "
             SELECT
@@ -33,7 +33,7 @@ class UserRepositoryImpl implements UserRepository
         ";
 
         $stmt = $this->pdo->prepare($SQL);
-        $stmt->execute(['id' => $id_user]);
+        $stmt->execute(['id' => $idUser]);
 
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$row) {

@@ -3,6 +3,7 @@
 use Controller\Impl\SidebarUserMapControllerImpl;
 use Repository\Impl\UserRepositoryImpl;
 use Service\Impl\SidebarUserMapServiceImpl;
+use Service\Impl\UserServiceImpl;
 
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../vendor/autoload.php';
@@ -10,7 +11,8 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 $pdo = get_pdo();
 
 $userRepo = new UserRepositoryImpl ($pdo);
-$sidebarUserMapService = new SidebarUserMapServiceImpl($userRepo);
+$userService = new UserServiceImpl($userRepo);
+$sidebarUserMapService = new SidebarUserMapServiceImpl($userService);
 $sidebarUserMapController = new SidebarUserMapControllerImpl($sidebarUserMapService);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

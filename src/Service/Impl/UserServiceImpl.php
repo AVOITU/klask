@@ -13,4 +13,9 @@ class UserServiceImpl implements UserService
 
     public function insertStudent($student): User
     { return $this->userRepo->insertStudent($student); }
+
+    public function findById(int $idUser) : ?User
+    {
+        return $this->userRepo->findById($idUser);
+    }
 }

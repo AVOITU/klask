@@ -2,11 +2,13 @@
 
 namespace Service;
 
+use Model\User;
+
 /**
  * Service :
  * Contient la logique applicative.
  */
 interface SidebarUserMapService
 {
-    public function getAll(): array;
+    public function getUserById(int $idUser): ?User;
 }
