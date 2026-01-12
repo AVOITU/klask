@@ -16,14 +16,14 @@
 </div>
 
 <div id="sidebar-panel" class="sidebar-container">
-    
+
     <div class="sidebar-header">
         <div class="header-icon">?</div>
         <h2>PAGE ANNEXE</h2>
     </div>
 
     <div class="sidebar-body">
-        
+
         <div class="left-strip">
             <span class="vertical-text">CARTE</span>
             <button id="btn-close-sidebar" class="tab-close">▶</button>
@@ -32,28 +32,27 @@
         <div class="user-card">
             <h3>UTILISATEUR</h3>
 
-<?php
-/** @var \Model\User|null $currentUser */
+            <?php
+            /** @var \Model\User|null $currentUser */
 
 
-$pseudo = "test";  
-$score  = 0;         
+            $pseudo = "test";
+            $score = 0;
 
 
-if (isset($currentUser) && $currentUser !== null) {
+            if (isset($currentUser) && $currentUser !== null) {
 
-    $pseudo = $currentUser->getPseudoUser(); 
+                $pseudo = $currentUser->getPseudoUser();
 
-}
-?>
+            }
+            ?>
 
-<div class="info-group">
-    <span class="label">PSEUDO :</span>
-    <span class="value pseudo"><?= htmlspecialchars($pseudo) ?></span>
-</div>
-
-
+            <div class="info-group">
+                <span class="label">PSEUDO :</span>
+                <span class="value pseudo"><?= htmlspecialchars($pseudo) ?></span>
             </div>
+
+
         </div>
     </div>
 </div>
