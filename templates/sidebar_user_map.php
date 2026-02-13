@@ -36,7 +36,7 @@
             /** @var \Model\User|null $currentUser */
 
 
-            $pseudo = "test";
+            $pseudo = "test.html";
             $score = 0;
 
 

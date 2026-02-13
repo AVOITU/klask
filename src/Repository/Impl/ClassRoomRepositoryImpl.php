@@ -28,11 +28,11 @@ class ClassRoomRepositoryImpl implements ClassRoomRepository
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function findById(int $id_class): ?ClassRoom
+    public function findById(int $idClass): ?ClassRoom
     {
         $SQL = "SELECT id_class, school, name_class FROM classes WHERE id_class = :id";
         $stmt = $this->pdo->prepare($SQL);
-        $stmt->execute(['id' => $id_class]);
+        $stmt->execute(['id' => $idClass]);
 
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$row) return null;
