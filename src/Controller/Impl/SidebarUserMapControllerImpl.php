@@ -29,9 +29,9 @@ class SidebarUserMapControllerImpl implements SidebarUserMapController
         $currentUser = null;
 
         if ($userId > 0) {
-            $currentUser = $this->sidebarUserMapService->getUserById($userId);
+            $currentUser = $this->sidebarUserMapService->createUserDTOById($userId);
         }
     
-        include __DIR__ . '$/../../../templates/sidebar_user_map.php';
+        include __DIR__ . '/../../../templates/sidebar_user_map.php';
     }
 }

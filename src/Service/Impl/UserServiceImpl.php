@@ -2,6 +2,7 @@
 
 namespace Service\Impl;
 
+use DTO\UserDTO;
 use Model\User;
 use Repository\UserRepository;
 use Service\UserService;
@@ -17,5 +18,10 @@ class UserServiceImpl implements UserService
     public function findById(int $idUser) : ?User
     {
         return $this->userRepo->findById($idUser);
+    }
+
+    public function createUserDTObyId(int $idUser) :?UserDTO
+    {
+        return $this->userRepo->createUserDTOById($idUser);
     }
 }
