@@ -2,6 +2,7 @@
 
 namespace Service\Impl;
 
+use DTO\UserDTO;
 use Service\SidebarUserMapService;
 use Repository\UserRepository;
 use Model\User;
@@ -30,5 +31,10 @@ class SidebarUserMapServiceImpl implements SidebarUserMapService
     {
         // On délègue le travail au Repository existant
         return $this->userService->findById($idUser);
+    }
+
+    public function createUserDTOById(int $idUser) :? UserDTO
+    {
+        return $this->userService->createUserDTObyId($idUser);
     }
 }

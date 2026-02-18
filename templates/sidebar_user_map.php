@@ -33,16 +33,18 @@
             <h3>UTILISATEUR</h3>
 
             <?php
-            /** @var \Model\User|null $currentUser */
+            /** @var \DTO\UserDTO|null $currentUser */
 
 
-            $pseudo = "test.html";
+            $pseudo = "";
             $score = 0;
 
 
-            if (isset($currentUser) && $currentUser !== null) {
+            if (isset($currentUser)) {
 
-                $pseudo = $currentUser->getPseudoUser();
+                $pseudo = $currentUser->getUser()->getPseudoUser();
+                $totalScore = $currentUser->getTotalScore();
+                $totalScoreClass = $currentUser->getTotalScoreClasse();
 
             }
             ?>
@@ -50,6 +52,10 @@
             <div class="info-group">
                 <span class="label">PSEUDO :</span>
                 <span class="value pseudo"><?= htmlspecialchars($pseudo) ?></span>
+                <span class="label">SCORE TOTAL :</span>
+                <span class="value pseudo"><?= htmlspecialchars($totalScore) ?></span>
+                <span class="label">SCORE CLASSE :</span>
+                <span class="value pseudo"><?= htmlspecialchars($totalScoreClass) ?></span>
             </div>
 
 

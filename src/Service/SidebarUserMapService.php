@@ -2,6 +2,7 @@
 
 namespace Service;
 
+use DTO\UserDTO;
 use Model\User;
 
 /**
@@ -11,4 +12,5 @@ use Model\User;
 interface SidebarUserMapService
 {
     public function getUserById(int $idUser): ?User;
+    public function createUserDTOById(int $idUser) :? UserDTO;
 }
