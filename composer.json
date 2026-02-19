@@ -8,7 +8,8 @@
             "Repository\\": "src/Repository/",
             "Utils\\": "src/Utils/",
             "Security\\": "src/Security/",
-            "Model\\": "src/Model/"
+            "Model\\": "src/Model/",
+            "DTO\\": "src/DTO/"
         }
     },
     "require": {

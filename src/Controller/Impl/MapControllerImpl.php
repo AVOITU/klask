@@ -2,7 +2,7 @@
 
 namespace Controller\Impl;
 
-use MapController;
+use Controller\MapController;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 

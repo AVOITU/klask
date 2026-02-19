@@ -16,25 +16,16 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 class InscriptionServiceImpl implements InscriptionService
 {
     private array $ANIMALS = [
-        'Tardigrade', 'Loutre', 'Panda', 'Aigle', 'Renard', 'Loup', 'Hibou',
-        'Dauphin', 'Faucon', 'Lynx', 'Salamandre', 'Koala',
-        'Suricate', 'Ours', 'Lémurien', 'Ornithorynque', 'Caméléon', 'Iguane',
-        'Jaguar', 'Panthère', 'Requin', 'Baleine', 'Orque',
-        'Hamster', 'Castor', 'Hérisson', 'Ecureuil', 'Kangourou', 'Lama', 'Zèbre',
-        'Dragon', 'Phoenix', 'Griffon', 'Pégase', 'Sphinx', 'Yéti', 'Kraken',
-        'Chimère', 'Hydre', 'Titan', 'Cyclope', 'Gargouille', 'Licorne'
+        'Dauphin', 'Goéland', 'Cormoran', 'Aigrette', 'Phoque', 'Hermine',
+        'Coccinelle', 'Ragondin', 'Chevreuil', 'Sanglier',
+        'Renard', 'Requin', 'Oursin', 'Crevette', 'Crabe',
+        'Mérou', 'Sauterelle', 'Escargot', 'Crapaud', 'Salamandre',
     ];
-
     private array $ADJECTIVES = [
-        'Cosmique', 'Galactique', 'Solaire', 'Lunaire', 'Stellaire', 'Polaire',
-        'Volcanique', 'Aquatique', 'Electrique', 'Magnétique', 'Bionique', 'Cyber',
-        'Intrépide', 'Brave', 'Sage', 'Zen', 'Fidèle', 'Rebelle', 'Sauvage',
-        'Libre', 'Solitaire', 'Sympathique', 'Drôle', 'Excentrique', 'Artiste',
-        'Habile', 'Agile', 'Rapide', 'Véloce', 'Tenace', 'Robuste', 'Stoïque',
-        'Diplomate', 'Pacifique', 'Terrible', 'Redoutable', 'Invincible',
-        'Invisible', 'Mystique', 'Magique', 'Enigmatique', 'Fantastique',
-        'Légendaire', 'Mythique', 'Héroïque', 'Epique', 'Titanesque',
-        'Incroyable', 'Imprévisible', 'Inarrêtable', 'Insaisissable'
+        'du rêve', 'cosmique', 'magique', 'intrépide', 'cyber',
+        'casse-cou', 'chic', 'perplexe', 'à lunettes', 'gastronome',
+        'scolaire', 'globe-trotter', 'de la royauté', 'aquatique',
+        'musicos', 'excentrique', 'des îles', 'cool', 'aristocrate', 'héroïque',
     ];
 
     public function __construct(

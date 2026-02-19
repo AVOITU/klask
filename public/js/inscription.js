@@ -4,4 +4,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function changerTheme(theme) {
     document.body.setAttribute('data-theme', theme);
+    // TODO: eviter que le changement de theme se fasse quand on relance le dé.
 }
