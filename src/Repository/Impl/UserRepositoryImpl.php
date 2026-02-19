@@ -1,13 +1,13 @@
 <?php
 
-namespace Repository\Impl;
+namespace App\Repository\Impl;
 
-use DTO\UserDTO;
-use Model\Authority;
-use Model\ClassRoom;
-use Model\User;
+use App\DTO\UserDTO;
+use App\Entity\Authority;
+use App\Entity\ClassRoom;
+use App\Entity\User;
 use PDO;
-use Repository\UserRepository;
+use App\Repository\UserRepository;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
@@ -103,7 +103,7 @@ class UserRepositoryImpl implements UserRepository
                   a.authority_user,
                   COALESCE(SUM(cat.nbr_point), 0) AS score_total,
                   COUNT(v.id_validation) AS validations_count,
-                
+
                   (
                     SELECT COALESCE(SUM(cat2.nbr_point),0)
                     FROM users u2
@@ -112,7 +112,7 @@ class UserRepositoryImpl implements UserRepository
                     LEFT JOIN activity_categories cat2 ON cat2.id_category = act2.id_category
                     WHERE u2.id_class = u.id_class
                   ) AS class_total_score
-                
+
                 FROM users u
                 JOIN classes c ON c.id_class = u.id_class
                 JOIN authorities a ON a.id_authority = u.id_authority

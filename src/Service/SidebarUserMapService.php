@@ -1,9 +1,9 @@
 <?php
 
-namespace Service;
+namespace App\Service;
 
-use DTO\UserDTO;
-use Model\User;
+use App\DTO\UserDTO;
+use App\Entity\User;
 
 /**
  * Service :

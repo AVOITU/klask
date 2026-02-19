@@ -1,8 +1,8 @@
 <?php
 
-namespace Service;
+namespace App\Service;
 
-use Model\Authority;
+use App\Entity\Authority;
 
 interface AuthorityService
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace Repository\Impl;
+namespace App\Repository\Impl;
 
-use Model\ClassRoom;
+use App\Entity\ClassRoom;
 use PDO;
-use Repository\ClassRoomRepository;
+use App\Repository\ClassRoomRepository;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 

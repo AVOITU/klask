@@ -1,15 +1,15 @@
 <?php
 
-namespace Service\Impl;
+namespace App\Service\Impl;
 
-use Model\ClassRoom;
-use Model\User;
+use App\Entity\ClassRoom;
+use App\Entity\User;
 use PDOException;
-use Security\Role;
-use Service\AuthorityService;
-use Service\ClassRoomService;
-use Service\InscriptionService;
-use Service\UserService;
+use App\Security\Role;
+use App\Service\AuthorityService;
+use App\Service\ClassRoomService;
+use App\Service\InscriptionService;
+use App\Service\UserService;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace Repository;
+namespace App\Repository;
 
-use Model\ClassRoom;
+use App\Entity\ClassRoom;
 
 interface ClassRoomRepository
 {

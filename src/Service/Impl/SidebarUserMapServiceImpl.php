@@ -1,12 +1,12 @@
 <?php
 
-namespace Service\Impl;
+namespace App\Service\Impl;
 
-use DTO\UserDTO;
-use Service\SidebarUserMapService;
-use Repository\UserRepository;
-use Model\User;
-use Service\UserService;
+use App\DTO\UserDTO;
+use App\Service\SidebarUserMapService;
+use App\Repository\UserRepository;
+use App\Entity\User;
+use App\Service\UserService;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 

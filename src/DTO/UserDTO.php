@@ -1,8 +1,8 @@
 <?php
 
-namespace DTO;
+namespace App\DTO;
 
-use Model\User;
+use App\Entity\User;
 
 class UserDTO
 {
@@ -13,6 +13,7 @@ class UserDTO
     /**
      * @param User $user
      * @param int $totalScore
+     * @param int $totalScoreClasse
      */
     public function __construct(User $user, int $totalScore, int $totalScoreClasse)
     {

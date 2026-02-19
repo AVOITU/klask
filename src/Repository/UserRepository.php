@@ -1,8 +1,8 @@
 <?php
 
-namespace Repository;
-use DTO\UserDTO;
-use Model\User;
+namespace App\Repository;
+use App\DTO\UserDTO;
+use App\Entity\User;
 
 interface UserRepository
 {

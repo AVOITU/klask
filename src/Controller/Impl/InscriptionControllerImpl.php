@@ -3,7 +3,7 @@
 namespace Controller\Impl;
 
 use Controller\InscriptionController;
-use Service\InscriptionService;
+use App\Service\InscriptionService;
 
 require_once __DIR__ . '/../../../config/database.php';
 require_once __DIR__ . '/../../../vendor/autoload.php';

@@ -1,10 +1,10 @@
 <?php
 
-namespace Repository\Impl;
+namespace App\Repository\Impl;
 
-use Model\Authority;
+use App\Entity\Authority;
 use PDO;
-use Repository\AuthorityRepository;
+use App\Repository\AuthorityRepository;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 class AuthorityRepositoryImpl implements AuthorityRepository

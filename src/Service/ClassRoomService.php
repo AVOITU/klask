@@ -1,8 +1,8 @@
 <?php
 
-namespace Service;
+namespace App\Service;
 
-use Model\ClassRoom;
+use App\Entity\ClassRoom;
 
 interface ClassRoomService
 {

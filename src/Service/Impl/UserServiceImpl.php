@@ -1,11 +1,11 @@
 <?php
 
-namespace Service\Impl;
+namespace App\Service\Impl;
 
-use DTO\UserDTO;
-use Model\User;
-use Repository\UserRepository;
-use Service\UserService;
+use App\DTO\UserDTO;
+use App\Entity\User;
+use App\Repository\UserRepository;
+use App\Service\UserService;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 class UserServiceImpl implements UserService

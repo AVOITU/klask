@@ -5,7 +5,7 @@ namespace Controller\Impl;
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
 use Controller\SidebarUserMapController;
-use Service\SidebarUserMapService;
+use App\Service\SidebarUserMapService;
 
 /**
  * Controller :
@@ -31,7 +31,7 @@ class SidebarUserMapControllerImpl implements SidebarUserMapController
         if ($userId > 0) {
             $currentUser = $this->sidebarUserMapService->createUserDTOById($userId);
         }
-    
+
         include __DIR__ . '/../../../templates/sidebar_user_map.php';
     }
 }
