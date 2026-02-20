@@ -1,18 +1,20 @@
 <?php
 
-namespace Controller\Impl;
+namespace App\Controller\Impl;
 
-use Controller\InscriptionController;
+use App\Controller\InscriptionController;
 use App\Service\InscriptionService;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
 
-require_once __DIR__ . '/../../../config/database.php';
-require_once __DIR__ . '/../../../vendor/autoload.php';
-
-class InscriptionControllerImpl implements InscriptionController
+#[Route('/pages', name: 'pages_')]
+class InscriptionControllerImpl extends AbstractController implements InscriptionController
 {
     public function __construct(private InscriptionService $inscriptionService) {}
 
-    public function showForm(): void
+    #[Route('/inscription', name: 'inscription')]
+    public function showInscriptionForm(): Response
     {
         $schools = $this->inscriptionService->getAllSchools();
 
@@ -27,25 +29,26 @@ class InscriptionControllerImpl implements InscriptionController
         $messageSuccess = $messageSuccess ?? null;
         $messageError   = $messageError ?? null;
 
-        require __DIR__ . '/../../../templates/inscription.php';
+        return $this->render("inscription.html.twig");
     }
 
-    public function submit(): void
+    public function inscriptionSubmit(): Response
     {
         $formAction = $_POST['form_action'] ?? 'save';
 
         if ($formAction === 'regen') {
             $_POST['pseudo_choisi'] = $this->inscriptionService->generateDefaultNickname();
-            $this->showForm();
-            return;
+            $this->showInscriptionForm();
+            return $this->render("inscription.html.twig");
         }
 
         if ($formAction === 'schoolChange') {
-            $this->showForm();
-            return;
+            $this->showInscriptionForm();
+            return $this->render("inscription.html.twig");
         }
 
         [$messageSuccess, $messageError] = $this->inscriptionService->registerStudent($_POST);
-        $this->showForm();
+        $this->showInscriptionForm();
+        return $this->render("inscription.html.twig");
     }
 }

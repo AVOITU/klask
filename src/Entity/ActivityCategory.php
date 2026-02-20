@@ -12,6 +12,8 @@ final class ActivityCategory
     #[ORM\Column]
     private array $activities;
 
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
     #[ORM\Column]
     private int $idCategory;
     #[ORM\Column]

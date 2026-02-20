@@ -12,6 +12,8 @@ final class Profession
     #[ORM\Column]
     private array $activities;
 
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
     #[ORM\Column]
     private int $idProfession;
     #[ORM\Column]

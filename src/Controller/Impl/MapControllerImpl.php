@@ -1,8 +1,8 @@
 <?php
 
-namespace Controller\Impl;
+namespace App\Controller\Impl;
 
-use Controller\MapController;
+use App\Controller\MapController;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 

@@ -12,6 +12,8 @@ final class Activity
     #[ORM\Column]
     private array $validations;
 
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
     #[ORM\Column]
     private int $idActivity;
     #[ORM\Column]

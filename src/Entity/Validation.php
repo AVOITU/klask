@@ -70,6 +70,4 @@ final class Validation
         $this->activity = $activity;
         $this->user = $user;
     }
-
-
 }

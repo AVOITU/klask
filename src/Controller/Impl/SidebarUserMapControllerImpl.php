@@ -1,11 +1,11 @@
 <?php
 
-namespace Controller\Impl;
+namespace App\Controller\Impl;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
-use Controller\SidebarUserMapController;
 use App\Service\SidebarUserMapService;
+use App\Controller\SidebarUserMapController;
 
 /**
  * Controller :
@@ -32,6 +32,6 @@ class SidebarUserMapControllerImpl implements SidebarUserMapController
             $currentUser = $this->sidebarUserMapService->createUserDTOById($userId);
         }
 
-        include __DIR__ . '/../../../templates/sidebar_user_map.php';
+        include __DIR__ . '/../../../templates/sidebar_user_map.html.twig';
     }
 }

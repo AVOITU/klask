@@ -8,6 +8,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: AuthorityRepositoryImpl::class)]
 final class Authority
 {
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
     #[ORM\Column]
     private int $idAuthority;
     #[ORM\Column]

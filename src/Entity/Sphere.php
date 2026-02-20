@@ -15,6 +15,8 @@ final class Sphere
     /** @var Activity[] */
     #[ORM\Column]
     private array $activities;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
     #[ORM\Column]
     private int $idSphere;
     #[ORM\Column]
