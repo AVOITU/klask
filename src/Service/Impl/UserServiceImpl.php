@@ -15,13 +15,29 @@ class UserServiceImpl implements UserService
     public function insertStudent($student): User
     { return $this->userRepo->insertStudent($student); }
 
-    public function findById(int $idUser) : ?User
+    public function findUserWithClassAndAuthority(int $idUser) : ?User
     {
-        return $this->userRepo->findById($idUser);
+        return $this->userRepo->findUserWithClassAndAuthority($idUser);
     }
 
-    public function createUserDTObyId(int $idUser) :?UserDTO
+    public function createUserDTObyId(int $idUser): ?UserDTO
     {
-        return $this->userRepo->createUserDTOById($idUser);
+        $dto = $this->findUserStats($idUser);
+        if (!$dto) return null;
+
+        $classId = $dto->getUser()->getClassRoom()->getIdClass();
+        $classTotal = $this->findClassTotalScore($classId);
+
+        return $dto->withClassTotalScore($classTotal);
+    }
+
+    public function findUserStats(int $userId) : ?UserDTO
+    {
+        return $this->userRepo->findUserStats($userId);
+    }
+
+    public function findClassTotalScore(int $classId): int
+    {
+        return $this->findClassTotalScore($classId);
     }
 }

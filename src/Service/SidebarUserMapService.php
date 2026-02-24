@@ -11,6 +11,6 @@ use App\Entity\User;
  */
 interface SidebarUserMapService
 {
-    public function getUserById(int $idUser): ?User;
+    public function findUserWithClassAndAuthority(int $idUser): ?User;
     public function createUserDTOById(int $idUser) :? UserDTO;
 }

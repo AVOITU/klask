@@ -4,10 +4,9 @@ namespace App\Repository\Impl;
 
 use App\Entity\Authority;
 use App\Entity\ClassRoom;
+use App\Repository\ClassRoomRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use PDO;
-use App\Repository\ClassRoomRepository;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 

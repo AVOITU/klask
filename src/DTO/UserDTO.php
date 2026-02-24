@@ -22,6 +22,16 @@ class UserDTO
         $this->totalScoreClasse = $totalScoreClasse;
     }
 
+
+    public function withClassTotalScore(int $classTotalScore): self
+    {
+        return new self(
+            $this->user,
+            $this->totalScore,
+            $classTotalScore
+        );
+    }
+
     public function getUser(): User
     {
         return $this->user;

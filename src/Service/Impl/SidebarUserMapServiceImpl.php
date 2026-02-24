@@ -27,14 +27,14 @@ class SidebarUserMapServiceImpl implements SidebarUserMapService
     }
 
     // 3. La méthode qui fait le lien
-    public function getUserById(int $idUser): ?User
+    public function findUserWithClassAndAuthority(int $idUser): ?User
     {
         // On délègue le travail au Repository existant
-        return $this->userService->findById($idUser);
+        return $this->userService->findUserWithClassAndAuthority($idUser);
     }
 
     public function createUserDTOById(int $idUser) :? UserDTO
     {
-        return $this->userService->createUserDTObyId($idUser);
+        return $this->userService->findUserStats($idUser);
     }
 }
