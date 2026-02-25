@@ -2,11 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\Impl\ClassRoomRepositoryImpl;
+use App\Repository\Impl\ClassroomRepositoryImpl;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ClassroomRepositoryImpl::class)]
-class ClassRoom
+class Classroom
 {
     /** @var User[] */
     #[ORM\Column]

@@ -16,7 +16,7 @@ class InscriptionControllerImpl extends AbstractController implements Inscriptio
     #[Route('/inscription', name: 'inscription')]
     public function showInscriptionForm(): Response
     {
-        $schools = $this->inscriptionService->getAllSchools();
+        $schools = $this->inscriptionService->findDistinctSchools();
 
         $selectedSchool = trim($_POST['ecole'] ?? '');
         $filteredClasses = ($selectedSchool !== '')

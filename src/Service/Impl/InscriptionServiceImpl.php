@@ -2,12 +2,13 @@
 
 namespace App\Service\Impl;
 
-use App\Entity\ClassRoom;
+use App\Entity\Classroom;
 use App\Entity\User;
-use PDOException;
+use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use App\Security\Role;
 use App\Service\AuthorityService;
-use App\Service\ClassRoomService;
+use App\Service\ClassroomService;
 use App\Service\InscriptionService;
 use App\Service\UserService;
 
@@ -29,13 +30,13 @@ class InscriptionServiceImpl implements InscriptionService
     ];
 
     public function __construct(
-        private ClassRoomService $classRoomService,
-        private UserService $userService,
+        private ClassroomService $classRoomService,
+        private UserService      $userService,
         private AuthorityService $authorityService
     ) { }
 
-    public function getAllSchools(): array {
-        return $this->classRoomService->findAllSchools();
+    public function findDistinctSchools(): array {
+        return $this->classRoomService->findDistinctSchools();
     }
 
     public function getClassesBySchool($school): array {
@@ -64,7 +65,7 @@ class InscriptionServiceImpl implements InscriptionService
         }
 
         try {
-            /** @var ClassRoom|null $classRoom */
+            /** @var Classroom|null $classRoom */
             $classRoom = $this->classRoomService->findById($classId);
 
             if ($classRoom === null) {
@@ -89,11 +90,12 @@ class InscriptionServiceImpl implements InscriptionService
                 'pseudo' => $student->getPseudoUser(),
             ];
 
-        } catch (PDOException $e) {
-            $messageError = ($e->getCode() === '23000')
-                ? '⚠️ Ce pseudo est déjà pris ! Relancez le dé.'
-                : 'Erreur lors de l’inscription.';
+        } catch (UniqueConstraintViolationException $e) {
+            $messageError = '⚠️ Ce pseudo est déjà pris ! Relancez le dé.';
+        } catch (Exception $e) {
+            $messageError = 'Erreur lors de l’inscription.';
         }
+
         return [$messageSuccess, $messageError];
     }
 }

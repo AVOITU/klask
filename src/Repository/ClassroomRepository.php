@@ -2,11 +2,11 @@
 
 namespace App\Repository;
 
-use App\Entity\ClassRoom;
+use App\Entity\Classroom;
 
-interface ClassRoomRepository
+interface ClassroomRepository
 {
     public function findDistinctSchools(): array;
     public function findClassesBySchool(string $school): array;
-    public function findById(int $idClass): ?ClassRoom;
+    public function findById(int $idClass): ?Classroom;
 }

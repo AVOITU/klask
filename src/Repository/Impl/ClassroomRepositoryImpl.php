@@ -2,19 +2,18 @@
 
 namespace App\Repository\Impl;
 
-use App\Entity\Authority;
-use App\Entity\ClassRoom;
-use App\Repository\ClassRoomRepository;
+use App\Entity\Classroom;
+use App\Repository\ClassroomRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
-class ClassRoomRepositoryImpl extends ServiceEntityRepository implements ClassRoomRepository
+class ClassroomRepositoryImpl extends ServiceEntityRepository implements ClassroomRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Authority::class);
+        parent::__construct($registry, Classroom::class);
     }
 
     public function findDistinctSchools(): array
@@ -36,7 +35,7 @@ class ClassRoomRepositoryImpl extends ServiceEntityRepository implements ClassRo
             ->getArrayResult();
     }
 
-    public function findById(int $idClass): ?ClassRoom
+    public function findById(int $idClass): ?Classroom
     {
         return $this->createQueryBuilder('c')
             ->where('c.idClass = :idClass')

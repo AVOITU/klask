@@ -4,7 +4,7 @@ namespace App\Repository\Impl;
 
 use App\DTO\UserDTO;
 use App\Entity\Authority;
-use App\Entity\ClassRoom;
+use App\Entity\Classroom;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;

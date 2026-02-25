@@ -16,7 +16,7 @@ final class User
     #[ORM\Column]
     private string $pseudoUser;
     #[ORM\Column]
-    private ClassRoom $classRoom;
+    private Classroom $classRoom;
     #[ORM\Column]
     private Authority $authority;
 
@@ -24,11 +24,11 @@ final class User
      * @param Validation[] $validations
      * @param int $idUser
      * @param string $pseudoUser
-     * @param ClassRoom $classRoom
+     * @param Classroom $classRoom
      * @param Authority $authority
      */
     public function __construct(array $validations, Authority $authority,
-                                int $idUser, string $pseudoUser, ClassRoom $classRoom)
+                                int   $idUser, string $pseudoUser, Classroom $classRoom)
     {
         $this->validations = $validations;
         $this->authority = $authority;
@@ -77,12 +77,12 @@ final class User
         $this->pseudoUser = $pseudoUser;
     }
 
-    public function getClassRoom(): ClassRoom
+    public function getClassRoom(): Classroom
     {
         return $this->classRoom;
     }
 
-    public function setClassRoom(ClassRoom $classRoom): void
+    public function setClassRoom(Classroom $classRoom): void
     {
         $this->classRoom = $classRoom;
     }
