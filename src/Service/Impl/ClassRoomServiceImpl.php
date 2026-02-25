@@ -21,4 +21,5 @@ class ClassRoomServiceImpl implements ClassRoomService
     public function findById($classId) : ?ClassRoom{
         return $this->classeRepo->findById($classId);
     }
+    public function getScoresByClass(): array { return $this->classeRepo->getScoresByClass(); }
 }
