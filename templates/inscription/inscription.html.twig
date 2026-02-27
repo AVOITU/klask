@@ -1,5 +1,23 @@
-<!DOCTYPE html>
-<html lang="fr">
+{% extends '../base.html.twig' %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block body %}
+    <h1>Inscription</h1>
+
+    {{ form_errors(inscriptionForm) }}
+
+    {{ form_start(inscriptionForm) }}
+    {{ form_row(inscriptionForm.email) }}
+    {{ form_row(inscriptionForm.username) }}
+    {{ form_row(inscriptionForm.plainPassword, {
+        label: 'Password'
+    }) }}
+
+    <button type="submit" class="btn">Valider l'inscription</button>
+    {{ form_end(inscriptionForm) }}
+{% endblock %}
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -10,21 +28,9 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;800&display=swap"
           rel="stylesheet">
-
     <link rel="stylesheet" href="/css/pages/inscription.css">
 </head>
 <body data-theme="standard">
-
-<div class="sphere sphere-1"></div>
-<div class="sphere sphere-2"></div>
-<div class="sphere sphere-3"></div>
-<div class="sphere sphere-4"></div>
-
-<div class="accessibility-bar">
-    <button onclick="changerTheme('standard')" class="btn-access btn-standard" title="Mode Standard">A</button>
-    <button onclick="changerTheme('chaud')" class="btn-access btn-warm" title="Filtre Lumière Bleue (Chaud)">☀</button>
-    <button onclick="changerTheme('negatif')" class="btn-access btn-negative" title="Contraste Élevé / Négatif">👁</button>
-</div>
 
 <div class="container">
     <h1>Création de profil</h1>
@@ -108,7 +114,6 @@
                         readonly
                 >
 
-                <!-- si tu as un JS qui change le pseudo, ok. Sinon ce bouton ne fera rien -->
                 <button type="submit" name="form_action" value="regen" id="btn_random">🎲</button>
             </div>
 
@@ -121,4 +126,3 @@
 
 <script src="/js/inscription.js"></script>
 </body>
-</html>
