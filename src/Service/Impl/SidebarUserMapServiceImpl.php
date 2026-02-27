@@ -5,7 +5,7 @@ namespace App\Service\Impl;
 use App\DTO\UserDTO;
 use App\Service\SidebarUserMapService;
 use App\Repository\UserRepository;
-use App\Entity\User;
+use App\Entity\Student;
 use App\Service\UserService;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
@@ -27,7 +27,7 @@ class SidebarUserMapServiceImpl implements SidebarUserMapService
     }
 
     // 3. La méthode qui fait le lien
-    public function findUserWithClassAndAuthority(int $idUser): ?User
+    public function findUserWithClassAndAuthority(int $idUser): ?Student
     {
         // On délègue le travail au Repository existant
         return $this->userService->findUserWithClassAndAuthority($idUser);

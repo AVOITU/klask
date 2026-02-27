@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use App\DTO\UserDTO;
-use App\Entity\User;
+use App\Entity\Student;
 
 /**
  * Service :
@@ -11,6 +11,6 @@ use App\Entity\User;
  */
 interface SidebarUserMapService
 {
-    public function findUserWithClassAndAuthority(int $idUser): ?User;
+    public function findUserWithClassAndAuthority(int $idUser): ?Student;
     public function createUserDTOById(int $idUser) :? UserDTO;
 }
