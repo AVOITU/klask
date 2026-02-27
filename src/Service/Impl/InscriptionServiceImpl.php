@@ -3,7 +3,7 @@
 namespace App\Service\Impl;
 
 use App\Entity\Classroom;
-use App\Entity\Student;
+use App\Entity\User;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use App\Security\Role;
@@ -74,7 +74,7 @@ class InscriptionServiceImpl implements InscriptionService
 
             $authority =  $this->authorityService->findByRole(Role::STUDENT->value);
 
-            $student = new Student(
+            $student = new User(
                 validations: [],
                 authority: $authority,
                 idUser: (int)null,

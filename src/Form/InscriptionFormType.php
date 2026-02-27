@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\Student;
+use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -27,7 +27,7 @@ class InscriptionFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Student::class,
+            'data_class' => User::class,
         ]);
     }
 }

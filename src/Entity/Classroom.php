@@ -3,15 +3,13 @@
 namespace App\Entity;
 
 use App\Repository\Impl\ClassroomRepositoryImpl;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ClassroomRepositoryImpl::class)]
 class Classroom
 {
-    /** @var Student[] */
-    #[ORM\Column]
-    private array $users;
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -22,27 +20,22 @@ class Classroom
     private string $className;
 
     /**
-     * @param Student[] $users
+     * @var Collection<int, User>
+     */
+    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'classroom')]
+    private Collection $users;
+
+    /**
      * @param int $idClass
      * @param string $school
      * @param string $className
      */
-    public function __construct(array $users, int $idClass, string $school, string $className)
+    public function __construct(int $idClass, string $school, string $className)
     {
-        $this->users = $users;
         $this->idClass = $idClass;
         $this->school = $school;
         $this->className = $className;
-    }
-
-    public function getUsers(): array
-    {
-        return $this->users;
-    }
-
-    public function setUsers(array $users): void
-    {
-        $this->users = $users;
+        $this->users = new ArrayCollection();
     }
 
     public function getIdClass(): int
@@ -75,4 +68,32 @@ class Classroom
         $this->className = $className;
     }
 
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUsers(User $users): static
+    {
+        if (!$this->users->contains($users)) {
+            $this->users->add($users);
+            $users->setClassroom($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUsers(User $users): static
+    {
+        if ($this->users->removeElement($users)) {
+            // set the owning side to null (unless already changed)
+            if ($users->getClassroom() === $this) {
+                $users->setClassroom(null);
+            }
+        }
+        return $this;
+    }
 }

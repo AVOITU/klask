@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: ActivityRepositoryImpl::class)]
 final class Activity
 {
-    /** @var Validation[] */
+    /** @var Scan[] */
     #[ORM\Column]
     private array $validations;
 
@@ -34,7 +34,7 @@ final class Activity
     private Profession $profession;
 
     /**
-     * @param Validation[] $validations
+     * @param Scan[] $validations
      * @param int $idActivity
      * @param string $nameActivity
      * @param string $descriptionActivity

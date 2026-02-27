@@ -2,20 +2,20 @@
 
 namespace App\DTO;
 
-use App\Entity\Student;
+use App\Entity\User;
 
 class UserDTO
 {
-    private Student $user;
+    private User $user;
     private int $totalScore;
     private int $totalScoreClasse;
 
     /**
-     * @param Student $user
+     * @param User $user
      * @param int $totalScore
      * @param int $totalScoreClasse
      */
-    public function __construct(Student $user, int $totalScore, int $totalScoreClasse)
+    public function __construct(User $user, int $totalScore, int $totalScoreClasse)
     {
         $this->user = $user;
         $this->totalScore = $totalScore;
@@ -32,12 +32,12 @@ class UserDTO
         );
     }
 
-    public function getUser(): Student
+    public function getUser(): User
     {
         return $this->user;
     }
 
-    public function setUser(Student $user): void
+    public function setUser(User $user): void
     {
         $this->user = $user;
     }

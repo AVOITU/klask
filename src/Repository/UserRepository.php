@@ -2,12 +2,12 @@
 
 namespace App\Repository;
 use App\DTO\UserDTO;
-use App\Entity\Student;
+use App\Entity\User;
 
 interface UserRepository
 {
-    public function findUserWithClassAndAuthority(int $id): ?Student;
-    public function insertStudent(Student $user): Student;
+    public function findUserWithClassAndAuthority(int $id): ?User;
+    public function insertStudent(User $user): User;
 
     public function findUserStats(int $userId): ?UserDTO;
 

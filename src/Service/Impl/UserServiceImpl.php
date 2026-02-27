@@ -3,7 +3,7 @@
 namespace App\Service\Impl;
 
 use App\DTO\UserDTO;
-use App\Entity\Student;
+use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Service\UserService;
 
@@ -12,10 +12,10 @@ class UserServiceImpl implements UserService
 {
     public function __construct( private UserRepository $userRepo) {}
 
-    public function insertStudent($student): Student
+    public function insertStudent($student): User
     { return $this->userRepo->insertStudent($student); }
 
-    public function findUserWithClassAndAuthority(int $idUser) : ?Student
+    public function findUserWithClassAndAuthority(int $idUser) : ?User
     {
         return $this->userRepo->findUserWithClassAndAuthority($idUser);
     }

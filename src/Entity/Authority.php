@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\Impl\AuthorityRepositoryImpl;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AuthorityRepositoryImpl::class)]
@@ -20,7 +22,13 @@ final class Authority
     private array $user;
 
     /**
-     * @param Student[] $users
+     * @var Collection<int, User>
+     */
+    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'authority', orphanRemoval: true)]
+    private Collection $users;
+
+    /**
+     * @param User[] $users
      * @param int $idAuthority
      * @param string $roleUser
      * @param string $authorityUser
@@ -31,6 +39,7 @@ final class Authority
         $this->roleUser = $roleUser;
         $this->authorityUser = $authorityUser;
         $this->user = $users;
+        $this->users = new ArrayCollection();
     }
 
     public function getIdAuthority(): int
@@ -71,5 +80,35 @@ final class Authority
     public function setAuthorityUser(string $authorityUser): void
     {
         $this->authorityUser = $authorityUser;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): static
+    {
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
+            $user->setAuthority($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): static
+    {
+        if ($this->users->removeElement($user)) {
+            // set the owning side to null (unless already changed)
+            if ($user->getAuthority() === $this) {
+                $user->setAuthority(null);
+            }
+        }
+
+        return $this;
     }
 }

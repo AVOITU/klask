@@ -5,7 +5,7 @@ namespace App\Repository\Impl;
 use App\DTO\UserDTO;
 use App\Entity\Authority;
 use App\Entity\Classroom;
-use App\Entity\Student;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use PDO;
@@ -21,7 +21,7 @@ class UserRepositoryImpl extends ServiceEntityRepository implements UserReposito
         parent::__construct($registry, Authority::class);
     }
 
-    public function findUserWithClassAndAuthority(int $id): ?Student
+    public function findUserWithClassAndAuthority(int $id): ?User
     {
         return $this->createQueryBuilder('u')
             ->addSelect('c', 'a')
@@ -36,7 +36,7 @@ class UserRepositoryImpl extends ServiceEntityRepository implements UserReposito
             ->getOneOrNullResult();
     }
 
-    public function insertStudent(Student $user): Student
+    public function insertStudent(User $user): User
     {
         $em = $this->getEntityManager();
 
