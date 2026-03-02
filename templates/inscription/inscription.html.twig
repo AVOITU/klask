@@ -1,128 +1,200 @@
-{% extends '../base.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% block title %}Inscription{% endblock %}
 
 {% block body %}
-    <h1>Inscription</h1>
+    <div class="container">
+        <h1>Création de profil</h1>
 
-    {{ form_errors(inscriptionForm) }}
+        {# Messages #}
+        {% if messageSuccess is not empty %}
+            <div class="resultat success-anim">
+                <h3>🎉 Inscription Validée !</h3>
+                🏫 {{ messageSuccess.ecole|e }}<br>
+                📚 {{ messageSuccess.classe|e }}<br>
+                👤 <strong>{{ messageSuccess.pseudo|e }}</strong>
+            </div>
+        {% elseif messageError is not empty %}
+            <div class="resultat error">
+                {{ messageError|e }}
+            </div>
+        {% endif %}
 
-    {{ form_start(inscriptionForm) }}
-    {{ form_row(inscriptionForm.email) }}
-    {{ form_row(inscriptionForm.username) }}
-    {{ form_row(inscriptionForm.plainPassword, {
-        label: 'Password'
-    }) }}
+        {# Form "old style" (sans Symfony Form) #}
+        <form method="post" action="{{ path('app_inscription') }}">
+            <input type="hidden" name="form_action" value="{{ form_action|default('save') }}">
 
-    <button type="submit" class="btn">Valider l'inscription</button>
-    {{ form_end(inscriptionForm) }}
+            {# 1) ECOLE #}
+            <div class="form-group">
+                <label for="choix_ecole">1. Mon Établissement</label>
+
+                <div class="select-wrapper">
+                    <select id="choix_ecole"
+                            name="ecole"
+                            onchange="this.form.form_action.value='schoolChange'; this.form.submit()">
+                        <option value="">👇 Touchez pour choisir</option>
+
+                        {% for nom in schools %}
+                            <option value="{{ nom|e }}"
+                                    {% if selectedSchool is not empty and selectedSchool == nom %}selected{% endif %}>
+                                {{ nom|e }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            {# 2) CLASSE #}
+            <div class="form-group">
+                <label for="choix_classe">2. Ma Classe</label>
+
+                <div class="select-wrapper">
+                    <select name="classe_final_id" id="choix_classe" required>
+                        {% if filteredClasses is empty %}
+                            <option value="" selected disabled>🔒 Choisissez d'abord l'école</option>
+                        {% else %}
+                            <option value="" disabled {% if selectedClassId == 0 %}selected{% endif %}>
+                                👇 Choisir la classe
+                            </option>
+
+                            {% for c in filteredClasses %}
+                                <option value="{{ c.id_class }}"
+                                        {% if selectedClassId == c.id_class %}selected{% endif %}>
+                                    {{ c.name_class|e }}
+                                </option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+            </div>
+
+            {# 3) PSEUDO #}
+            <div class="form-group">
+                <label>3. Mon identité secrète</label>
+
+                <div class="identity-box">
+                    <input type="text"
+                           name="pseudo_choisi"
+                           id="pseudo_input"
+                           value="{{ nom_depart|e }}"
+                           readonly>
+
+                    <button type="submit" name="form_action" value="regen" id="btn_random">🎲</button>
+                </div>
+
+                <small>Touchez le dé pour changer</small>
+            </div>
+
+            <input type="submit" value="Valider l'inscription">
+        </form>
+    </div>
 {% endblock %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Inscription</title>
+    {#<head>#}
+    {#    <meta charset="UTF-8">#}
+    {#    <meta name="viewport"#}
+    {#          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">#}
+    {#    <title>Inscription</title>#}
 
-    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    {#    <link rel="icon" href="/favicon.ico" type="image/x-icon">#}
 
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;800&display=swap"
-          rel="stylesheet">
-    <link rel="stylesheet" href="/css/pages/inscription.css">
-</head>
-<body data-theme="standard">
+    {#    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;800&display=swap"#}
+    {#          rel="stylesheet">#}
+    {#    <link rel="stylesheet" href="/css/pages/inscription.css">#}
+    {#</head>#}
+    {#<body data-theme="standard">#}
 
-<div class="container">
-    <h1>Création de profil</h1>
+    {#<div class="container">#}
+    {#    <h1>Création de profil</h1>#}
 
-    <?php if (!empty($messageSuccess)): ?>
-        <div class="resultat success-anim">
-            <h3>🎉 Inscription Validée !</h3>
-            🏫 <?= htmlspecialchars($messageSuccess['ecole']) ?><br>
-            📚 <?= htmlspecialchars($messageSuccess['classe']) ?><br>
-            👤 <strong><?= htmlspecialchars($messageSuccess['pseudo']) ?></strong>
-        </div>
-    <?php elseif (!empty($messageError)): ?>
-        <div class="resultat error">
-            <?= htmlspecialchars($messageError) ?>
-        </div>
-    <?php endif; ?>
+    {#    <?php if (!empty($messageSuccess)): ?>#}
+    {#        <div class="resultat success-anim">#}
+    {#            <h3>🎉 Inscription Validée !</h3>#}
+    {#            🏫 <?= htmlspecialchars($messageSuccess['ecole']) ?><br>#}
+    {#            📚 <?= htmlspecialchars($messageSuccess['classe']) ?><br>#}
+    {#            👤 <strong><?= htmlspecialchars($messageSuccess['pseudo']) ?></strong>#}
+    {#        </div>#}
+    {#    <?php elseif (!empty($messageError)): ?>#}
+    {#        <div class="resultat error">#}
+    {#            <?= htmlspecialchars($messageError) ?>#}
+    {#        </div>#}
+    {#    <?php endif; ?>#}
 
-    <form action="/pages/inscription.php" method="POST">
-        <input type="hidden" name="form_action" value="save">
+    {#    <form action="/pages/inscription.php" method="POST">#}
+    {#        <input type="hidden" name="form_action" value="save">#}
 
-        <!-- 1) ECOLE -->
-        <div class="form-group">
-            <label for="choix_ecole">1. Mon Établissement</label>
+    {#        <!-- 1) ECOLE -->#}
+    {#        <div class="form-group">#}
+    {#            <label for="choix_ecole">1. Mon Établissement</label>#}
 
-            <div class="select-wrapper">
-                <select id="choix_ecole" name="ecole"
-                        onchange="this.form.form_action.value='schoolChange'; this.form.submit()">
+    {#            <div class="select-wrapper">#}
+    {#                <select id="choix_ecole" name="ecole"#}
+    {#                        onchange="this.form.form_action.value='schoolChange'; this.form.submit()">#}
 
 
-                <option value="">👇 Touchez pour choisir</option>
+    {#                <option value="">👇 Touchez pour choisir</option>#}
 
-                    <?php foreach ($schools as $nom): ?>
-                        <option
-                                value="<?= htmlspecialchars($nom, ENT_QUOTES, 'UTF-8') ?>"
-                                <?= ($selectedSchool !== '' && $selectedSchool === $nom) ? 'selected' : '' ?>
-                        >
-                            <?= htmlspecialchars($nom, ENT_QUOTES, 'UTF-8') ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-        </div>
+    {#                    <?php foreach ($schools as $nom): ?>#}
+    {#                        <option#}
+    {#                                value="<?= htmlspecialchars($nom, ENT_QUOTES, 'UTF-8') ?>"#}
+    {#                                <?= ($selectedSchool !== '' && $selectedSchool === $nom) ? 'selected' : '' ?>#}
+    {#                        >#}
+    {#                            <?= htmlspecialchars($nom, ENT_QUOTES, 'UTF-8') ?>#}
+    {#                        </option>#}
+    {#                    <?php endforeach; ?>#}
+    {#                </select>#}
+    {#            </div>#}
+    {#        </div>#}
 
-        <!-- 2) CLASSE -->
-        <div class="form-group">
-            <label for="choix_classe">2. Ma Classe</label>
+    {#        <!-- 2) CLASSE -->#}
+    {#        <div class="form-group">#}
+    {#            <label for="choix_classe">2. Ma Classe</label>#}
 
-            <div class="select-wrapper">
-                <select name="classe_final_id" id="choix_classe" required>
-                    <?php if (empty($filteredClasses)): ?>
-                        <option value="" selected disabled>🔒 Choisissez d'abord l'école</option>
-                    <?php else: ?>
-                        <?php $selectedClassId = (int)($_POST['classe_final_id'] ?? 0); ?>
+    {#            <div class="select-wrapper">#}
+    {#                <select name="classe_final_id" id="choix_classe" required>#}
+    {#                    <?php if (empty($filteredClasses)): ?>#}
+    {#                        <option value="" selected disabled>🔒 Choisissez d'abord l'école</option>#}
+    {#                    <?php else: ?>#}
+    {#                        <?php $selectedClassId = (int)($_POST['classe_final_id'] ?? 0); ?>#}
 
-                        <option value="" disabled <?= $selectedClassId === 0 ? 'selected' : '' ?>>
-                            👇 Choisir la classe
-                        </option>
+    {#                        <option value="" disabled <?= $selectedClassId === 0 ? 'selected' : '' ?>>#}
+    {#                            👇 Choisir la classe#}
+    {#                        </option>#}
 
-                        <?php foreach ($filteredClasses as $classes): ?>
-                            <?php $id = (int)$classes['id_class']; ?>
-                            <option value="<?= $id ?>" <?= ($selectedClassId === $id) ? 'selected' : '' ?>>
-                                <?= htmlspecialchars($classes['name_class'], ENT_QUOTES, 'UTF-8') ?>
-                            </option>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </select>
-            </div>
-        </div>
+    {#                        <?php foreach ($filteredClasses as $classes): ?>#}
+    {#                            <?php $id = (int)$classes['id_class']; ?>#}
+    {#                            <option value="<?= $id ?>" <?= ($selectedClassId === $id) ? 'selected' : '' ?>>#}
+    {#                                <?= htmlspecialchars($classes['name_class'], ENT_QUOTES, 'UTF-8') ?>#}
+    {#                            </option>#}
+    {#                        <?php endforeach; ?>#}
+    {#                    <?php endif; ?>#}
+    {#                </select>#}
+    {#            </div>#}
+    {#        </div>#}
 
-        <!-- 3) PSEUDO -->
-        <div class="form-group">
-            <label>3. Mon identité secrète</label>
+    {#        <!-- 3) PSEUDO -->#}
+    {#        <div class="form-group">#}
+    {#            <label>3. Mon identité secrète</label>#}
 
-            <div class="identity-box">
-                <label for="pseudo_input"></label>
-                <input
-                        type="text"
-                        name="pseudo_choisi"
-                        id="pseudo_input"
-                        value="<?= htmlspecialchars($nom_depart, ENT_QUOTES, 'UTF-8') ?>"
-                        readonly
-                >
+    {#            <div class="identity-box">#}
+    {#                <label for="pseudo_input"></label>#}
+    {#                <input#}
+    {#                        type="text"#}
+    {#                        name="pseudo_choisi"#}
+    {#                        id="pseudo_input"#}
+    {#                        value="<?= htmlspecialchars($nom_depart, ENT_QUOTES, 'UTF-8') ?>"#}
+    {#                        readonly#}
+    {#                >#}
 
-                <button type="submit" name="form_action" value="regen" id="btn_random">🎲</button>
-            </div>
+    {#                <button type="submit" name="form_action" value="regen" id="btn_random">🎲</button>#}
+    {#            </div>#}
 
-            <small>Touchez le dé pour changer</small>
-        </div>
+    {#            <small>Touchez le dé pour changer</small>#}
+    {#        </div>#}
 
-        <input type="submit" value="Valider l'inscription">
-    </form>
-</div>
+    {#        <input type="submit" value="Valider l'inscription">#}
+    {#    </form>#}
+    {#</div>#}
 
-<script src="/js/inscription.js"></script>
-</body>
+    {#<script src="/js/inscription.js"></script>#}
+    {#</body>#}

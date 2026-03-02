@@ -25,27 +25,14 @@ class Classroom
     #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'classroom')]
     private Collection $users;
 
-    /**
-     * @param int $idClass
-     * @param string $school
-     * @param string $className
-     */
-    public function __construct(int $idClass, string $school, string $className)
+    public function __construct()
     {
-        $this->idClass = $idClass;
-        $this->school = $school;
-        $this->className = $className;
         $this->users = new ArrayCollection();
     }
 
     public function getIdClass(): int
     {
         return $this->idClass;
-    }
-
-    public function setIdClass(int $idClass): void
-    {
-        $this->idClass = $idClass;
     }
 
     public function getSchool(): string

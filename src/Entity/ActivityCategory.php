@@ -36,7 +36,8 @@ final class ActivityCategory
      * @param int $nbrMaxActivity
      * @param Sphere $sphere
      */
-    public function __construct(array $activities, int $idCategory, string $typeCategory, int $timeMax, int $nbrPoints, int $nbrMaxActivity, Sphere $sphere)
+    public function __construct(array $activities, int $idCategory, string $typeCategory,
+                                int $timeMax, int $nbrPoints, int $nbrMaxActivity, Sphere $sphere)
     {
         $this->activities = $activities;
         $this->idCategory = $idCategory;

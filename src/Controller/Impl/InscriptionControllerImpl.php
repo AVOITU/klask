@@ -3,8 +3,11 @@
 namespace App\Controller\Impl;
 
 use App\Controller\InscriptionController;
+use App\Entity\Classroom;
+use App\Form\InscriptionFormType;
 use App\Service\InscriptionService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -14,9 +17,12 @@ class InscriptionControllerImpl extends AbstractController implements Inscriptio
     public function __construct(private InscriptionService $inscriptionService) {}
 
     #[Route('/inscription', name: 'inscription')]
-    public function showInscriptionForm(): Response
+    public function showInscriptionForm(Request $request): Response
     {
         $schools = $this->inscriptionService->findDistinctSchools();
+
+        $form = $this->createForm(InscriptionFormType::class, $schools);
+        $form->handleRequest($request);
 
         $selectedSchool = trim($_POST['ecole'] ?? '');
         $filteredClasses = ($selectedSchool !== '')
@@ -29,26 +35,28 @@ class InscriptionControllerImpl extends AbstractController implements Inscriptio
         $messageSuccess = $messageSuccess ?? null;
         $messageError   = $messageError ?? null;
 
-        return $this->render("inscription.html.twig");
+        return $this->render('inscription/inscription.html.twig', [
+            'inscriptionForm' => $form->createView(),
+        ]);
     }
 
-    public function inscriptionSubmit(): Response
+    public function inscriptionSubmit(Request $request): Response
     {
         $formAction = $_POST['form_action'] ?? 'save';
 
         if ($formAction === 'regen') {
             $_POST['pseudo_choisi'] = $this->inscriptionService->generateDefaultNickname();
-            $this->showInscriptionForm();
-            return $this->render("inscription.html.twig");
+            $this->showInscriptionForm($request);
+            return $this->render("inscription/inscription.html.twig");
         }
 
         if ($formAction === 'schoolChange') {
-            $this->showInscriptionForm();
-            return $this->render("inscription.html.twig");
+            $this->showInscriptionForm($request);
+            return $this->render("inscription/inscription.html.twig");
         }
 
         [$messageSuccess, $messageError] = $this->inscriptionService->registerStudent($_POST);
-        $this->showInscriptionForm();
-        return $this->render("inscription.html.twig");
+        $this->showInscriptionForm($request);
+        return $this->render("inscription/inscription.html.twig");
     }
 }

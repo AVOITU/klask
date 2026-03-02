@@ -2,25 +2,36 @@
 
 namespace App\Form;
 
+use App\Entity\Classroom;
 use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\IsTrue;
-use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 class InscriptionFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $selectedSchool = $options['selected_school'];
+
         $builder
-            ->add('username')
-            ->add('')
+            ->add('username', TextType::class,[
+                'constraints' =>[new NotBlank()]
+            ])
+            ->add('school', ChoiceType::class,[
+                'mapped' => false,
+                'placeholder' => '👇 Touchez pour choisir',
+                'choices' => array_combine($options['schools'], $options['schools']),
+            ])
+
+            ->add('classroom', EntityType::class,[
+                'class' => Classroom::class,
+                'placeholder' => $selectedSchool ? 'Choisir la classe' : '🔒 Choisissez d\'abord l\'école',
+            ])
         ;
     }
 
