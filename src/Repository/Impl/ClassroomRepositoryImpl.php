@@ -5,6 +5,7 @@ namespace App\Repository\Impl;
 use App\Entity\Classroom;
 use App\Repository\ClassroomRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
@@ -25,14 +26,19 @@ class ClassroomRepositoryImpl extends ServiceEntityRepository implements Classro
             ->getSingleColumnResult();
     }
 
-    public function findClassesBySchool(string $school): array {
-        return $this->createQueryBuilder('c')
-            ->select('c.idClass', 'c.nameClass')
-            ->where('c.school = :school')
-            ->setParameter('school', $school)
-            ->orderBy('c.nameClass', 'ASC')
-            ->getQuery()
-            ->getArrayResult();
+    public function qbBySchool(?string $school): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->orderBy('c.className', 'ASC');
+
+        if ($school) {
+            $qb->andWhere('c.school = :school')
+                ->setParameter('school', $school);
+        } else {
+            $qb->andWhere('1 = 0');
+        }
+
+        return $qb;
     }
 
     public function findById(int $idClass): ?Classroom

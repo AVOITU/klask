@@ -3,7 +3,6 @@
 namespace App\Controller\Impl;
 
 use App\Controller\InscriptionController;
-use App\Entity\Classroom;
 use App\Form\InscriptionFormType;
 use App\Service\InscriptionService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

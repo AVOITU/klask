@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Classroom;
 use App\Entity\User;
+use App\Repository\Impl\ClassroomRepositoryImpl;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -31,6 +32,9 @@ class InscriptionFormType extends AbstractType
             ->add('classroom', EntityType::class,[
                 'class' => Classroom::class,
                 'placeholder' => $selectedSchool ? 'Choisir la classe' : '🔒 Choisissez d\'abord l\'école',
+                'query_builder' => function (ClassroomRepositoryImpl $classroomRepositoryImpl) use ($selectedSchool) {
+                    return $classroomRepositoryImpl->qbBySchool($selectedSchool);
+                }
             ])
         ;
     }
@@ -39,6 +43,11 @@ class InscriptionFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => User::class,
+            'schools' => [],
+            'selected_school' => '',
         ]);
+
+        $resolver->setAllowedTypes('schools', 'array');
+        $resolver->setAllowedTypes('selected_school', 'string');
     }
 }
