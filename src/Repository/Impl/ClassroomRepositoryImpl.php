@@ -29,7 +29,7 @@ class ClassroomRepositoryImpl extends ServiceEntityRepository implements Classro
     public function qbBySchool(?string $school): QueryBuilder
     {
         $qb = $this->createQueryBuilder('c')
-            ->orderBy('c.className', 'ASC');
+            ->orderBy('c.nameClass', 'ASC');
 
         if ($school) {
             $qb->andWhere('c.school = :school')

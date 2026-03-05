@@ -86,7 +86,7 @@ class InscriptionServiceImpl implements InscriptionService
 
             $messageSuccess = [
                 'ecole'  => $classRoom->getSchool(),
-                'classe' => $classRoom->getClassName(),
+                'classe' => $classRoom->getNameClass(),
                 'pseudo' => $student->getPseudoUser(),
             ];
 

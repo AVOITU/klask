@@ -20,7 +20,7 @@ class InscriptionFormType extends AbstractType
         $selectedSchool = $options['selected_school'];
 
         $builder
-            ->add('username', TextType::class,[
+            ->add('pseudoUser', TextType::class,[
                 'constraints' =>[new NotBlank()]
             ])
             ->add('school', ChoiceType::class,[

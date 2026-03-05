@@ -17,7 +17,7 @@ class Classroom
     #[ORM\Column]
     private string $school;
     #[ORM\Column]
-    private string $className;
+    private string $nameClass;
 
     /**
      * @var Collection<int, User>
@@ -45,14 +45,14 @@ class Classroom
         $this->school = $school;
     }
 
-    public function getClassName(): string
+    public function getNameClass(): string
     {
-        return $this->className;
+        return $this->nameClass;
     }
 
-    public function setClassName(string $className): void
+    public function setNameClass(string $nameClass): void
     {
-        $this->className = $className;
+        $this->nameClass = $nameClass;
     }
 
     /**

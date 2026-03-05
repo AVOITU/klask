@@ -16,8 +16,6 @@ final class User
     private int $idUser;
     #[ORM\Column]
     private string $pseudoUser;
-    #[ORM\Column]
-    private Classroom $classRoom;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
     private ?Classroom $classroom = null;
@@ -32,17 +30,9 @@ final class User
     #[ORM\JoinColumn(nullable: false)]
     private ?Authority $authority = null;
 
-    /**
-     * @param int $idUser
-     * @param string $pseudoUser
-     * @param Classroom $classRoom
-     */
-    public function __construct(int   $idUser, string $pseudoUser,
-                                Classroom $classRoom)
+
+    public function __construct()
     {
-        $this->idUser = $idUser;
-        $this->pseudoUser = $pseudoUser;
-        $this->classRoom = $classRoom;
         $this->validations = new ArrayCollection();
     }
     public function getIdUser(): int
@@ -65,14 +55,15 @@ final class User
         $this->pseudoUser = $pseudoUser;
     }
 
-    public function getClassRoom(): Classroom
+    public function getClassroom(): ?Classroom
     {
-        return $this->classRoom;
+        return $this->classroom;
     }
 
-    public function setClassRoom(Classroom $classRoom): void
+    public function setClassroom(?Classroom $classroom): self
     {
-        $this->classRoom = $classRoom;
+        $this->classroom = $classroom;
+        return $this;
     }
 
     /**
@@ -83,7 +74,7 @@ final class User
         return $this->validations;
     }
 
-    public function addValidation(Scan $validation): static
+    public function addValidation(Scan $validation): self
     {
         if (!$this->validations->contains($validation)) {
             $this->validations->add($validation);
@@ -93,7 +84,7 @@ final class User
         return $this;
     }
 
-    public function removeValidation(Scan $validation): static
+    public function removeValidation(Scan $validation): self
     {
         if ($this->validations->removeElement($validation)) {
             // set the owning side to null (unless already changed)
@@ -109,7 +100,7 @@ final class User
         return $this->authority;
     }
 
-    public function setAuthority(?Authority $authority): static
+    public function setAuthority(?Authority $authority): self
     {
         $this->authority = $authority;
         return $this;
