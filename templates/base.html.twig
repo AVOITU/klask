@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>{% block title %}Page d'accueil{% endblock %}</title>
     <link rel="icon" href="{{ asset('images/favicon.png') }}">
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
     {% block stylesheets %}
     {% endblock %}
 
@@ -15,13 +15,6 @@
 <body data-theme="standard">
 {% include 'structure/header.html.twig' %}
 {% include 'structure/shared_body.html.twig' %}
-{% for label, messages in app.flashes %}
-    <div class="alert-{{ label }}">
-        {% for message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
-    </div>
-{% endfor %}
 
 <main>
     {% block body %}{% endblock %}

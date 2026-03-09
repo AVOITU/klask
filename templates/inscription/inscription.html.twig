@@ -3,35 +3,24 @@
 {% block title %}Inscription{% endblock %}
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('css/pages/inscription.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/pages/inscription.css') }}">
 {% endblock %}
 {% block body %}
     <div class="container">
         <h1>Création de profil</h1>
 
-        {% for label, messages in app.flashes %}
-            {% for message in messages %}
-                <div class="alert alert-{{ label }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endfor %}
+        {% if app.flashes %}
+             Messages
+            <div class="resultat success-anim">
+                <h3>🎉 Inscription Validée !</h3>
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        👤 <strong> {{ message }} </strong>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
 
-{#        #}{# Messages #}
-{#        {% if messageSuccess is not empty %}#}
-{#            <div class="resultat success-anim">#}
-{#                <h3>🎉 Inscription Validée !</h3>#}
-{#                🏫 {{ messageSuccess.ecole|e }}<br>#}
-{#                📚 {{ messageSuccess.classe|e }}<br>#}
-{#                👤 <strong>{{ messageSuccess.pseudo|e }}</strong>#}
-{#            </div>#}
-{#        {% elseif messageError is not empty %}#}
-{#            <div class="resultat error">#}
-{#                {{ messageError|e }}#}
-{#            </div>#}
-{#        {% endif %}#}
-
-        {# Form "old style" (sans Symfony Form) #}
         <form method="post" action="{{ path('app_inscription') }}">
             <input type="hidden" name="form_action" value="{{ form_action|default('save') }}">
 
@@ -63,7 +52,7 @@
                     <select name="classe_final_id" id="choix_classe" required>
                         {% if filteredClasses is empty %}
                             <option value="" selected disabled>
-{#                                🔒 Choisissez d'abord l'école#}
+                                🔒 Choisissez d'abord l'école
                             </option>
                         {% else %}
                             <option value="" disabled {% if selectedClassId == 0 %}selected{% endif %}>
