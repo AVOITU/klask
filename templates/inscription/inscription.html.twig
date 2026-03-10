@@ -1,15 +1,22 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Inscription{% endblock %}
+
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('styles/pages/inscription.css') }}">
 {% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="module" src="{{ asset('js/shared_body.js') }}"></script>
+{% endblock %}
+
 {% block body %}
     <div class="container">
         <h1>Création de profil</h1>
 
-        {% if app.flashes %}
+{#        {% if app.flashes %}#}
              Messages
             <div class="resultat success-anim">
                 <h3>🎉 Inscription Validée !</h3>
@@ -19,7 +26,7 @@
                     {% endfor %}
                 {% endfor %}
             </div>
-        {% endif %}
+{#        {% endif %}#}
 
         <form method="post" action="{{ path('app_inscription') }}">
             <input type="hidden" name="form_action" value="{{ form_action|default('save') }}">
