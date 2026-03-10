@@ -5,7 +5,6 @@ namespace App\Form;
 use App\Entity\Classroom;
 use App\Entity\User;
 use App\Repository\Impl\ClassroomRepositoryImpl;
-use App\Service\InscriptionService;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -19,25 +18,42 @@ class InscriptionFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $selectedSchool = $options['selected_school'];
+        $schools = $options['schools'];
+        $defaultNickname = $options['nom_depart'];
 
         $builder
-            ->add('pseudoUser', TextType::class,[
-                'constraints' =>[new NotBlank()]
-            ])
-            ->add('school', ChoiceType::class,[
-                'mapped' => false,
-                'placeholder' => '👇 Touchez pour choisir',
-                'choices' => array_combine($options['schools'], $options['schools']),
+            ->add('pseudoUser', TextType::class, [
+                'label' => 'Mon identité secrète',
+                'constraints' => [
+                    new NotBlank(),
+                ],
+                'data' => $defaultNickname,
+                'attr' => [
+                    'readonly' => true,
+                ],
             ])
 
-            ->add('classroom', EntityType::class,[
-                'class' => Classroom::class,
-                'placeholder' => $selectedSchool ? 'Choisir la classe' : '🔒 Choisissez d\'abord l\'école',
-                'query_builder' => function (ClassroomRepositoryImpl $classroomRepositoryImpl) use ($selectedSchool) {
-                    return $classroomRepositoryImpl->qbBySchool($selectedSchool);
-                }
+            ->add('school', ChoiceType::class, [
+                'label' => 'Mon établissement',
+                'mapped' => false,
+                'required' => true,
+                'placeholder' => '👇 Touchez pour choisir',
+                'choices' => array_combine($schools, $schools),
+                'data' => $selectedSchool !== '' ? $selectedSchool : null,
             ])
-        ;
+
+            ->add('classroom', EntityType::class, [
+                'label' => 'Ma classe',
+                'class' => Classroom::class,
+                'choice_label' => 'nameClass',
+                'placeholder' => $selectedSchool !== ''
+                    ? '👇 Choisir la classe'
+                    : '🔒 Choisissez d’abord l’école',
+                'required' => true,
+                'query_builder' => function (ClassroomRepositoryImpl $classroomRepository) use ($selectedSchool) {
+                    return $classroomRepository->qbBySchool($selectedSchool);
+                },
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -46,7 +62,6 @@ class InscriptionFormType extends AbstractType
             'data_class' => User::class,
             'schools' => [],
             'selected_school' => '',
-            'filteredClasses' => '',
             'nom_depart' => '',
         ]);
 

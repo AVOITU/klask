@@ -16,85 +16,84 @@
     <div class="container">
         <h1>Création de profil</h1>
 
-{#        {% if app.flashes %}#}
-             Messages
-            <div class="resultat success-anim">
-                <h3>🎉 Inscription Validée !</h3>
-                {% for label, messages in app.flashes %}
-                    {% for message in messages %}
-                        👤 <strong> {{ message }} </strong>
-                    {% endfor %}
-                {% endfor %}
-            </div>
-{#        {% endif %}#}
-
-        <form method="post" action="{{ path('app_inscription') }}">
-            <input type="hidden" name="form_action" value="{{ form_action|default('save') }}">
-
-            {# 1) ECOLE #}
-            <div class="form-group">
-                <label for="choix_ecole">1. Mon Établissement</label>
-
-                <div class="select-wrapper">
-                    <select id="choix_ecole"
-                            name="ecole"
-                            onchange="this.form.form_action.value='schoolChange'; this.form.submit()">
-                        <option value="">👇 Touchez pour choisir</option>
-
-                        {% for school in schools %}
-                            <option value="{{ school|e }}"
-                                    {% if selectedSchool is not empty and selectedSchool == school %}selected{% endif %}>
-                                {{ school|e }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-
-            {# 2) CLASSE #}
-            <div class="form-group">
-                <label for="choix_classe">2. Ma Classe</label>
-
-                <div class="select-wrapper">
-                    <select name="classe_final_id" id="choix_classe" required>
-                        {% if filteredClasses is empty %}
-                            <option value="" selected disabled>
-                                🔒 Choisissez d'abord l'école
-                            </option>
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="resultat {{ label == 'success' ? 'success-anim' : 'error-anim' }}">
+                    <h3>
+                        {% if label == 'success' %}
+                            🎉 Inscription validée !
                         {% else %}
-                            <option value="" disabled {% if selectedClassId == 0 %}selected{% endif %}>
-                                👇 Choisir la classe
-                            </option>
-
-                            {% for classe in filteredClasses %}
-                                <option value="{{ classe.id_class }}"
-                                        {% if selectedClassId == classe.id_class %}selected{% endif %}>
-                                    {{ classe.name_class|e }}
-                                </option>
-                            {% endfor %}
+                            ⚠️ Erreur
                         {% endif %}
-                    </select>
+                    </h3>
+                    <p><strong>{{ message }}</strong></p>
                 </div>
+            {% endfor %}
+        {% endfor %}
+
+        {{ form_start(inscriptionForm, {
+            action: path('app_inscription_save'),
+            method: 'POST',
+            attr: {
+                'data-turbo': 'false'
+            }
+        }) }}
+
+        <div class="form-group">
+            {{ form_label(inscriptionForm.school, '1. Mon Établissement', {
+                label_attr: { for: 'inscription_form_school' }
+            }) }}
+
+            <div class="select-wrapper">
+                {{ form_widget(inscriptionForm.school, {
+                    attr: {
+                        onchange: "this.form.action='" ~ path('app_inscription_school_change') ~ "'; this.form.submit();"
+                    }
+                }) }}
             </div>
 
-            {# 3) PSEUDO #}
-            <div class="form-group">
-                <label>3. Mon identité secrète</label>
+            {{ form_errors(inscriptionForm.school) }}
+        </div>
 
-                <div class="identity-box">
-                    <input type="text"
-                           name="pseudo_choisi"
-                           id="pseudo_input"
-                           value="{{ nom_depart }}"
-                           readonly>
+        <div class="form-group">
+            {{ form_label(inscriptionForm.classroom, '2. Ma Classe', {
+                label_attr: { for: 'inscription_form_classroom' }
+            }) }}
 
-                    <button type="submit" name="form_action" value="regen" id="btn_random">🎲</button>
-                </div>
-
-                <small>Touchez le dé pour changer</small>
+            <div class="select-wrapper">
+                {{ form_widget(inscriptionForm.classroom) }}
             </div>
 
-            <input type="submit" value="Valider l'inscription">
-        </form>
+            {{ form_errors(inscriptionForm.classroom) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(inscriptionForm.pseudoUser, '3. Mon identité secrète') }}
+
+            <div class="identity-box">
+                {{ form_widget(inscriptionForm.pseudoUser, {
+                    attr: {
+                        id: 'pseudo_input',
+                        readonly: 'readonly',
+                    }
+                }) }}
+
+                <button
+                    type="submit"
+                    id="btn_random"
+                    formaction="{{ path('app_inscription_regen') }}"
+                    formmethod="POST"
+                >
+                    🎲
+                </button>
+            </div>
+
+            <small>Touchez le dé pour changer</small>
+            {{ form_errors(inscriptionForm.pseudoUser) }}
+        </div>
+
+        <input type="submit" value="Valider l'inscription">
+
+        {{ form_end(inscriptionForm) }}
     </div>
 {% endblock %}
