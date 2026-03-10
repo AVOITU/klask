@@ -30,9 +30,8 @@ class InscriptionServiceImpl implements InscriptionService
     ];
 
     public function __construct(
-        private ClassroomService $classRoomService,
-        private UserService      $userService,
-        private AuthorityService $authorityService
+        private readonly ClassroomService $classRoomService,
+        private readonly UserService      $userService,
     ) { }
 
     public function findDistinctSchools(): array {
@@ -50,52 +49,8 @@ class InscriptionServiceImpl implements InscriptionService
         return $animal . ' ' . $adjectif;
     }
 
-    public function registerStudent(array $post): array
+    public function registerStudent(User $student): User
     {
-        $messageSuccess = null;
-        $messageError   = null;
-
-        $classId = isset($post['classe_final_id']) ? (int)$post['classe_final_id'] : 0;
-        $pseudo  = isset($post['pseudo_choisi'])
-            ? htmlspecialchars($post['pseudo_choisi'], ENT_QUOTES, 'UTF-8')
-            : 'Anonyme';
-
-        if ($classId <= 0) {
-            return [null, 'Classe invalide.'];
-        }
-
-        try {
-            /** @var Classroom|null $classRoom */
-            $classRoom = $this->classRoomService->findById($classId);
-
-            if ($classRoom === null) {
-                return [null, 'Classe introuvable.'];
-            }
-
-            $authority =  $this->authorityService->findByRole(Role::STUDENT->value);
-
-            $student = new User(
-                validations: [],
-                authority: $authority,
-                idUser: (int)null,
-                pseudoUser: $pseudo,
-                classRoom: $classRoom
-            );
-
-            $this->userService->insertStudent($student);
-
-            $messageSuccess = [
-                'ecole'  => $classRoom->getSchool(),
-                'classe' => $classRoom->getNameClass(),
-                'pseudo' => $student->getPseudoUser(),
-            ];
-
-        } catch (UniqueConstraintViolationException $e) {
-            $messageError = '⚠️ Ce pseudo est déjà pris ! Relancez le dé.';
-        } catch (Exception $e) {
-            $messageError = 'Erreur lors de l’inscription.';
-        }
-
-        return [$messageSuccess, $messageError];
+        return $this->userService->insertStudent($student);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Classroom;
 use App\Entity\User;
 use App\Repository\Impl\ClassroomRepositoryImpl;
+use App\Service\InscriptionService;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -45,9 +46,12 @@ class InscriptionFormType extends AbstractType
             'data_class' => User::class,
             'schools' => [],
             'selected_school' => '',
+            'filteredClasses' => '',
+            'nom_depart' => '',
         ]);
 
         $resolver->setAllowedTypes('schools', 'array');
         $resolver->setAllowedTypes('selected_school', 'string');
+        $resolver->setAllowedTypes('nom_depart', 'string');
     }
 }

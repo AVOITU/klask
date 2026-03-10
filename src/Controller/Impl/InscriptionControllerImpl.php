@@ -6,90 +6,39 @@ use App\Controller\InscriptionController;
 use App\Entity\User;
 use App\Form\InscriptionFormType;
 use App\Repository\Impl\ClassroomRepositoryImpl;
+use App\Service\InscriptionService;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Exception;
+use Throwable;
 
 class InscriptionControllerImpl extends AbstractController implements InscriptionController
 {
-    private LoggerInterface $logger;
-
-    public function __construct(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
+    public function __construct(
+        private readonly LoggerInterface $logger,
+        private readonly InscriptionService $inscriptionService,
+    ) {
     }
+
     #[Route('/inscription', name: 'app_inscription', methods: ['GET', 'POST'])]
-    public function showInscriptionForm(
-        Request $request,
-        ClassroomRepositoryImpl $classroomRepo,
-        EntityManagerInterface $em,
-    ): Response {
+    public function showInscriptionForm(Request $request): Response
+    {
         $user = new User();
+        $schools = $this->inscriptionService->findDistinctSchools();
+        $pseudoUser = $this->inscriptionService->generateDefaultNickname();
         $filteredClasses = '';
-        // 1) Load schools (for the "school" ChoiceType, unmapped)
-        $schools = $classroomRepo->findDistinctSchools();
+        $selectedSchool = $this->extractSelectedSchool($request);
 
-        // 2) Detect currently selected school (so the classroom EntityType can be filtered)
-        // - First display (GET): none selected
-        // - After submit (POST): take it from submitted form data
-        if ($request->isMethod('POST')) {
-            // form name = "inscription_form" by default? actually it's based on FormType name.
-            // safest: read the form root array using $form->getName() AFTER creation.
-            $posted = $request->request->all(); // we'll re-read after form creation below
-        }
-
-        // 3) Build form (first pass) with empty selected school (safe)
-        $form = $this->createForm(InscriptionFormType::class, $user, [
-            'schools' => $schools,
-            'selected_school' => '',
-        ]);
-
-        // 4) Now that we know the real form name, read selected school from POST and rebuild if needed
-        $pseudoUser = $form->getName();
-        $selectedSchool = '';
-        if ($request->isMethod('POST')) {
-            $formRoot = $request->request->all($pseudoUser);
-            $selectedSchool = (string)($formRoot['school'] ?? '');
-        }
-
-        if ($selectedSchool !== '') {
-            // rebuild so query_builder filters classrooms correctly
-            $form = $this->createForm(InscriptionFormType::class, $user, [
-                'schools' => $schools,
-                'selected_school' => $selectedSchool,
-            ]);
-        }
-
-        // 5) Handle request
+        $form = $this->createInscriptionForm($user, $schools, $selectedSchool,
+                                             $pseudoUser, $filteredClasses);
         $form->handleRequest($request);
 
-        // 6) Persist on valid submit
-        try {
-            $form->isSubmitted() && $form->isValid();
-            // school is unmapped => you can read it if you want
-            $school = (string)$form->get('school')->getData();
-
-            $em->persist($user);
-            $em->flush();
-
-            return $this->redirectToRoute('app_inscription');
-        } catch (UniqueConstraintViolationException $e) {
-            $this->addFlash('error', 'Le pseudonyme est déjà pris');
-
-        } catch (Exception $e){
-
-            $this->logger->error('Erreur création utilisateur', [
-                'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            $this->addFlash('error', 'Erreur lors de la création');
+        if ($form->isSubmitted() && $form->isValid()) {
+            return $this->handleValidForm($form, $user);
         }
 
         return $this->render('inscription/inscription.html.twig', [
@@ -99,5 +48,50 @@ class InscriptionControllerImpl extends AbstractController implements Inscriptio
             'filteredClasses' => $filteredClasses,
             'nom_depart' => $pseudoUser
         ]);
+    }
+
+    private function createInscriptionForm(User $user, array $schools, string $selectedSchool,
+                                           string $pseudoUser, string $filteredClasses): FormInterface
+    {
+        return $this->createForm(InscriptionFormType::class, $user, [
+            'schools' => $schools,
+            'selected_school' => $selectedSchool,
+            'filteredClasses' =>$filteredClasses,
+            'nom_depart' => $pseudoUser
+        ]);
+    }
+
+    private function extractSelectedSchool(Request $request): string
+    {
+        if (!$request->isMethod('POST')) {
+            return '';
+        }
+
+        $formData = $request->request->all('inscription_form');
+
+        return (string) ($formData['school'] ?? '');
+    }
+
+    private function handleValidForm(FormInterface $form, User $student): Response
+    {
+        try {
+            $school = (string) $form->get('school')->getData();
+
+            $this->inscriptionService->registerStudent($student);
+
+            $this->addFlash('success', 'Utilisateur créé avec succès.');
+
+            return $this->redirectToRoute('app_inscription');
+        } catch (UniqueConstraintViolationException) {
+            $this->addFlash('error', 'Le pseudonyme est déjà pris.');
+        } catch (Throwable $e) {
+            $this->logger->error('Erreur création utilisateur', [
+                'exception' => $e,
+            ]);
+
+            $this->addFlash('error', 'Erreur lors de la création.');
+        }
+
+        return $this->redirectToRoute('app_inscription');
     }
 }

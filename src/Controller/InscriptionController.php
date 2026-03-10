@@ -10,8 +10,5 @@ use Symfony\Component\HttpFoundation\Response;
 
 interface InscriptionController
 {
-    public function showInscriptionForm( Request $request,
-                                         ClassroomRepositoryImpl $classroomRepo,
-                                         EntityManagerInterface $em,
-    ): Response;
+    public function showInscriptionForm(Request $request): Response;
 }
