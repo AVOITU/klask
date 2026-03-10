@@ -10,6 +10,4 @@ interface UserRepository
     public function insertStudent(User $user): User;
 
     public function findUserStats(int $userId): ?UserDTO;
-
-    public function findClassTotalScore(int $classId): int;
 }

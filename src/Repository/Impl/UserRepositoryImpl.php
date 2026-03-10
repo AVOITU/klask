@@ -18,7 +18,7 @@ class UserRepositoryImpl extends ServiceEntityRepository implements UserReposito
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Authority::class);
+        parent::__construct($registry, User::class);
     }
 
     public function findUserWithClassAndAuthority(int $id): ?User
@@ -49,8 +49,6 @@ class UserRepositoryImpl extends ServiceEntityRepository implements UserReposito
         return $user;
     }
 
-//    findUserStats et findClassTotalScore =Requêtes scindées pour permettre à l'ORM de
-//    fonctionner correctement et d'éviter une mega requête
     public function findUserStats(int $userId): ?UserDTO
     {
         return $this->createQueryBuilder('u')
@@ -70,18 +68,5 @@ class UserRepositoryImpl extends ServiceEntityRepository implements UserReposito
             ->groupBy('u.idUser')
             ->getQuery()
             ->getOneOrNullResult();
-    }
-
-    public function findClassTotalScore(int $classId): int
-    {
-        return (int) $this->createQueryBuilder('u')
-            ->select('COALESCE(SUM(cat.nbrPoint), 0)')
-            ->leftJoin('u.validations', 'v')
-            ->leftJoin('v.activity', 'act')
-            ->leftJoin('act.category', 'cat')
-            ->where('u.classRoom = :classId')
-            ->setParameter('classId', $classId)
-            ->getQuery()
-            ->getSingleScalarResult();
     }
 }

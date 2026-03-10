@@ -16,12 +16,11 @@ class ClassroomServiceImpl implements ClassroomService
 
     public function findDistinctSchools(): array { return $this->classeRepo->findDistinctSchools(); }
 
-    public function findClassesBySchool($school): array {
-//        return $this->classeRepo->findClassesBySchool($school);
-        return [];
-    }
-
     public function findById($classId) : ?Classroom{
         return $this->classeRepo->findById($classId);
+    }
+
+    public function findClassTotalScore($classId) :int {
+        return $this->classeRepo->findClassTotalScore($classId);
     }
 }

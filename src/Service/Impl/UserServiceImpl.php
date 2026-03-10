@@ -4,27 +4,30 @@ namespace App\Service\Impl;
 
 use App\DTO\UserDTO;
 use App\Entity\User;
+use App\Repository\ClassroomRepository;
 use App\Repository\UserRepository;
+use App\Service\ClassroomService;
 use App\Service\UserService;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 class UserServiceImpl implements UserService
 {
-    public function __construct( private UserRepository $userRepo) {}
+    public function __construct( private UserRepository $userRepo,
+                                 private  ClassroomService $classroomService) {}
 
     public function insertStudent($student): User
     { return $this->userRepo->insertStudent($student); }
 
     public function findUserWithClassAndAuthority(int $idUser) : ?User
-    {
-        return $this->userRepo->findUserWithClassAndAuthority($idUser);
-    }
+    { return $this->userRepo->findUserWithClassAndAuthority($idUser); }
 
     public function createUserDTObyId(int $idUser): ?UserDTO
     {
         $dto = $this->findUserStats($idUser);
         if (!$dto) return null;
 
+        //    findUserStats et findClassTotalScore =Requêtes scindées pour permettre à l'ORM de
+        //    fonctionner correctement et d'éviter une mega requête
         $classId = $dto->getUser()->getClassRoom()->getIdClass();
         $classTotal = $this->findClassTotalScore($classId);
 
@@ -32,12 +35,8 @@ class UserServiceImpl implements UserService
     }
 
     public function findUserStats(int $userId) : ?UserDTO
-    {
-        return $this->userRepo->findUserStats($userId);
-    }
+    { return $this->userRepo->findUserStats($userId); }
 
     public function findClassTotalScore(int $classId): int
-    {
-        return $this->findClassTotalScore($classId);
-    }
+    { return $this->classroomService->findClassTotalScore($classId); }
 }

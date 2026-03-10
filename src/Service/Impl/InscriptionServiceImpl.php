@@ -2,20 +2,21 @@
 
 namespace App\Service\Impl;
 
-use App\Entity\Classroom;
 use App\Entity\User;
-use Doctrine\DBAL\Exception;
-use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use App\Security\Role;
-use App\Service\AuthorityService;
+use App\Repository\AuthorityRepository;
 use App\Service\ClassroomService;
 use App\Service\InscriptionService;
 use App\Service\UserService;
+use RuntimeException;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
 class InscriptionServiceImpl implements InscriptionService
 {
+    private AuthorityRepository $authorityRepository;
+    private UserService $userService;
+    private ClassroomService $classroomService;
+
     private array $ANIMALS = [
         'Dauphin', 'Goéland', 'Cormoran', 'Aigrette', 'Phoque', 'Hermine',
         'Coccinelle', 'Ragondin', 'Chevreuil', 'Sanglier',
@@ -29,17 +30,20 @@ class InscriptionServiceImpl implements InscriptionService
         'musicos', 'excentrique', 'des îles', 'cool', 'aristocrate', 'héroïque',
     ];
 
-    public function __construct(
-        private readonly ClassroomService $classRoomService,
-        private readonly UserService      $userService,
-    ) { }
-
-    public function findDistinctSchools(): array {
-        return $this->classRoomService->findDistinctSchools();
+    /**
+     * @param AuthorityRepository $authorityRepository
+     * @param UserService $userService
+     * @param ClassroomService $classroomService
+     */
+    public function __construct(AuthorityRepository $authorityRepository, UserService $userService, ClassroomService $classroomService)
+    {
+        $this->authorityRepository = $authorityRepository;
+        $this->userService = $userService;
+        $this->classroomService = $classroomService;
     }
 
-    public function getClassesBySchool($school): array {
-        return $this->classRoomService->findClassesBySchool($school);
+    public function findDistinctSchools(): array {
+        return $this->classroomService->findDistinctSchools();
     }
 
     public function generateDefaultNickname(): string
@@ -51,6 +55,14 @@ class InscriptionServiceImpl implements InscriptionService
 
     public function registerStudent(User $student): User
     {
+        $authority = $this->authorityRepository->findByRole('STUDENT');
+
+        if ($authority === null) {
+            throw new RuntimeException('Autorité STUDENT introuvable.');
+        }
+
+        $student->setAuthority($authority);
+
         return $this->userService->insertStudent($student);
     }
 }

@@ -18,6 +18,7 @@ final class User
     private string $pseudoUser;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
+    #[ORM\JoinColumn(name: 'id_class', referencedColumnName: 'id_class', nullable: false)]
     private ?Classroom $classroom = null;
 
     /**
@@ -27,7 +28,7 @@ final class User
     private Collection $validations;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(name: 'id_authority', referencedColumnName: 'id_authority', nullable: false)]
     private ?Authority $authority = null;
 
 

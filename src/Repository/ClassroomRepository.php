@@ -10,4 +10,6 @@ interface ClassroomRepository
     public function findDistinctSchools(): array;
     public function qbBySchool(?string $school): QueryBuilder;
     public function findById(int $idClass): ?Classroom;
+
+    public function findClassTotalScore(int $classId): int;
 }

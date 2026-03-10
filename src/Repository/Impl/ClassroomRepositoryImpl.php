@@ -49,4 +49,17 @@ class ClassroomRepositoryImpl extends ServiceEntityRepository implements Classro
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    public function findClassTotalScore(int $classId): int
+    {
+        return (int) $this->createQueryBuilder('u')
+            ->select('COALESCE(SUM(cat.nbrPoint), 0)')
+            ->leftJoin('u.validations', 'v')
+            ->leftJoin('v.activity', 'act')
+            ->leftJoin('act.category', 'cat')
+            ->where('u.classRoom = :classId')
+            ->setParameter('classId', $classId)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

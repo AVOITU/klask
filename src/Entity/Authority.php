@@ -18,8 +18,6 @@ final class Authority
     private string $roleUser;
     #[ORM\Column]
     private string $authorityUser;
-    #[ORM\Column]
-    private array $user;
 
     /**
      * @var Collection<int, User>
@@ -28,17 +26,15 @@ final class Authority
     private Collection $users;
 
     /**
-     * @param User[] $users
      * @param int $idAuthority
      * @param string $roleUser
      * @param string $authorityUser
      */
-    public function __construct(array $users, int $idAuthority, string $roleUser, string $authorityUser)
+    public function __construct(int $idAuthority, string $roleUser, string $authorityUser)
     {
         $this->idAuthority = $idAuthority;
         $this->roleUser = $roleUser;
         $this->authorityUser = $authorityUser;
-        $this->user = $users;
         $this->users = new ArrayCollection();
     }
 
@@ -60,16 +56,6 @@ final class Authority
     public function setRoleUser(string $roleUser): void
     {
         $this->roleUser = $roleUser;
-    }
-
-    public function getUser(): array
-    {
-        return $this->user;
-    }
-
-    public function setUser(array $user): void
-    {
-        $this->user = $user;
     }
 
     public function getAuthorityUser(): string
@@ -108,7 +94,6 @@ final class Authority
                 $user->setAuthority(null);
             }
         }
-
         return $this;
     }
 }
