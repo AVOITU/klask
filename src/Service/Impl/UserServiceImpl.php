@@ -4,12 +4,10 @@ namespace App\Service\Impl;
 
 use App\DTO\UserDTO;
 use App\Entity\User;
-use App\Repository\ClassroomRepository;
 use App\Repository\UserRepository;
 use App\Service\ClassroomService;
 use App\Service\UserService;
 
-require_once __DIR__ . '/../../../vendor/autoload.php';
 class UserServiceImpl implements UserService
 {
     public function __construct( private UserRepository $userRepo,

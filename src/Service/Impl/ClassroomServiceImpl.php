@@ -7,7 +7,6 @@ use App\Repository\ClassroomRepository;
 use App\Service\ClassroomService;
 
 
-require_once __DIR__ . '/../../../vendor/autoload.php';
 class ClassroomServiceImpl implements ClassroomService
 {
     public function __construct(

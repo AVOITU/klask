@@ -3,16 +3,11 @@
 namespace App\Repository\Impl;
 
 use App\DTO\UserDTO;
-use App\Entity\Authority;
-use App\Entity\Classroom;
 use App\Entity\User;
+use App\Repository\UserRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use PDO;
-use App\Repository\UserRepository;
 use RuntimeException;
-
-require_once __DIR__ . '/../../../vendor/autoload.php';
 
 class UserRepositoryImpl extends ServiceEntityRepository implements UserRepository
 {

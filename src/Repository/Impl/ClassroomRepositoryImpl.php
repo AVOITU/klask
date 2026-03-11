@@ -8,8 +8,6 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
-require_once __DIR__ . '/../../../vendor/autoload.php';
-
 class ClassroomRepositoryImpl extends ServiceEntityRepository implements ClassroomRepository
 {
     public function __construct(ManagerRegistry $registry)

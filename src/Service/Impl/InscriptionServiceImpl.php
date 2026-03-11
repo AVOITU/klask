@@ -9,8 +9,6 @@ use App\Service\InscriptionService;
 use App\Service\UserService;
 use RuntimeException;
 
-require_once __DIR__ . '/../../../vendor/autoload.php';
-
 class InscriptionServiceImpl implements InscriptionService
 {
     private AuthorityRepository $authorityRepository;

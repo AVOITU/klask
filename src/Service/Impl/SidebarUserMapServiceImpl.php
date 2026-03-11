@@ -3,12 +3,9 @@
 namespace App\Service\Impl;
 
 use App\DTO\UserDTO;
-use App\Service\SidebarUserMapService;
-use App\Repository\UserRepository;
 use App\Entity\User;
+use App\Service\SidebarUserMapService;
 use App\Service\UserService;
-
-require_once __DIR__ . '/../../../vendor/autoload.php';
 
 /**
  * Implémentation concrète du Service.

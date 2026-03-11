@@ -5,8 +5,6 @@ namespace App\Service\Impl;
 use App\Entity\Authority;
 use App\Repository\AuthorityRepository;
 use App\Service\AuthorityService;
-
-require_once __DIR__ . '/../../../vendor/autoload.php';
 class AuthorityServiceImpl implements AuthorityService
 {
     private AuthorityRepository $authorityRepository;

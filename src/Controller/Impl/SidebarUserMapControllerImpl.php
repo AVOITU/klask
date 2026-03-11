@@ -2,8 +2,6 @@
 
 namespace App\Controller\Impl;
 
-require_once __DIR__ . '/../../../vendor/autoload.php';
-
 use App\Service\SidebarUserMapService;
 use App\Controller\SidebarUserMapController;
 
