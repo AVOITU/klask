@@ -41,6 +41,7 @@ class ClassRoomRepositoryImpl implements ClassRoomRepository
                 c.school, 
                 c.name_class
             ORDER BY scoreTotal DESC
+            LIMIT 5
         ");
 
         $results = [];
