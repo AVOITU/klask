@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Page d'accueil{% endblock %}</title>
+    <link rel="icon" href="{{ asset('images/favicon.png') }}">
+    <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
+    {% block stylesheets %}
+    {% endblock %}
+
+    {% block javascripts %}
+        {% block importmap %}{{ importmap('app') }}{% endblock %}
+    {% endblock %}
+</head>
+<body data-theme="standard">
+{% include 'structure/header.html.twig' %}
+{% include 'structure/shared_body.html.twig' %}
+
+<main>
+    {% block body %}{% endblock %}
+</main>
+{% include 'structure/footer.html.twig' %}
+</body>
+</html>

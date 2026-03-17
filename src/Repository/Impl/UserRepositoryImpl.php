@@ -1,87 +1,72 @@
 <?php
 
-namespace Repository\Impl;
+namespace App\Repository\Impl;
 
-use Model\Authority;
-use Model\ClassRoom;
-use Model\User;
+use App\DTO\UserDTO;
+use App\Entity\Authority;
+use App\Entity\Classroom;
+use App\Entity\User;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 use PDO;
-use Repository\UserRepository;
+use App\Repository\UserRepository;
+use RuntimeException;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
-class UserRepositoryImpl implements UserRepository
+class UserRepositoryImpl extends ServiceEntityRepository implements UserRepository
 {
-    public function __construct(private PDO $pdo) {}
-
-    public function findById(int $id_user): ?User
+    public function __construct(ManagerRegistry $registry)
     {
-        $SQL = "
-            SELECT
-                u.id_user,
-                u.pseudo_user,
-                c.id_class,
-                c.school,
-                c.name_class,
-                a.id_authority,
-                a.role_user,
-                a.authority_user
-            FROM users u
-            INNER JOIN classes c ON c.id_class = u.id_class
-            INNER JOIN klask.authorities a on u.id_authority = a.id_authority
-            WHERE u.id_user = :id
-        ";
+        parent::__construct($registry, User::class);
+    }
 
-        $stmt = $this->pdo->prepare($SQL);
-        $stmt->execute(['id' => $id_user]);
-
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!$row) {
-            return null;
-        }
-
-        $authority = new Authority(
-            users: [],
-            idAuthority: (int) $row['id_authority'],
-            roleUser: $row['role_user'],
-            authorityUser: $row['authority_user']
-        );
-
-        $classRoom = new ClassRoom(
-            users: [],
-            idClass: (int)$row['id_class'],
-            school: $row['school'],
-            className: $row['name_class']
-        );
-
-        return new User(
-            validations: [],
-            authority: $authority,
-            idUser: (int)$row['id_user'],
-            pseudoUser: $row['pseudo_user'],
-            classRoom: $classRoom
-        );
+    public function findUserWithClassAndAuthority(int $id): ?User
+    {
+        return $this->createQueryBuilder('u')
+            ->addSelect('c', 'a')
+            ->join('u.class', 'c')
+            ->join('u.authority', 'a')
+            ->leftJoin('u.validations', 'v')
+            ->leftJoin('v.activity', 'act')
+            ->leftJoin('act.category', 'cat')
+            ->where('u.idUser = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     public function insertStudent(User $user): User
     {
-        $SQL = "
-                INSERT INTO users (pseudo_user, id_class, id_authority)
-                VALUES (
-                  :pseudo,
-                  :id_class,
-                  :id_authority
-                );
-        ";
+        $em = $this->getEntityManager();
 
-        $stmt = $this->pdo->prepare($SQL);
-        $stmt->execute([
-            'pseudo'   => $user->getPseudoUser(),
-            'id_class' => $user->getClassRoom()->getIdClass(),
-            'id_authority' => $user->getAuthority()->getIdAuthority()
-        ]);
+        $em->persist($user);
+        $em->flush();
 
-        $newId = (int)$this->pdo->lastInsertId();
-        return $this->findById($newId);
+        if ($user->getIdUser() === null) {
+            throw new RuntimeException('L\'insertion utilisateur n\'a pas pu être effectuée');
+        }
+        return $user;
+    }
+
+    public function findUserStats(int $userId): ?UserDTO
+    {
+        return $this->createQueryBuilder('u')
+            ->select(
+                'NEW App\DTO\UserDTO(
+                u,
+                COALESCE(SUM(cat.nbrPoint), 0)
+            )'
+            )
+            ->join('u.classRoom', 'c')
+            ->join('u.authority', 'a')
+            ->leftJoin('u.validations', 'v')
+            ->leftJoin('v.activity', 'act')
+            ->leftJoin('act.category', 'cat')
+            ->where('u.idUser = :id')
+            ->setParameter('id', $userId)
+            ->groupBy('u.idUser')
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }

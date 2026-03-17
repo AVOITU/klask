@@ -1,0 +1,124 @@
+<?php
+
+namespace App\Entity;
+
+use App\Repository\Impl\UserRepositoryImpl;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: UserRepositoryImpl::class)]
+final class User
+{
+    #[ORM\Column]
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    private int $idUser;
+    #[ORM\Column]
+    private string $pseudoUser;
+
+    #[ORM\ManyToOne(inversedBy: 'users')]
+    #[ORM\JoinColumn(name: 'id_class', referencedColumnName: 'id_class', nullable: false)]
+    private ?Classroom $classroom = null;
+
+    /**
+     * @var Collection<int, Scan>
+     */
+    #[ORM\OneToMany(targetEntity: Scan::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $scans;
+
+    #[ORM\ManyToOne(inversedBy: 'users')]
+    #[ORM\JoinColumn(name: 'id_authority', referencedColumnName: 'id_authority', nullable: false)]
+    private ?Authority $authority = null;
+
+    #[ORM\Column(length: 60, nullable: true)]
+    private ?string $password = null;
+
+
+    public function __construct()
+    {
+        $this->scans = new ArrayCollection();
+    }
+    public function getIdUser(): int
+    {
+        return $this->idUser;
+    }
+
+    public function setIdUser(int $idUser): void
+    {
+        $this->idUser = $idUser;
+    }
+
+    public function getPseudoUser(): string
+    {
+        return $this->pseudoUser;
+    }
+
+    public function setPseudoUser(string $pseudoUser): void
+    {
+        $this->pseudoUser = $pseudoUser;
+    }
+
+    public function getClassroom(): ?Classroom
+    {
+        return $this->classroom;
+    }
+
+    public function setClassroom(?Classroom $classroom): self
+    {
+        $this->classroom = $classroom;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Scan>
+     */
+    public function getscans(): Collection
+    {
+        return $this->scans;
+    }
+
+    public function addScan(Scan $scan): self
+    {
+        if (!$this->scans->contains($scan)) {
+            $this->scans->add($scan);
+            $scan->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeScan(Scan $scan): self
+    {
+        if ($this->scans->removeElement($scan)) {
+            // set the owning side to null (unless already changed)
+            if ($scan->getUser() === $this) {
+                $scan->setUser(null);
+            }
+        }
+        return $this;
+    }
+
+    public function getAuthority(): ?Authority
+    {
+        return $this->authority;
+    }
+
+    public function setAuthority(?Authority $authority): self
+    {
+        $this->authority = $authority;
+        return $this;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(?string $password): static
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+}

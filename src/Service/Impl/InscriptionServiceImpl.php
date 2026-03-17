@@ -1,54 +1,49 @@
 <?php
 
-namespace Service\Impl;
+namespace App\Service\Impl;
 
-use Model\ClassRoom;
-use Model\User;
-use PDOException;
-use Security\Role;
-use Service\AuthorityService;
-use Service\ClassRoomService;
-use Service\InscriptionService;
-use Service\UserService;
+use App\Entity\User;
+use App\Repository\AuthorityRepository;
+use App\Service\ClassroomService;
+use App\Service\InscriptionService;
+use App\Service\UserService;
+use RuntimeException;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
 class InscriptionServiceImpl implements InscriptionService
 {
+    private AuthorityRepository $authorityRepository;
+    private UserService $userService;
+    private ClassroomService $classroomService;
+
     private array $ANIMALS = [
-        'Tardigrade', 'Loutre', 'Panda', 'Aigle', 'Renard', 'Loup', 'Hibou',
-        'Dauphin', 'Faucon', 'Lynx', 'Salamandre', 'Koala',
-        'Suricate', 'Ours', 'Lémurien', 'Ornithorynque', 'Caméléon', 'Iguane',
-        'Jaguar', 'Panthère', 'Requin', 'Baleine', 'Orque',
-        'Hamster', 'Castor', 'Hérisson', 'Ecureuil', 'Kangourou', 'Lama', 'Zèbre',
-        'Dragon', 'Phoenix', 'Griffon', 'Pégase', 'Sphinx', 'Yéti', 'Kraken',
-        'Chimère', 'Hydre', 'Titan', 'Cyclope', 'Gargouille', 'Licorne'
+        'Dauphin', 'Goéland', 'Cormoran', 'Aigrette', 'Phoque', 'Hermine',
+        'Coccinelle', 'Ragondin', 'Chevreuil', 'Sanglier',
+        'Renard', 'Requin', 'Oursin', 'Crevette', 'Crabe',
+        'Mérou', 'Sauterelle', 'Escargot', 'Crapaud', 'Salamandre',
     ];
-
     private array $ADJECTIVES = [
-        'Cosmique', 'Galactique', 'Solaire', 'Lunaire', 'Stellaire', 'Polaire',
-        'Volcanique', 'Aquatique', 'Electrique', 'Magnétique', 'Bionique', 'Cyber',
-        'Intrépide', 'Brave', 'Sage', 'Zen', 'Fidèle', 'Rebelle', 'Sauvage',
-        'Libre', 'Solitaire', 'Sympathique', 'Drôle', 'Excentrique', 'Artiste',
-        'Habile', 'Agile', 'Rapide', 'Véloce', 'Tenace', 'Robuste', 'Stoïque',
-        'Diplomate', 'Pacifique', 'Terrible', 'Redoutable', 'Invincible',
-        'Invisible', 'Mystique', 'Magique', 'Enigmatique', 'Fantastique',
-        'Légendaire', 'Mythique', 'Héroïque', 'Epique', 'Titanesque',
-        'Incroyable', 'Imprévisible', 'Inarrêtable', 'Insaisissable'
+        'du rêve', 'cosmique', 'magique', 'intrépide', 'cyber',
+        'casse-cou', 'chic', 'perplexe', 'à lunettes', 'gastronome',
+        'scolaire', 'globe-trotter', 'de la royauté', 'aquatique',
+        'musicos', 'excentrique', 'des îles', 'cool', 'aristocrate', 'héroïque',
     ];
 
-    public function __construct(
-        private ClassRoomService $classRoomService,
-        private UserService $userService,
-        private AuthorityService $authorityService
-    ) { }
-
-    public function getAllSchools(): array {
-        return $this->classRoomService->findAllSchools();
+    /**
+     * @param AuthorityRepository $authorityRepository
+     * @param UserService $userService
+     * @param ClassroomService $classroomService
+     */
+    public function __construct(AuthorityRepository $authorityRepository, UserService $userService, ClassroomService $classroomService)
+    {
+        $this->authorityRepository = $authorityRepository;
+        $this->userService = $userService;
+        $this->classroomService = $classroomService;
     }
 
-    public function getClassesBySchool($school): array {
-        return $this->classRoomService->findClassesBySchool($school);
+    public function findDistinctSchools(): array {
+        return $this->classroomService->findDistinctSchools();
     }
 
     public function generateDefaultNickname(): string
@@ -58,51 +53,16 @@ class InscriptionServiceImpl implements InscriptionService
         return $animal . ' ' . $adjectif;
     }
 
-    public function registerStudent(array $post): array
+    public function registerStudent(User $student): User
     {
-        $messageSuccess = null;
-        $messageError   = null;
+        $authority = $this->authorityRepository->findByRole('STUDENT');
 
-        $classId = isset($post['classe_final_id']) ? (int)$post['classe_final_id'] : 0;
-        $pseudo  = isset($post['pseudo_choisi'])
-            ? htmlspecialchars($post['pseudo_choisi'], ENT_QUOTES, 'UTF-8')
-            : 'Anonyme';
-
-        if ($classId <= 0) {
-            return [null, 'Classe invalide.'];
+        if ($authority === null) {
+            throw new RuntimeException('Autorité STUDENT introuvable.');
         }
 
-        try {
-            /** @var ClassRoom|null $classRoom */
-            $classRoom = $this->classRoomService->findById($classId);
+        $student->setAuthority($authority);
 
-            if ($classRoom === null) {
-                return [null, 'Classe introuvable.'];
-            }
-
-            $authority =  $this->authorityService->findByRole(Role::STUDENT->value);
-
-            $student = new User(
-                validations: [],
-                authority: $authority,
-                idUser: (int)null,
-                pseudoUser: $pseudo,
-                classRoom: $classRoom
-            );
-
-            $this->userService->insertStudent($student);
-
-            $messageSuccess = [
-                'ecole'  => $classRoom->getSchool(),
-                'classe' => $classRoom->getClassName(),
-                'pseudo' => $student->getPseudoUser(),
-            ];
-
-        } catch (PDOException $e) {
-            $messageError = ($e->getCode() === '23000')
-                ? '⚠️ Ce pseudo est déjà pris ! Relancez le dé.'
-                : 'Erreur lors de l’inscription.';
-        }
-        return [$messageSuccess, $messageError];
+        return $this->userService->insertStudent($student);
     }
 }

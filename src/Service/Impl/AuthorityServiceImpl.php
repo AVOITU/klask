@@ -1,10 +1,10 @@
 <?php
 
-namespace Service\Impl;
+namespace App\Service\Impl;
 
-use Model\Authority;
-use Repository\AuthorityRepository;
-use Service\AuthorityService;
+use App\Entity\Authority;
+use App\Repository\AuthorityRepository;
+use App\Service\AuthorityService;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 class AuthorityServiceImpl implements AuthorityService

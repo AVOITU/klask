@@ -1,5 +1,5 @@
 <?php
-namespace Security;
+namespace App\Security;
 
 enum Role: string
 {

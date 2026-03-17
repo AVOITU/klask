@@ -1,8 +1,8 @@
 <?php
 
-namespace Repository;
+namespace App\Repository;
 
-use Model\Authority;
+use App\Entity\Authority;
 
 interface AuthorityRepository
 {

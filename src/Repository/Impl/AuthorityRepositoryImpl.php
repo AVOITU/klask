@@ -1,35 +1,25 @@
 <?php
 
-namespace Repository\Impl;
+namespace App\Repository\Impl;
 
-use Model\Authority;
-use PDO;
-use Repository\AuthorityRepository;
+use App\Entity\Authority;
+use App\Repository\AuthorityRepository;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 
-require_once __DIR__ . '/../../../vendor/autoload.php';
-class AuthorityRepositoryImpl implements AuthorityRepository
+class AuthorityRepositoryImpl extends ServiceEntityRepository implements AuthorityRepository
 {
-    public function __construct(private PDO $pdo) {}
-    public function findByRole(string $role) : ?Authority
+    public function __construct(ManagerRegistry $registry)
     {
-        $SQL = "
-            SELECT id_authority, role_user, authority_user FROM authorities
-            WHERE role_user = :role_user
-        ";
+        parent::__construct($registry, Authority::class);
+    }
 
-        $stmt = $this->pdo->prepare($SQL);
-        $stmt->execute(['role_user' => $role]);
-
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!$row) {
-            return null;
-        }
-
-        return new Authority(
-            users: [],
-            idAuthority: (int) $row['id_authority'],
-            roleUser: $row['role_user'],
-            authorityUser: $row['authority_user']
-        );
+    public function findByRole(string $role): ?Authority
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.roleUser = :role')
+            ->setParameter('role', $role)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }

@@ -1,10 +1,11 @@
 <?php
 
-namespace Service;
+namespace App\Service;
+use App\Entity\User;
+
 interface InscriptionService
 {
-    public function getAllSchools(): array;
-    public function getClassesBySchool($school): array;
+    public function findDistinctSchools(): array;
     public function generateDefaultNickname(): string;
-    public function registerStudent(array $post): array;
+    public function registerStudent(User $student): User;
 }

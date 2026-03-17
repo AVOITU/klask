@@ -1,51 +1,152 @@
 <?php
 
-namespace Controller\Impl;
+namespace App\Controller\Impl;
 
-use Controller\InscriptionController;
-use Service\InscriptionService;
+use App\Controller\InscriptionController;
+use App\Entity\User;
+use App\Form\InscriptionFormType;
+use App\Service\InscriptionService;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Psr\Log\LoggerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+use Throwable;
 
-require_once __DIR__ . '/../../../config/database.php';
-require_once __DIR__ . '/../../../vendor/autoload.php';
-
-class InscriptionControllerImpl implements InscriptionController
+class InscriptionControllerImpl extends AbstractController implements InscriptionController
 {
-    public function __construct(private InscriptionService $inscriptionService) {}
-
-    public function showForm(): void
-    {
-        $schools = $this->inscriptionService->getAllSchools();
-
-        $selectedSchool = trim($_POST['ecole'] ?? '');
-        $filteredClasses = ($selectedSchool !== '')
-            ? $this->inscriptionService->getClassesBySchool($selectedSchool)
-            : [];
-
-        $pseudo = trim($_POST['pseudo_choisi'] ?? '');
-        $nom_depart = ($pseudo !== '') ? $pseudo : $this->inscriptionService->generateDefaultNickname();
-
-        $messageSuccess = $messageSuccess ?? null;
-        $messageError   = $messageError ?? null;
-
-        require __DIR__ . '/../../../templates/inscription.php';
+    public function __construct(
+        private readonly LoggerInterface $logger,
+        private readonly InscriptionService $inscriptionService,
+    ) {
     }
 
-    public function submit(): void
+    #[Route('/inscription', name: 'app_inscription_show', methods: ['GET'])]
+    public function show(): Response
     {
-        $formAction = $_POST['form_action'] ?? 'save';
+        $user = new User();
+        $pseudo = $this->inscriptionService->generateDefaultNickname();
 
-        if ($formAction === 'regen') {
-            $_POST['pseudo_choisi'] = $this->inscriptionService->generateDefaultNickname();
-            $this->showForm();
-            return;
+        $form = $this->buildForm(
+            user: $user,
+            selectedSchool: '',
+            pseudo: $pseudo
+        );
+
+        return $this->renderForm($form, '', $pseudo);
+    }
+
+    #[Route('/inscription/school-change', name: 'app_inscription_school_change', methods: ['POST'])]
+    public function schoolChange(Request $request): Response
+    {
+        $data = $this->getPostedFormData($request);
+
+        $selectedSchool = (string) ($data['school'] ?? '');
+        $pseudo = (string) ($data['pseudoUser'] ?? $this->inscriptionService->generateDefaultNickname());
+
+        $user = new User();
+        if ($pseudo !== '') {
+            $user->setPseudoUser($pseudo);
         }
 
-        if ($formAction === 'schoolChange') {
-            $this->showForm();
-            return;
+        $form = $this->buildForm(
+            user: $user,
+            selectedSchool: $selectedSchool,
+            pseudo: $pseudo
+        );
+
+        $form->submit($data, false);
+
+        return $this->renderForm($form, $selectedSchool, $pseudo);
+    }
+
+    #[Route('/inscription/regen', name: 'app_inscription_regen', methods: ['POST'])]
+    public function regeneratePseudo(Request $request): Response
+    {
+        $data = $this->getPostedFormData($request);
+
+        $selectedSchool = (string) ($data['school'] ?? '');
+        $newPseudo = $this->inscriptionService->generateDefaultNickname();
+
+        $user = new User();
+        $user->setPseudoUser($newPseudo);
+
+        $form = $this->buildForm(
+            user: $user,
+            selectedSchool: $selectedSchool,
+            pseudo: $newPseudo
+        );
+
+        $data['pseudoUser'] = $newPseudo;
+        $form->submit($data, false);
+
+        return $this->renderForm($form, $selectedSchool, $newPseudo);
+    }
+
+    #[Route('/inscription/save', name: 'app_inscription_save', methods: ['POST'])]
+    public function save(Request $request): Response
+    {
+        $data = $this->getPostedFormData($request);
+        $selectedSchool = (string) ($data['school'] ?? '');
+        $pseudo = (string) ($data['pseudoUser'] ?? '');
+
+        $user = new User();
+
+        $form = $this->buildForm(
+            user: $user,
+            selectedSchool: $selectedSchool,
+            pseudo: $pseudo
+        );
+
+        $form->handleRequest($request);
+
+        if (!$form->isSubmitted() || !$form->isValid()) {
+            return $this->renderForm($form, $selectedSchool, $pseudo);
         }
 
-        [$messageSuccess, $messageError] = $this->inscriptionService->registerStudent($_POST);
-        $this->showForm();
+        try {
+            $this->inscriptionService->registerStudent($user);
+
+            $this->addFlash('success', 'Utilisateur créé avec succès.');
+
+            return $this->redirectToRoute('app_inscription_show');
+        } catch (UniqueConstraintViolationException) {
+            $this->addFlash('error', 'Le pseudonyme est déjà pris.');
+        } catch (Throwable $e) {
+            $this->logger->error('Erreur création utilisateur', [
+                'exception' => $e,
+            ]);
+
+            $this->addFlash('error', 'Erreur lors de la création.');
+        }
+
+        return $this->renderForm($form, $selectedSchool, $pseudo);
+    }
+
+    private function buildForm(User $user, string $selectedSchool, string $pseudo): FormInterface
+    {
+        $schools = $this->inscriptionService->findDistinctSchools();
+
+        return $this->createForm(InscriptionFormType::class, $user, [
+            'schools' => $schools,
+            'selected_school' => $selectedSchool,
+            'nom_depart' => $pseudo,
+        ]);
+    }
+
+    private function renderForm(FormInterface $form, string $selectedSchool, string $pseudo): Response
+    {
+        return $this->render('inscription/inscription.html.twig', [
+            'inscriptionForm' => $form->createView(),
+            'selectedSchool' => $selectedSchool,
+            'nom_depart' => $pseudo,
+        ]);
+    }
+
+    private function getPostedFormData(Request $request): array
+    {
+        return $request->request->all('inscription_form');
     }
 }
