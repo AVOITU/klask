@@ -26,6 +26,12 @@ final class Authority
     private Collection $users;
 
     /**
+     * @var Collection<int, Role>
+     */
+    #[ORM\ManyToMany(targetEntity: Role::class, mappedBy: 'authorities')]
+    private Collection $roles;
+
+    /**
      * @param int $idAuthority
      * @param string $roleUser
      * @param string $authorityUser
@@ -36,6 +42,7 @@ final class Authority
         $this->roleUser = $roleUser;
         $this->authorityUser = $authorityUser;
         $this->users = new ArrayCollection();
+        $this->roles = new ArrayCollection();
     }
 
     public function getIdAuthority(): int
@@ -94,6 +101,33 @@ final class Authority
                 $user->setAuthority(null);
             }
         }
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Role>
+     */
+    public function getRoles(): Collection
+    {
+        return $this->roles;
+    }
+
+    public function addRole(Role $role): static
+    {
+        if (!$this->roles->contains($role)) {
+            $this->roles->add($role);
+            $role->addAutority($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRole(Role $role): static
+    {
+        if ($this->roles->removeElement($role)) {
+            $role->removeAutority($this);
+        }
+
         return $this;
     }
 }

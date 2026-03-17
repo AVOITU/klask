@@ -10,7 +10,7 @@ final class Activity
 {
     /** @var Scan[] */
     #[ORM\Column]
-    private array $validations;
+    private array $scans;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -34,7 +34,7 @@ final class Activity
     private Profession $profession;
 
     /**
-     * @param Scan[] $validations
+     * @param Scan[] $scans
      * @param int $idActivity
      * @param string $nameActivity
      * @param string $descriptionActivity
@@ -45,9 +45,9 @@ final class Activity
      * @param ActivityCategory $activityCategory
      * @param Profession $profession
      */
-    public function __construct(array $validations, int $idActivity, string $nameActivity, string $descriptionActivity, string $qrcodeActivity, float $pointX, float $pointY, Sphere $sphere, ActivityCategory $activityCategory, Profession $profession)
+    public function __construct(array $scans, int $idActivity, string $nameActivity, string $descriptionActivity, string $qrcodeActivity, float $pointX, float $pointY, Sphere $sphere, ActivityCategory $activityCategory, Profession $profession)
     {
-        $this->validations = $validations;
+        $this->scans = $scans;
         $this->idActivity = $idActivity;
         $this->nameActivity = $nameActivity;
         $this->descriptionActivity = $descriptionActivity;
@@ -59,14 +59,14 @@ final class Activity
         $this->profession = $profession;
     }
 
-    public function getValidations(): array
+    public function getScans(): array
     {
-        return $this->validations;
+        return $this->scans;
     }
 
-    public function setValidations(array $validations): void
+    public function setScans(array $scans): void
     {
-        $this->validations = $validations;
+        $this->scans = $scans;
     }
 
     public function getIdActivity(): int

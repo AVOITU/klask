@@ -25,16 +25,19 @@ final class User
      * @var Collection<int, Scan>
      */
     #[ORM\OneToMany(targetEntity: Scan::class, mappedBy: 'user', orphanRemoval: true)]
-    private Collection $validations;
+    private Collection $scans;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
     #[ORM\JoinColumn(name: 'id_authority', referencedColumnName: 'id_authority', nullable: false)]
     private ?Authority $authority = null;
 
+    #[ORM\Column(length: 60, nullable: true)]
+    private ?string $password = null;
+
 
     public function __construct()
     {
-        $this->validations = new ArrayCollection();
+        $this->scans = new ArrayCollection();
     }
     public function getIdUser(): int
     {
@@ -70,27 +73,27 @@ final class User
     /**
      * @return Collection<int, Scan>
      */
-    public function getValidations(): Collection
+    public function getscans(): Collection
     {
-        return $this->validations;
+        return $this->scans;
     }
 
-    public function addValidation(Scan $validation): self
+    public function addScan(Scan $scan): self
     {
-        if (!$this->validations->contains($validation)) {
-            $this->validations->add($validation);
-            $validation->setUser($this);
+        if (!$this->scans->contains($scan)) {
+            $this->scans->add($scan);
+            $scan->setUser($this);
         }
 
         return $this;
     }
 
-    public function removeValidation(Scan $validation): self
+    public function removeScan(Scan $scan): self
     {
-        if ($this->validations->removeElement($validation)) {
+        if ($this->scans->removeElement($scan)) {
             // set the owning side to null (unless already changed)
-            if ($validation->getUser() === $this) {
-                $validation->setUser(null);
+            if ($scan->getUser() === $this) {
+                $scan->setUser(null);
             }
         }
         return $this;
@@ -104,6 +107,18 @@ final class User
     public function setAuthority(?Authority $authority): self
     {
         $this->authority = $authority;
+        return $this;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(?string $password): static
+    {
+        $this->password = $password;
+
         return $this;
     }
 }

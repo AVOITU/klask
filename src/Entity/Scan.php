@@ -2,43 +2,43 @@
 
 namespace App\Entity;
 
-use App\Repository\Impl\ValidationRepositoryImpl;
+use App\Repository\Impl\ScanRepositoryImpl;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: ValidationRepositoryImpl::class)]
+#[ORM\Entity(repositoryClass: ScanRepositoryImpl::class)]
 final class Scan
 {
     #[ORM\Column]
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    private int $idValidation;
+    private int $idScan;
     #[ORM\Column]
-    private string $hourValidation;
+    private string $hourScan;
     #[ORM\Column]
     private Activity $activity;
 
-    #[ORM\ManyToOne(inversedBy: 'validations')]
+    #[ORM\ManyToOne(inversedBy: 'scans')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-    public function getIdValidation(): int
+    public function getIdscan(): int
     {
-        return $this->idValidation;
+        return $this->idScan;
     }
 
-    public function setIdValidation(int $idValidation): void
+    public function setIdScan(int $idScan): void
     {
-        $this->idValidation = $idValidation;
+        $this->idScan = $idScan;
     }
 
-    public function getHourValidation(): string
+    public function getHourScan(): string
     {
-        return $this->hourValidation;
+        return $this->hourScan;
     }
 
-    public function setHourValidation(string $hourValidation): void
+    public function setHourScan(string $hourScan): void
     {
-        $this->hourValidation = $hourValidation;
+        $this->hourScan = $hourScan;
     }
 
     public function getActivity(): Activity
@@ -52,14 +52,14 @@ final class Scan
     }
 
     /**
-     * @param int $idValidation
-     * @param string $hourValidation
+     * @param int $idScan
+     * @param string $hourScan
      * @param Activity $activity
      */
-    public function __construct(int $idValidation, string $hourValidation, Activity $activity)
+    public function __construct(int $idScan, string $hourScan, Activity $activity)
     {
-        $this->idValidation = $idValidation;
-        $this->hourValidation = $hourValidation;
+        $this->idScan = $idScan;
+        $this->hourScan = $hourScan;
         $this->activity = $activity;
     }
 

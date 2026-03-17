@@ -14,73 +14,51 @@ class Classroom
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private int $idClass;
+
     #[ORM\Column]
-    private string $school;
-    #[ORM\Column]
-    private string $nameClass;
+    private ?int $idClassroom = null;
 
-    /**
-     * @var Collection<int, User>
-     */
-    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'classroom')]
-    private Collection $users;
+    #[ORM\Column(length: 100)]
+    private ?string $nameClassroom = null;
 
-    public function __construct()
+    #[ORM\ManyToOne(inversedBy: 'classroomss')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Event $idEvent = null;
+
+    public function getIdClassroom(): ?int
     {
-        $this->users = new ArrayCollection();
+        return $this->idClassroom;
     }
 
-    public function getIdClass(): int
+    public function setIdClassroom(int $idClassroom): static
     {
-        return $this->idClass;
-    }
-
-    public function getSchool(): string
-    {
-        return $this->school;
-    }
-
-    public function setSchool(string $school): void
-    {
-        $this->school = $school;
-    }
-
-    public function getNameClass(): string
-    {
-        return $this->nameClass;
-    }
-
-    public function setNameClass(string $nameClass): void
-    {
-        $this->nameClass = $nameClass;
-    }
-
-    /**
-     * @return Collection<int, User>
-     */
-    public function getUsers(): Collection
-    {
-        return $this->users;
-    }
-
-    public function addUsers(User $users): static
-    {
-        if (!$this->users->contains($users)) {
-            $this->users->add($users);
-            $users->setClassroom($this);
-        }
+        $this->idClassroom = $idClassroom;
 
         return $this;
     }
 
-    public function removeUsers(User $users): static
+    public function getNameClassroom(): ?string
     {
-        if ($this->users->removeElement($users)) {
-            // set the owning side to null (unless already changed)
-            if ($users->getClassroom() === $this) {
-                $users->setClassroom(null);
-            }
-        }
+        return $this->nameClassroom;
+    }
+
+    public function setNameClassroom(string $nameClassroom): static
+    {
+        $this->nameClassroom = $nameClassroom;
+
         return $this;
     }
+
+    public function getIdEvent(): ?Event
+    {
+        return $this->idEvent;
+    }
+
+    public function setIdEvent(?Event $idEvent): static
+    {
+        $this->idEvent = $idEvent;
+
+        return $this;
+    }
+
 }

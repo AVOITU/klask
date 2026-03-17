@@ -2,7 +2,7 @@
 
 namespace App\Repository\Impl;
 
-class ValidationRepositoryImpl
+class ScanRepositoryImpl
 {
 
 }
