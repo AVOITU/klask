@@ -3,18 +3,14 @@
 namespace App\Entity;
 
 use App\Repository\Impl\SphereRepositoryImpl;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SphereRepositoryImpl::class)]
 final class Sphere
 {
-    /** @var ActivityCategory[] */
-    #[ORM\Column]
-    private array $activityCategories;
-
-    /** @var Activity[] */
-    #[ORM\Column]
-    private array $activities;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -24,40 +20,23 @@ final class Sphere
     #[ORM\Column]
     private string $colorSphere;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $descriptionSphere = null;
+
     /**
-     * @param ActivityCategory[] $activityCategories
-     * @param Activity[] $activities
+     * @var Collection<int, Activity>
+     */
+    #[ORM\OneToMany(targetEntity: Activity::class, mappedBy: 'sphere')]
+    private Collection $activities;
+
+    /**
      * @param int $idSphere
      * @param string $nameSphere
      * @param string $colorSphere
      */
-    public function __construct(array $activityCategories, array $activities, int $idSphere, string $nameSphere, string $colorSphere)
+    public function __construct()
     {
-        $this->activityCategories = $activityCategories;
-        $this->activities = $activities;
-        $this->idSphere = $idSphere;
-        $this->nameSphere = $nameSphere;
-        $this->colorSphere = $colorSphere;
-    }
-
-    public function getActivityCategories(): array
-    {
-        return $this->activityCategories;
-    }
-
-    public function setActivityCategories(array $activityCategories): void
-    {
-        $this->activityCategories = $activityCategories;
-    }
-
-    public function getActivities(): array
-    {
-        return $this->activities;
-    }
-
-    public function setActivities(array $activities): void
-    {
-        $this->activities = $activities;
+        $this->activities = new ArrayCollection();
     }
 
     public function getIdSphere(): int
@@ -88,6 +67,48 @@ final class Sphere
     public function setColorSphere(string $colorSphere): void
     {
         $this->colorSphere = $colorSphere;
+    }
+
+    public function getDescriptionSphere(): ?string
+    {
+        return $this->descriptionSphere;
+    }
+
+    public function setDescriptionSphere(?string $descriptionSphere): static
+    {
+        $this->descriptionSphere = $descriptionSphere;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Activity>
+     */
+    public function getActivities(): Collection
+    {
+        return $this->activities;
+    }
+
+    public function addActivities(Activity $activities): static
+    {
+        if (!$this->activities->contains($activities)) {
+            $this->activities->add($activities);
+            $activities->setSphere($this);
+        }
+
+        return $this;
+    }
+
+    public function removeActivities(Activity $activities): static
+    {
+        if ($this->activities->removeElement($activities)) {
+            // set the owning side to null (unless already changed)
+            if ($activities->getSphere() === $this) {
+                $activities->setSphere(null);
+            }
+        }
+
+        return $this;
     }
 }
 

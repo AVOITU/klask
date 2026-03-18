@@ -21,10 +21,6 @@ class Classroom
     #[ORM\Column(length: 100)]
     private ?string $nameClassroom = null;
 
-    #[ORM\ManyToOne(inversedBy: 'classroomss')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Event $idEvent = null;
-
     public function getIdClassroom(): ?int
     {
         return $this->idClassroom;
@@ -45,18 +41,6 @@ class Classroom
     public function setNameClassroom(string $nameClassroom): static
     {
         $this->nameClassroom = $nameClassroom;
-
-        return $this;
-    }
-
-    public function getIdEvent(): ?Event
-    {
-        return $this->idEvent;
-    }
-
-    public function setIdEvent(?Event $idEvent): static
-    {
-        $this->idEvent = $idEvent;
 
         return $this;
     }

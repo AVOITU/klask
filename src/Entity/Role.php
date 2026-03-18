@@ -21,17 +21,6 @@ class Role
     #[ORM\Column(length: 255)]
     private ?string $nameRole = null;
 
-    /**
-     * @var Collection<int, Authority>
-     */
-    #[ORM\ManyToMany(targetEntity: Authority::class, inversedBy: 'roles')]
-    private Collection $authorities;
-
-    public function __construct()
-    {
-        $this->authorities = new ArrayCollection();
-    }
-
     public function getId(): ?int
     {
         return $this->id;
@@ -57,30 +46,6 @@ class Role
     public function setNameRole(string $nameRole): static
     {
         $this->nameRole = $nameRole;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Authority>
-     */
-    public function getAuthorities(): Collection
-    {
-        return $this->authorities;
-    }
-
-    public function addAutority(Authority $autority): static
-    {
-        if (!$this->authorities->contains($autority)) {
-            $this->authorities->add($autority);
-        }
-
-        return $this;
-    }
-
-    public function removeAutority(Authority $autority): static
-    {
-        $this->authorities->removeElement($autority);
 
         return $this;
     }

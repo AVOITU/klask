@@ -14,8 +14,6 @@ final class Scan
     private int $idScan;
     #[ORM\Column]
     private string $hourScan;
-    #[ORM\Column]
-    private Activity $activity;
 
     #[ORM\ManyToOne(inversedBy: 'scans')]
     #[ORM\JoinColumn(nullable: false)]
@@ -41,27 +39,12 @@ final class Scan
         $this->hourScan = $hourScan;
     }
 
-    public function getActivity(): Activity
-    {
-        return $this->activity;
-    }
-
-    public function setActivity(Activity $activity): void
-    {
-        $this->activity = $activity;
-    }
-
     /**
      * @param int $idScan
      * @param string $hourScan
-     * @param Activity $activity
      */
-    public function __construct(int $idScan, string $hourScan, Activity $activity)
-    {
-        $this->idScan = $idScan;
-        $this->hourScan = $hourScan;
-        $this->activity = $activity;
-    }
+    public function __construct()
+    {    }
 
     public function getUser(): ?User
     {

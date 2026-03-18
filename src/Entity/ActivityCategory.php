@@ -3,15 +3,13 @@
 namespace App\Entity;
 
 use App\Repository\Impl\ActivityCategoryRepositoryImpl;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ActivityCategoryRepositoryImpl::class)]
 final class ActivityCategory
 {
-    /** @var Activity[] */
-    #[ORM\Column]
-    private array $activities;
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -19,43 +17,30 @@ final class ActivityCategory
     #[ORM\Column]
     private string $typeCategory;
     #[ORM\Column]
-    private int $timeMax;
-    #[ORM\Column]
     private int $nbrPoints;
     #[ORM\Column]
     private int $nbrMaxActivity;
-    #[ORM\Column]
-    private Sphere $sphere;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $beginningHourCategory = null;
 
     /**
-     * @param Activity[] $activities
+     * @var Collection<int, Activity>
+     */
+    #[ORM\OneToMany(targetEntity: Activity::class, mappedBy: 'category', orphanRemoval: true)]
+    private Collection $activities;
+
+    #[ORM\Column(nullable: true)]
+
+    /**
      * @param int $idCategory
      * @param string $typeCategory
-     * @param int $timeMax
      * @param int $nbrPoints
      * @param int $nbrMaxActivity
-     * @param Sphere $sphere
      */
-    public function __construct(array $activities, int $idCategory, string $typeCategory,
-                                int $timeMax, int $nbrPoints, int $nbrMaxActivity, Sphere $sphere)
+    public function __construct()
     {
-        $this->activities = $activities;
-        $this->idCategory = $idCategory;
-        $this->typeCategory = $typeCategory;
-        $this->timeMax = $timeMax;
-        $this->nbrPoints = $nbrPoints;
-        $this->nbrMaxActivity = $nbrMaxActivity;
-        $this->sphere = $sphere;
-    }
-
-    public function getActivities(): array
-    {
-        return $this->activities;
-    }
-
-    public function setActivities(array $activities): void
-    {
-        $this->activities = $activities;
+        $this->activities = new ArrayCollection();
     }
 
     public function getIdCategory(): int
@@ -78,15 +63,6 @@ final class ActivityCategory
         $this->typeCategory = $typeCategory;
     }
 
-    public function getTimeMax(): int
-    {
-        return $this->timeMax;
-    }
-
-    public function setTimeMax(int $timeMax): void
-    {
-        $this->timeMax = $timeMax;
-    }
 
     public function getNbrPoints(): int
     {
@@ -108,13 +84,46 @@ final class ActivityCategory
         $this->nbrMaxActivity = $nbrMaxActivity;
     }
 
-    public function getSphere(): Sphere
+    public function getBeginningHourCategory(): ?\DateTimeImmutable
     {
-        return $this->sphere;
+        return $this->beginningHourCategory;
     }
 
-    public function setSphere(Sphere $sphere): void
+    public function setBeginningHourCategory(?\DateTimeImmutable $beginningHourCategory): static
     {
-        $this->sphere = $sphere;
+        $this->beginningHourCategory = $beginningHourCategory;
+
+        return $this;
     }
+
+    /**
+     * @return Collection<int, Activity>
+     */
+    public function getActivities(): Collection
+    {
+        return $this->activities;
+    }
+
+    public function addActivities(Activity $activities): static
+    {
+        if (!$this->activities->contains($activities)) {
+            $this->activities->add($activities);
+            $activities->setCategory($this);
+        }
+
+        return $this;
+    }
+
+    public function removeActivities(Activity $activities): static
+    {
+        if ($this->activities->removeElement($activities)) {
+            // set the owning side to null (unless already changed)
+            if ($activities->getCategory() === $this) {
+                $activities->setCategory(null);
+            }
+        }
+
+        return $this;
+    }
+
 }
