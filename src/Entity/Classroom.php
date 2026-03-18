@@ -13,9 +13,6 @@ class Classroom
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private int $idClass;
-
-    #[ORM\Column]
     private ?int $idClassroom = null;
 
     #[ORM\Column(length: 100)]

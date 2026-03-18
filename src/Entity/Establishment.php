@@ -15,31 +15,11 @@ class Establishment
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $id_establishment = null;
-
     #[ORM\Column(length: 100)]
     private ?string $name_establishment = null;
 
     public function __construct()
     {
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function getIdEstablishment(): ?int
-    {
-        return $this->id_establishment;
-    }
-
-    public function setIdEstablishment(int $id_establishment): static
-    {
-        $this->id_establishment = $id_establishment;
-
-        return $this;
     }
 
     public function getNameEstablishment(): ?string
