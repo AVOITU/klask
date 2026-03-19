@@ -15,9 +15,9 @@ final class Sphere
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private int $idSphere;
-    #[ORM\Column]
+    #[ORM\Column(length: 100)]
     private string $nameSphere;
-    #[ORM\Column]
+    #[ORM\Column(length: 50)]
     private string $colorSphere;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -29,6 +29,9 @@ final class Sphere
     #[ORM\OneToMany(targetEntity: Activity::class, mappedBy: 'sphere')]
     private Collection $activities;
 
+    #[ORM\ManyToOne(inversedBy: 'spheres')]
+    private ?ActivityCategory $category = null;
+
     /**
      * @param int $idSphere
      * @param string $nameSphere
@@ -39,15 +42,6 @@ final class Sphere
         $this->activities = new ArrayCollection();
     }
 
-    public function getIdSphere(): int
-    {
-        return $this->idSphere;
-    }
-
-    public function setIdSphere(int $idSphere): void
-    {
-        $this->idSphere = $idSphere;
-    }
 
     public function getNameSphere(): string
     {
@@ -107,6 +101,18 @@ final class Sphere
                 $activities->setSphere(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCategory(): ?ActivityCategory
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?ActivityCategory $category): static
+    {
+        $this->category = $category;
 
         return $this;
     }

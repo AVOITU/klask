@@ -17,17 +17,28 @@ final class User
     #[ORM\Column]
     private string $pseudoUser;
 
-    #[ORM\Column(length: 60, nullable: true)]
+    #[ORM\Column(length: 40, nullable: true)]
     private ?string $password = null;
-    public function getIdUser(): int
-    {
-        return $this->idUser;
-    }
 
-    public function setIdUser(int $idUser): void
+    #[ORM\ManyToOne(inversedBy: 'users')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Authority $authority = null;
+
+    #[ORM\ManyToOne(inversedBy: 'users')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Classroom $classroom = null;
+
+    /**
+     * @var Collection<int, Scan>
+     */
+    #[ORM\OneToMany(targetEntity: Scan::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $scans;
+
+    public function __construct()
     {
-        $this->idUser = $idUser;
+        $this->scans = new ArrayCollection();
     }
+    
 
     public function getPseudoUser(): string
     {
@@ -47,6 +58,60 @@ final class User
     public function setPassword(?string $password): static
     {
         $this->password = $password;
+
+        return $this;
+    }
+
+    public function getAuthority(): ?Authority
+    {
+        return $this->authority;
+    }
+
+    public function setAuthority(?Authority $authority): static
+    {
+        $this->authority = $authority;
+
+        return $this;
+    }
+
+    public function getClassroom(): ?Classroom
+    {
+        return $this->classroom;
+    }
+
+    public function setClassroom(?Classroom $classroom): static
+    {
+        $this->classroom = $classroom;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Scan>
+     */
+    public function getScans(): Collection
+    {
+        return $this->scans;
+    }
+
+    public function addScan(Scan $scan): static
+    {
+        if (!$this->scans->contains($scan)) {
+            $this->scans->add($scan);
+            $scan->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeScan(Scan $scan): static
+    {
+        if ($this->scans->removeElement($scan)) {
+            // set the owning side to null (unless already changed)
+            if ($scan->getUser() === $this) {
+                $scan->setUser(null);
+            }
+        }
 
         return $this;
     }

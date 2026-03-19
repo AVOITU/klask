@@ -14,8 +14,14 @@ final class Authority
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private int $idAuthority;
-    #[ORM\Column]
+    #[ORM\Column(length: 50)]
     private string $authorityUser;
+
+    /**
+     * @var Collection<int, User>
+     */
+    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'authority')]
+    private Collection $users;
 
     /**
      * @param int $idAuthority
@@ -23,17 +29,9 @@ final class Authority
      */
     public function __construct()
     {
+        $this->users = new ArrayCollection();
     }
 
-    public function getIdAuthority(): int
-    {
-        return $this->idAuthority;
-    }
-
-    public function setIdAuthority(int $idAuthority): void
-    {
-        $this->idAuthority = $idAuthority;
-    }
 
     public function getAuthorityUser(): string
     {
@@ -43,5 +41,35 @@ final class Authority
     public function setAuthorityUser(string $authorityUser): void
     {
         $this->authorityUser = $authorityUser;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): static
+    {
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
+            $user->setAuthority($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): static
+    {
+        if ($this->users->removeElement($user)) {
+            // set the owning side to null (unless already changed)
+            if ($user->getAuthority() === $this) {
+                $user->setAuthority(null);
+            }
+        }
+
+        return $this;
     }
 }

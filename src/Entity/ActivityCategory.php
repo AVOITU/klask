@@ -14,7 +14,7 @@ final class ActivityCategory
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private int $idCategory;
-    #[ORM\Column]
+    #[ORM\Column(length: 255)]
     private string $typeCategory;
     #[ORM\Column]
     private int $nbrPoints;
@@ -30,6 +30,12 @@ final class ActivityCategory
     #[ORM\OneToMany(targetEntity: Activity::class, mappedBy: 'category', orphanRemoval: true)]
     private Collection $activities;
 
+    /**
+     * @var Collection<int, Sphere>
+     */
+    #[ORM\OneToMany(targetEntity: Sphere::class, mappedBy: 'category')]
+    private Collection $spheres;
+
     #[ORM\Column(nullable: true)]
 
     /**
@@ -41,17 +47,10 @@ final class ActivityCategory
     public function __construct()
     {
         $this->activities = new ArrayCollection();
+        $this->spheres = new ArrayCollection();
     }
 
-    public function getIdCategory(): int
-    {
-        return $this->idCategory;
-    }
 
-    public function setIdCategory(int $idCategory): void
-    {
-        $this->idCategory = $idCategory;
-    }
 
     public function getTypeCategory(): string
     {
@@ -120,6 +119,36 @@ final class ActivityCategory
             // set the owning side to null (unless already changed)
             if ($activities->getCategory() === $this) {
                 $activities->setCategory(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Sphere>
+     */
+    public function getSpheres(): Collection
+    {
+        return $this->spheres;
+    }
+
+    public function addSphere(Sphere $sphere): static
+    {
+        if (!$this->spheres->contains($sphere)) {
+            $this->spheres->add($sphere);
+            $sphere->setCategory($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSphere(Sphere $sphere): static
+    {
+        if ($this->spheres->removeElement($sphere)) {
+            // set the owning side to null (unless already changed)
+            if ($sphere->getCategory() === $this) {
+                $sphere->setCategory(null);
             }
         }
 

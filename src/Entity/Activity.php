@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\Impl\ActivityRepositoryImpl;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ActivityRepositoryImpl::class)]
@@ -28,15 +30,26 @@ final class Activity
     #[ORM\Column(nullable: true)]
     private ?float $pointYActivity = null;
 
-    #[ORM\ManyToOne(inversedBy: 'activities')]
+    #[ORM\ManyToOne(inversedBy: 'activities', nullable: true)]
     private ?Sphere $sphere = null;
 
     #[ORM\ManyToOne(inversedBy: 'activities')]
     #[ORM\JoinColumn(nullable: false)]
     private ?ActivityCategory $category = null;
 
-    #[ORM\ManyToOne(inversedBy: 'activities')]
+    #[ORM\ManyToOne(inversedBy: 'activities', nullable: true)]
     private ?Profession $profession = null;
+
+    /**
+     * @var Collection<int, Scan>
+     */
+    #[ORM\OneToMany(targetEntity: Scan::class, mappedBy: 'activity')]
+    private Collection $scans;
+
+    public function __construct()
+    {
+        $this->scans = new ArrayCollection();
+    }
 
     public function getNameActivity(): ?string
     {
@@ -130,6 +143,36 @@ final class Activity
     public function setProfession(?Profession $profession): static
     {
         $this->profession = $profession;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Scan>
+     */
+    public function getScans(): Collection
+    {
+        return $this->scans;
+    }
+
+    public function addScan(Scan $scan): static
+    {
+        if (!$this->scans->contains($scan)) {
+            $this->scans->add($scan);
+            $scan->setActivity($this);
+        }
+
+        return $this;
+    }
+
+    public function removeScan(Scan $scan): static
+    {
+        if ($this->scans->removeElement($scan)) {
+            // set the owning side to null (unless already changed)
+            if ($scan->getActivity() === $this) {
+                $scan->setActivity(null);
+            }
+        }
 
         return $this;
     }

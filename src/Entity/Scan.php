@@ -12,39 +12,51 @@ final class Scan
     #[ORM\Id]
     #[ORM\GeneratedValue]
     private int $idScan;
+    
+
     #[ORM\Column]
-    private string $hourScan;
+    private ?\DateTimeImmutable $hourValidation = null;
+
+    #[ORM\ManyToOne(inversedBy: 'scans')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Activity $activity = null;
 
     #[ORM\ManyToOne(inversedBy: 'scans')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-    public function getIdscan(): int
-    {
-        return $this->idScan;
-    }
 
-    public function setIdScan(int $idScan): void
-    {
-        $this->idScan = $idScan;
-    }
 
-    public function getHourScan(): string
-    {
-        return $this->hourScan;
-    }
-
-    public function setHourScan(string $hourScan): void
-    {
-        $this->hourScan = $hourScan;
-    }
 
     /**
      * @param int $idScan
-     * @param string $hourScan
      */
     public function __construct()
     {    }
+
+    public function getHourValidation(): ?\DateTimeImmutable
+    {
+        return $this->hourValidation;
+    }
+
+    public function setHourValidation(\DateTimeImmutable $hourValidation): static
+    {
+        $this->hourValidation = $hourValidation;
+
+        return $this;
+    }
+
+    public function getActivity(): ?Activity
+    {
+        return $this->activity;
+    }
+
+    public function setActivity(?Activity $activity): static
+    {
+        $this->activity = $activity;
+
+        return $this;
+    }
 
     public function getUser(): ?User
     {
