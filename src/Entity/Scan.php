@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\Impl\ScanRepositoryImpl;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ScanRepositoryImpl::class)]
@@ -12,10 +13,10 @@ final class Scan
     #[ORM\Id]
     #[ORM\GeneratedValue]
     private int $idScan;
-    
+
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $hourValidation = null;
+    private ?DateTimeImmutable $hourValidation = null;
 
     #[ORM\ManyToOne(inversedBy: 'scans')]
     #[ORM\JoinColumn(nullable: false)]
@@ -25,12 +26,6 @@ final class Scan
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-
-
-
-    /**
-     * @param int $idScan
-     */
     public function __construct()
     {    }
 

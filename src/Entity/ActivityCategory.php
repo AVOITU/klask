@@ -36,13 +36,6 @@ final class ActivityCategory
     #[ORM\OneToMany(targetEntity: Sphere::class, mappedBy: 'category')]
     private Collection $spheres;
 
-
-    /**
-     * @param int $idCategory
-     * @param string $typeCategory
-     * @param int $nbrPoints
-     * @param int $nbrMaxActivity
-     */
     public function __construct()
     {
         $this->activities = new ArrayCollection();
