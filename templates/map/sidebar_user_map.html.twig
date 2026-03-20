@@ -1,68 +1,69 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Sidebar user map</title>
-    <link rel="stylesheet" href="/css/pages/sidebarUserMap.css">
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;800&display=swap"
-          rel="stylesheet">
-</head>
-<body>
+{% extends 'base.html.twig' %}
 
-<h1>Page Sidebar user map</h1>
+{% block title %}Sidebar{% endblock %}
 
-<div id="sidebar-trigger-zone" class="trigger-tab">
-    <span class="arrow-icon">◀</span>
-</div>
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/pages/sidebarUserMap.css') }}">
+{% endblock %}
 
-<div id="sidebar-panel" class="sidebar-container">
+{% block body %}
 
-    <div class="sidebar-header">
-        <div class="header-icon">?</div>
-        <h2>PAGE ANNEXE</h2>
+    <h1>Page Sidebar user map</h1>
+
+    <div id="sidebar-trigger-zone" class="trigger-tab">
+        <span class="arrow-icon">◀</span>
     </div>
 
-    <div class="sidebar-body">
+    <div id="sidebar-panel" class="sidebar-container">
 
-        <div class="left-strip">
-            <span class="vertical-text">CARTE</span>
-            <button id="btn-close-sidebar" class="tab-close">▶</button>
+        <div class="sidebar-header">
+            <div class="header-icon">?</div>
+            <h2>PAGE ANNEXE</h2>
         </div>
 
-        <div class="user-card">
-            <h3>UTILISATEUR</h3>
+        <div class="sidebar-body">
 
-            <?php
-            /** @var \DTO\UserDTO|null $currentUser */
-
-
-            $pseudo = "";
-            $score = 0;
-
-
-            if (isset($currentUser)) {
-
-                $pseudo = $currentUser->getUser()->getPseudoUser();
-                $totalScore = $currentUser->getTotalScore();
-                $totalScoreClass = $currentUser->getTotalScoreClasse();
-
-            }
-            ?>
-
-            <div class="info-group">
-                <span class="label">PSEUDO :</span>
-                <span class="value pseudo"><?= htmlspecialchars($pseudo) ?></span>
-                <span class="label">SCORE TOTAL :</span>
-                <span class="value pseudo"><?= htmlspecialchars($totalScore) ?></span>
-                <span class="label">SCORE CLASSE :</span>
-                <span class="value pseudo"><?= htmlspecialchars($totalScoreClass) ?></span>
+            <div class="left-strip">
+                <span class="vertical-text">CARTE</span>
+                <button id="btn-close-sidebar" class="tab-close">▶</button>
             </div>
 
+            <div class="user-card">
+                <h3>UTILISATEUR</h3>
 
+                <?php
+                /** @var \DTO\UserDTO|null $currentUser */
+
+
+                    $pseudo = "";
+                    $score = 0;
+
+
+                    {% if (isset($currentUser)) %}
+                        {
+
+                            $pseudo = $currentUser->getUser()->getPseudoUser();
+                            $totalScore = $currentUser->getTotalScore();
+                            $totalScoreClass = $currentUser->getTotalScoreClasse();
+
+                        }
+                    {% endif %}
+                ?>
+
+                <div class="info-group">
+                    <span class="label">PSEUDO :</span>
+                    <span class="value pseudo"><?= htmlspecialchars($pseudo) ?></span>
+                    <span class="label">SCORE TOTAL :</span>
+                    <span class="value pseudo"><?= htmlspecialchars($totalScore) ?></span>
+                    <span class="label">SCORE CLASSE :</span>
+                    <span class="value pseudo"><?= htmlspecialchars($totalScoreClass) ?></span>
+                </div>
+
+
+            </div>
         </div>
     </div>
-</div>
 
-<script src="/js/pages/sidebarUserMap.js"></script>
-</body>
-</html>
+    <script src="/js/pages/sidebarUserMap.js"></script>
+{% endblock %}
