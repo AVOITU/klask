@@ -24,12 +24,19 @@ final class Authority
     private Collection $users;
 
     /**
+     * @var Collection<int, AuthorityRole>
+     */
+    #[ORM\OneToMany(targetEntity: AuthorityRole::class, mappedBy: 'authority', orphanRemoval: true)]
+    private Collection $authorityRoles;
+
+    /**
      * @param int $idAuthority
      * @param string $authorityUser
      */
     public function __construct()
     {
         $this->users = new ArrayCollection();
+        $this->authorityRoles = new ArrayCollection();
     }
 
 
@@ -67,6 +74,36 @@ final class Authority
             // set the owning side to null (unless already changed)
             if ($user->getAuthority() === $this) {
                 $user->setAuthority(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, AuthorityRole>
+     */
+    public function getAuthorityRoles(): Collection
+    {
+        return $this->authorityRoles;
+    }
+
+    public function addAuthorityRole(AuthorityRole $authorityRole): static
+    {
+        if (!$this->authorityRoles->contains($authorityRole)) {
+            $this->authorityRoles->add($authorityRole);
+            $authorityRole->setAuthority($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAuthorityRole(AuthorityRole $authorityRole): static
+    {
+        if ($this->authorityRoles->removeElement($authorityRole)) {
+            // set the owning side to null (unless already changed)
+            if ($authorityRole->getAuthority() === $this) {
+                $authorityRole->setAuthority(null);
             }
         }
 

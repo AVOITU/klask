@@ -36,7 +36,6 @@ final class ActivityCategory
     #[ORM\OneToMany(targetEntity: Sphere::class, mappedBy: 'category')]
     private Collection $spheres;
 
-    #[ORM\Column(nullable: true)]
 
     /**
      * @param int $idCategory
