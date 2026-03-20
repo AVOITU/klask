@@ -32,11 +32,6 @@ final class Sphere
     #[ORM\ManyToOne(inversedBy: 'spheres')]
     private ?ActivityCategory $category = null;
 
-    /**
-     * @param int $idSphere
-     * @param string $nameSphere
-     * @param string $colorSphere
-     */
     public function __construct()
     {
         $this->activities = new ArrayCollection();

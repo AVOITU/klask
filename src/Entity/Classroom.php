@@ -37,18 +37,6 @@ class Classroom
         $this->users = new ArrayCollection();
     }
 
-    public function getIdClassroom(): ?int
-    {
-        return $this->idClassroom;
-    }
-
-    public function setIdClassroom(int $idClassroom): static
-    {
-        $this->idClassroom = $idClassroom;
-
-        return $this;
-    }
-
     public function getNameClassroom(): ?string
     {
         return $this->nameClassroom;

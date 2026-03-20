@@ -23,10 +23,6 @@ final class Authority
     #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'authority')]
     private Collection $users;
 
-    /**
-     * @param int $idAuthority
-     * @param string $authorityUser
-     */
     public function __construct()
     {
         $this->users = new ArrayCollection();

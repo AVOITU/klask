@@ -30,14 +30,16 @@ final class Activity
     #[ORM\Column(nullable: true)]
     private ?float $pointYActivity = null;
 
-    #[ORM\ManyToOne(inversedBy: 'activities', nullable: true)]
+    #[ORM\ManyToOne(inversedBy: 'activities')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Sphere $sphere = null;
 
     #[ORM\ManyToOne(inversedBy: 'activities')]
     #[ORM\JoinColumn(nullable: false)]
     private ?ActivityCategory $category = null;
 
-    #[ORM\ManyToOne(inversedBy: 'activities', nullable: true)]
+    #[ORM\ManyToOne(inversedBy: 'activities')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Profession $profession = null;
 
     /**
