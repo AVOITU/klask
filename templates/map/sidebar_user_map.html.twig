@@ -7,6 +7,11 @@
     <link rel="stylesheet" href="{{ asset('styles/pages/sidebarUserMap.css') }}">
 {% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
+    <script type="module" src="{{ asset('js/sidebarUserMap.js') }}"></script>
+{% endblock %}
+
 {% block body %}
 
     <h1>Page Sidebar user map</h1>
@@ -32,24 +37,19 @@
             <div class="user-card">
                 <h3>UTILISATEUR</h3>
 
-                <?php
-                /** @var \DTO\UserDTO|null $currentUser */
-
-
                     $pseudo = "";
                     $score = 0;
 
-
                     {% if (isset($currentUser)) %}
                         {
-
+                            {{ form_label(sidebarForm.currentUser, "1. pseudo") }}
+                            
                             $pseudo = $currentUser->getUser()->getPseudoUser();
                             $totalScore = $currentUser->getTotalScore();
                             $totalScoreClass = $currentUser->getTotalScoreClasse();
 
                         }
                     {% endif %}
-                ?>
 
                 <div class="info-group">
                     <span class="label">PSEUDO :</span>
@@ -65,5 +65,4 @@
         </div>
     </div>
 
-    <script src="/js/pages/sidebarUserMap.js"></script>
 {% endblock %}
