@@ -18,6 +18,3 @@
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
-
-
-.vscode/launch.json
