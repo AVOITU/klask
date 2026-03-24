@@ -2,14 +2,14 @@
 
 namespace App\Repository;
 
-use App\Entity\Classroom;
+use App\Entity\Group;
 use Doctrine\ORM\QueryBuilder;
 
-interface ClassroomRepository
+interface GroupRepository
 {
     public function findDistinctSchools(): array;
     public function qbBySchool(?string $school): QueryBuilder;
-    public function findById(int $idClass): ?Classroom;
+    public function findById(int $idClass): ?Group;
 
     public function findClassTotalScore(int $classId): int;
 }

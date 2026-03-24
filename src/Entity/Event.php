@@ -13,7 +13,7 @@ class Event
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private int $idEvent;
+    private int $id;
 
     #[ORM\Column(length: 50)]
     private ?string $nameEvent = null;
@@ -25,14 +25,14 @@ class Event
     private ?\DateTimeImmutable $endHourEvent = null;
 
     /**
-     * @var Collection<int, Classroom>
+     * @var Collection<int, Group>
      */
-    #[ORM\OneToMany(targetEntity: Classroom::class, mappedBy: 'event')]
-    private Collection $classrooms;
+    #[ORM\OneToMany(targetEntity: Group::class, mappedBy: 'event')]
+    private Collection $groups;
 
     public function __construct()
     {
-        $this->classrooms = new ArrayCollection();
+        $this->groups = new ArrayCollection();
     }
 
     public function getNameEvent(): ?string
@@ -72,29 +72,29 @@ class Event
     }
 
     /**
-     * @return Collection<int, Classroom>
+     * @return Collection<int, Group>
      */
-    public function getClassrooms(): Collection
+    public function getGroups(): Collection
     {
-        return $this->classrooms;
+        return $this->groups;
     }
 
-    public function addClassroom(Classroom $classroom): static
+    public function addGroup(Group $group): static
     {
-        if (!$this->classrooms->contains($classroom)) {
-            $this->classrooms->add($classroom);
-            $classroom->setEvent($this);
+        if (!$this->groups->contains($group)) {
+            $this->groups->add($group);
+            $group->setEvent($this);
         }
 
         return $this;
     }
 
-    public function removeClassroom(Classroom $classroom): static
+    public function removeGroup(Group $group): static
     {
-        if ($this->classrooms->removeElement($classroom)) {
+        if ($this->groups->removeElement($group)) {
             // set the owning side to null (unless already changed)
-            if ($classroom->getEvent() === $this) {
-                $classroom->setEvent(null);
+            if ($group->getEvent() === $this) {
+                $group->setEvent(null);
             }
         }
 

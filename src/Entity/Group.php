@@ -2,33 +2,33 @@
 
 namespace App\Entity;
 
-use App\Repository\Impl\ClassroomRepositoryImpl;
+use App\Repository\Impl\GroupRepositoryImpl;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: ClassroomRepositoryImpl::class)]
-class Classroom
+#[ORM\Entity(repositoryClass: GroupRepositoryImpl::class)]
+class Group
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $idClassroom = null;
+    private ?int $id = null;
 
     #[ORM\Column(length: 50, nullable: true)]
-    private ?string $nameClassroom = null;
+    private ?string $nameGroup = null;
 
     /**
      * @var Collection<int, User>
      */
-    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'classroom', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'group', orphanRemoval: true)]
     private Collection $users;
 
-    #[ORM\ManyToOne(inversedBy: 'classrooms')]
+    #[ORM\ManyToOne(inversedBy: 'groups')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Establishment $establishment = null;
 
-    #[ORM\ManyToOne(inversedBy: 'classrooms')]
+    #[ORM\ManyToOne(inversedBy: 'groups')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Event $event = null;
 
@@ -37,14 +37,14 @@ class Classroom
         $this->users = new ArrayCollection();
     }
 
-    public function getNameClassroom(): ?string
+    public function getNameGroup(): ?string
     {
-        return $this->nameClassroom;
+        return $this->nameGroup;
     }
 
-    public function setNameClassroom(string $nameClassroom): static
+    public function setNameGroup(string $nameGroup): static
     {
-        $this->nameClassroom = $nameClassroom;
+        $this->nameGroup = $nameGroup;
 
         return $this;
     }
@@ -61,7 +61,7 @@ class Classroom
     {
         if (!$this->users->contains($user)) {
             $this->users->add($user);
-            $user->setClassroom($this);
+            $user->setGroup($this);
         }
 
         return $this;
@@ -71,8 +71,8 @@ class Classroom
     {
         if ($this->users->removeElement($user)) {
             // set the owning side to null (unless already changed)
-            if ($user->getClassroom() === $this) {
-                $user->setClassroom(null);
+            if ($user->getGroup() === $this) {
+                $user->setGroup(null);
             }
         }
 

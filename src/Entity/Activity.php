@@ -13,7 +13,7 @@ final class Activity
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private int $idActivity;
+    private int $id;
 
     #[ORM\Column(length: 100)]
     private ?string $nameActivity = null;

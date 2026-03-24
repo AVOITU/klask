@@ -5,13 +5,13 @@ namespace App\Service\Impl;
 use App\DTO\UserDTO;
 use App\Entity\User;
 use App\Repository\UserRepository;
-use App\Service\ClassroomService;
+use App\Service\GroupService;
 use App\Service\UserService;
 
 class UserServiceImpl implements UserService
 {
     public function __construct( private UserRepository $userRepo,
-                                 private  ClassroomService $classroomService) {}
+                                 private  GroupService  $classroomService) {}
 
     public function insertStudent($student): User
     { return $this->userRepo->insertStudent($student); }
@@ -26,7 +26,7 @@ class UserServiceImpl implements UserService
 
         //    findUserStats et findClassTotalScore =Requêtes scindées pour permettre à l'ORM de
         //    fonctionner correctement et d'éviter une mega requête
-        $classId = $dto->getUser()->getClassRoom()->getIdClass();
+        $classId = $dto->getUser()->getGroup()->getIdClass();
         $classTotal = $this->findClassTotalScore($classId);
 
         return $dto->withClassTotalScore($classTotal);

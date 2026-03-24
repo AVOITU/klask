@@ -13,7 +13,7 @@ final class ActivityCategory
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private int $idCategory;
+    private int $id;
     #[ORM\Column(length: 255)]
     private string $typeCategory;
     #[ORM\Column]

@@ -13,20 +13,20 @@ class Establishment
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private int $idEstablishment;
+    private int $id;
 
     #[ORM\Column(length: 100)]
     private ?string $name_establishment = null;
 
     /**
-     * @var Collection<int, Classroom>
+     * @var Collection<int, Group>
      */
-    #[ORM\OneToMany(targetEntity: Classroom::class, mappedBy: 'establishment', orphanRemoval: true)]
-    private Collection $classrooms;
+    #[ORM\OneToMany(targetEntity: Group::class, mappedBy: 'establishment', orphanRemoval: true)]
+    private Collection $groups;
 
     public function __construct()
     {
-        $this->classrooms = new ArrayCollection();
+        $this->groups = new ArrayCollection();
     }
 
     public function getNameEstablishment(): ?string
@@ -42,29 +42,29 @@ class Establishment
     }
 
     /**
-     * @return Collection<int, Classroom>
+     * @return Collection<int, Group>
      */
-    public function getClassrooms(): Collection
+    public function getGroups(): Collection
     {
-        return $this->classrooms;
+        return $this->groups;
     }
 
-    public function addClassroom(Classroom $classroom): static
+    public function addGroup(Group $group): static
     {
-        if (!$this->classrooms->contains($classroom)) {
-            $this->classrooms->add($classroom);
-            $classroom->setEstablishment($this);
+        if (!$this->groups->contains($group)) {
+            $this->groups->add($group);
+            $group->setEstablishment($this);
         }
 
         return $this;
     }
 
-    public function removeClassroom(Classroom $classroom): static
+    public function removeGroup(Group $group): static
     {
-        if ($this->classrooms->removeElement($classroom)) {
+        if ($this->groups->removeElement($group)) {
             // set the owning side to null (unless already changed)
-            if ($classroom->getEstablishment() === $this) {
-                $classroom->setEstablishment(null);
+            if ($group->getEstablishment() === $this) {
+                $group->setEstablishment(null);
             }
         }
 

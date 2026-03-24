@@ -14,7 +14,7 @@ final class Sphere
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private int $idSphere;
+    private int $id;
     #[ORM\Column(length: 100)]
     private string $nameSphere;
     #[ORM\Column(length: 50)]

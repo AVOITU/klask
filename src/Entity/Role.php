@@ -13,7 +13,7 @@ class Role
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private int $idRole;
+    private int $id;
 
     #[ORM\Column(length: 50)]
     private ?string $nameRole = null;

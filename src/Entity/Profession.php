@@ -13,7 +13,7 @@ final class Profession
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private int $idProfession;
+    private int $id;
     #[ORM\Column(length: 500, nullable: true)]
     private ?string $descriptionProfession = null;
     #[ORM\Column(length: 5)]

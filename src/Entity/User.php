@@ -13,7 +13,7 @@ final class User
     #[ORM\Column]
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    private int $idUser;
+    private int $id;
     #[ORM\Column]
     private string $pseudoUser;
 
@@ -26,7 +26,7 @@ final class User
 
     #[ORM\ManyToOne(inversedBy: 'users')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Classroom $classroom = null;
+    private ?Group $group = null;
 
     /**
      * @var Collection<int, Scan>
@@ -38,7 +38,7 @@ final class User
     {
         $this->scans = new ArrayCollection();
     }
-    
+
 
     public function getPseudoUser(): string
     {
@@ -74,14 +74,14 @@ final class User
         return $this;
     }
 
-    public function getClassroom(): ?Classroom
+    public function getGroup(): ?Group
     {
-        return $this->classroom;
+        return $this->group;
     }
 
-    public function setClassroom(?Classroom $classroom): static
+    public function setGroup(?Group $group): static
     {
-        $this->classroom = $classroom;
+        $this->group = $group;
 
         return $this;
     }

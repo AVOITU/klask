@@ -13,7 +13,7 @@ final class Authority
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private int $idAuthority;
+    private int $id;
     #[ORM\Column(length: 50)]
     private string $authorityUser;
 

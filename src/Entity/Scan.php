@@ -12,7 +12,7 @@ final class Scan
     #[ORM\Column]
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    private int $idScan;
+    private int $id;
 
 
     #[ORM\Column]

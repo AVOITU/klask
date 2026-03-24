@@ -4,7 +4,7 @@ namespace App\Service\Impl;
 
 use App\Entity\User;
 use App\Repository\AuthorityRepository;
-use App\Service\ClassroomService;
+use App\Service\GroupService;
 use App\Service\InscriptionService;
 use App\Service\UserService;
 use RuntimeException;
@@ -13,7 +13,7 @@ class InscriptionServiceImpl implements InscriptionService
 {
     private AuthorityRepository $authorityRepository;
     private UserService $userService;
-    private ClassroomService $classroomService;
+    private GroupService $groupService;
 
     private array $ANIMALS = [
         'Dauphin', 'Goéland', 'Cormoran', 'Aigrette', 'Phoque', 'Hermine',
@@ -31,17 +31,17 @@ class InscriptionServiceImpl implements InscriptionService
     /**
      * @param AuthorityRepository $authorityRepository
      * @param UserService $userService
-     * @param ClassroomService $classroomService
+     * @param GroupService $classroomService
      */
-    public function __construct(AuthorityRepository $authorityRepository, UserService $userService, ClassroomService $classroomService)
+    public function __construct(AuthorityRepository $authorityRepository, UserService $userService, GroupService $classroomService)
     {
         $this->authorityRepository = $authorityRepository;
         $this->userService = $userService;
-        $this->classroomService = $classroomService;
+        $this->groupService = $classroomService;
     }
 
     public function findDistinctSchools(): array {
-        return $this->classroomService->findDistinctSchools();
+        return $this->groupService->findDistinctSchools();
     }
 
     public function generateDefaultNickname(): string

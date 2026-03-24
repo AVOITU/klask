@@ -2,17 +2,17 @@
 
 namespace App\Repository\Impl;
 
-use App\Entity\Classroom;
-use App\Repository\ClassroomRepository;
+use App\Entity\Group;
+use App\Repository\GroupRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
-class ClassroomRepositoryImpl extends ServiceEntityRepository implements ClassroomRepository
+class GroupRepositoryImpl extends ServiceEntityRepository implements GroupRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Classroom::class);
+        parent::__construct($registry, Group::class);
     }
 
     public function findDistinctSchools(): array
@@ -39,7 +39,7 @@ class ClassroomRepositoryImpl extends ServiceEntityRepository implements Classro
         return $qb;
     }
 
-    public function findById(int $idClass): ?Classroom
+    public function findById(int $idClass): ?Group
     {
         return $this->createQueryBuilder('c')
             ->where('c.idClass = :idClass')
