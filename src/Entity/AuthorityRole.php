@@ -9,22 +9,15 @@ use Doctrine\ORM\Mapping as ORM;
 class AuthorityRole
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
-
     #[ORM\ManyToOne(inversedBy: 'authorityRoles')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Authority $authority = null;
 
+    #[ORM\Id]
     #[ORM\ManyToOne(inversedBy: 'authorityRoles')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Role $role = null;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
 
     public function getAuthority(): ?Authority
     {
