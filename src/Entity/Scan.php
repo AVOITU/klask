@@ -2,65 +2,55 @@
 
 namespace App\Entity;
 
-use App\Repository\Impl\ValidationRepositoryImpl;
+use App\Repository\Impl\ScanRepositoryImpl;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: ValidationRepositoryImpl::class)]
+#[ORM\Entity(repositoryClass: ScanRepositoryImpl::class)]
 final class Scan
 {
     #[ORM\Column]
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    private int $idValidation;
-    #[ORM\Column]
-    private string $hourValidation;
-    #[ORM\Column]
-    private Activity $activity;
+    private int $idScan;
 
-    #[ORM\ManyToOne(inversedBy: 'validations')]
+
+    #[ORM\Column]
+    private ?DateTimeImmutable $hourValidation = null;
+
+    #[ORM\ManyToOne(inversedBy: 'scans')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Activity $activity = null;
+
+    #[ORM\ManyToOne(inversedBy: 'scans')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-    public function getIdValidation(): int
-    {
-        return $this->idValidation;
-    }
+    public function __construct()
+    {    }
 
-    public function setIdValidation(int $idValidation): void
-    {
-        $this->idValidation = $idValidation;
-    }
-
-    public function getHourValidation(): string
+    public function getHourValidation(): ?\DateTimeImmutable
     {
         return $this->hourValidation;
     }
 
-    public function setHourValidation(string $hourValidation): void
+    public function setHourValidation(\DateTimeImmutable $hourValidation): static
     {
         $this->hourValidation = $hourValidation;
+
+        return $this;
     }
 
-    public function getActivity(): Activity
+    public function getActivity(): ?Activity
     {
         return $this->activity;
     }
 
-    public function setActivity(Activity $activity): void
+    public function setActivity(?Activity $activity): static
     {
         $this->activity = $activity;
-    }
 
-    /**
-     * @param int $idValidation
-     * @param string $hourValidation
-     * @param Activity $activity
-     */
-    public function __construct(int $idValidation, string $hourValidation, Activity $activity)
-    {
-        $this->idValidation = $idValidation;
-        $this->hourValidation = $hourValidation;
-        $this->activity = $activity;
+        return $this;
     }
 
     public function getUser(): ?User

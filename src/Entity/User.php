@@ -17,34 +17,28 @@ final class User
     #[ORM\Column]
     private string $pseudoUser;
 
+    #[ORM\Column(length: 40, nullable: true)]
+    private ?string $password = null;
+
     #[ORM\ManyToOne(inversedBy: 'users')]
-    #[ORM\JoinColumn(name: 'id_class', referencedColumnName: 'id_class', nullable: false)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Authority $authority = null;
+
+    #[ORM\ManyToOne(inversedBy: 'users')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Classroom $classroom = null;
 
     /**
      * @var Collection<int, Scan>
      */
     #[ORM\OneToMany(targetEntity: Scan::class, mappedBy: 'user', orphanRemoval: true)]
-    private Collection $validations;
-
-    #[ORM\ManyToOne(inversedBy: 'users')]
-    #[ORM\JoinColumn(name: 'id_authority', referencedColumnName: 'id_authority', nullable: false)]
-    private ?Authority $authority = null;
-
+    private Collection $scans;
 
     public function __construct()
     {
-        $this->validations = new ArrayCollection();
+        $this->scans = new ArrayCollection();
     }
-    public function getIdUser(): int
-    {
-        return $this->idUser;
-    }
-
-    public function setIdUser(int $idUser): void
-    {
-        $this->idUser = $idUser;
-    }
+    
 
     public function getPseudoUser(): string
     {
@@ -56,43 +50,15 @@ final class User
         $this->pseudoUser = $pseudoUser;
     }
 
-    public function getClassroom(): ?Classroom
+    public function getPassword(): ?string
     {
-        return $this->classroom;
+        return $this->password;
     }
 
-    public function setClassroom(?Classroom $classroom): self
+    public function setPassword(?string $password): static
     {
-        $this->classroom = $classroom;
-        return $this;
-    }
+        $this->password = $password;
 
-    /**
-     * @return Collection<int, Scan>
-     */
-    public function getValidations(): Collection
-    {
-        return $this->validations;
-    }
-
-    public function addValidation(Scan $validation): self
-    {
-        if (!$this->validations->contains($validation)) {
-            $this->validations->add($validation);
-            $validation->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeValidation(Scan $validation): self
-    {
-        if ($this->validations->removeElement($validation)) {
-            // set the owning side to null (unless already changed)
-            if ($validation->getUser() === $this) {
-                $validation->setUser(null);
-            }
-        }
         return $this;
     }
 
@@ -101,9 +67,52 @@ final class User
         return $this->authority;
     }
 
-    public function setAuthority(?Authority $authority): self
+    public function setAuthority(?Authority $authority): static
     {
         $this->authority = $authority;
+
+        return $this;
+    }
+
+    public function getClassroom(): ?Classroom
+    {
+        return $this->classroom;
+    }
+
+    public function setClassroom(?Classroom $classroom): static
+    {
+        $this->classroom = $classroom;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Scan>
+     */
+    public function getScans(): Collection
+    {
+        return $this->scans;
+    }
+
+    public function addScan(Scan $scan): static
+    {
+        if (!$this->scans->contains($scan)) {
+            $this->scans->add($scan);
+            $scan->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeScan(Scan $scan): static
+    {
+        if ($this->scans->removeElement($scan)) {
+            // set the owning side to null (unless already changed)
+            if ($scan->getUser() === $this) {
+                $scan->setUser(null);
+            }
+        }
+
         return $this;
     }
 }

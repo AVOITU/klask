@@ -3,159 +3,179 @@
 namespace App\Entity;
 
 use App\Repository\Impl\ActivityRepositoryImpl;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ActivityRepositoryImpl::class)]
 final class Activity
 {
-    /** @var Scan[] */
-    #[ORM\Column]
-    private array $validations;
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private int $idActivity;
-    #[ORM\Column]
-    private string $nameActivity;
-    #[ORM\Column]
-    private string $descriptionActivity;
-    #[ORM\Column]
-    private string $qrcodeActivity;
-    #[ORM\Column]
-    private float $pointX;
-    #[ORM\Column]
-    private float $pointY;
-    #[ORM\Column]
-    private Sphere $sphere;
-    #[ORM\Column]
-    private ActivityCategory $activityCategory;
-    #[ORM\Column]
-    private Profession $profession;
+
+    #[ORM\Column(length: 100)]
+    private ?string $nameActivity = null;
+
+    #[ORM\Column(length: 500, nullable: true)]
+    private ?string $descriptionActivity = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $qrcodeActivity = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $pointXActivity = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $pointYActivity = null;
+
+    #[ORM\ManyToOne(inversedBy: 'activities')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Sphere $sphere = null;
+
+    #[ORM\ManyToOne(inversedBy: 'activities')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?ActivityCategory $category = null;
+
+    #[ORM\ManyToOne(inversedBy: 'activities')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Profession $profession = null;
 
     /**
-     * @param Scan[] $validations
-     * @param int $idActivity
-     * @param string $nameActivity
-     * @param string $descriptionActivity
-     * @param string $qrcodeActivity
-     * @param float $pointX
-     * @param float $pointY
-     * @param Sphere $sphere
-     * @param ActivityCategory $activityCategory
-     * @param Profession $profession
+     * @var Collection<int, Scan>
      */
-    public function __construct(array $validations, int $idActivity, string $nameActivity, string $descriptionActivity, string $qrcodeActivity, float $pointX, float $pointY, Sphere $sphere, ActivityCategory $activityCategory, Profession $profession)
+    #[ORM\OneToMany(targetEntity: Scan::class, mappedBy: 'activity')]
+    private Collection $scans;
+
+    public function __construct()
     {
-        $this->validations = $validations;
-        $this->idActivity = $idActivity;
-        $this->nameActivity = $nameActivity;
-        $this->descriptionActivity = $descriptionActivity;
-        $this->qrcodeActivity = $qrcodeActivity;
-        $this->pointX = $pointX;
-        $this->pointY = $pointY;
-        $this->sphere = $sphere;
-        $this->activityCategory = $activityCategory;
-        $this->profession = $profession;
+        $this->scans = new ArrayCollection();
     }
 
-    public function getValidations(): array
-    {
-        return $this->validations;
-    }
-
-    public function setValidations(array $validations): void
-    {
-        $this->validations = $validations;
-    }
-
-    public function getIdActivity(): int
-    {
-        return $this->idActivity;
-    }
-
-    public function setIdActivity(int $idActivity): void
-    {
-        $this->idActivity = $idActivity;
-    }
-
-    public function getNameActivity(): string
+    public function getNameActivity(): ?string
     {
         return $this->nameActivity;
     }
 
-    public function setNameActivity(string $nameActivity): void
+    public function setNameActivity(string $nameActivity): static
     {
         $this->nameActivity = $nameActivity;
+
+        return $this;
     }
 
-    public function getDescriptionActivity(): string
+    public function getDescriptionActivity(): ?string
     {
         return $this->descriptionActivity;
     }
 
-    public function setDescriptionActivity(string $descriptionActivity): void
+    public function setDescriptionActivity(?string $descriptionActivity): static
     {
         $this->descriptionActivity = $descriptionActivity;
+
+        return $this;
     }
 
-    public function getQrcodeActivity(): string
+    public function getQrcodeActivity(): ?string
     {
         return $this->qrcodeActivity;
     }
 
-    public function setQrcodeActivity(string $qrcodeActivity): void
+    public function setQrcodeActivity(?string $qrcodeActivity): static
     {
         $this->qrcodeActivity = $qrcodeActivity;
+
+        return $this;
     }
 
-    public function getPointX(): float
+    public function getPointXActivity(): ?float
     {
-        return $this->pointX;
+        return $this->pointXActivity;
     }
 
-    public function setPointX(float $pointX): void
+    public function setPointXActivity(?float $pointXActivity): static
     {
-        $this->pointX = $pointX;
+        $this->pointXActivity = $pointXActivity;
+
+        return $this;
     }
 
-    public function getPointY(): float
+    public function getPointYActivity(): ?float
     {
-        return $this->pointY;
+        return $this->pointYActivity;
     }
 
-    public function setPointY(float $pointY): void
+    public function setPointYActivity(?float $pointYActivity): static
     {
-        $this->pointY = $pointY;
+        $this->pointYActivity = $pointYActivity;
+
+        return $this;
     }
 
-    public function getSphere(): Sphere
+    public function getSphere(): ?Sphere
     {
         return $this->sphere;
     }
 
-    public function setSphere(Sphere $sphere): void
+    public function setSphere(?Sphere $sphere): static
     {
         $this->sphere = $sphere;
+
+        return $this;
     }
 
-    public function getActivityCategory(): ActivityCategory
+    public function getCategory(): ?ActivityCategory
     {
-        return $this->activityCategory;
+        return $this->category;
     }
 
-    public function setActivityCategory(ActivityCategory $activityCategory): void
+    public function setCategory(?ActivityCategory $category): static
     {
-        $this->activityCategory = $activityCategory;
+        $this->category = $category;
+
+        return $this;
     }
 
-    public function getProfession(): Profession
+    public function getProfession(): ?Profession
     {
         return $this->profession;
     }
 
-    public function setProfession(Profession $profession): void
+    public function setProfession(?Profession $profession): static
     {
         $this->profession = $profession;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Scan>
+     */
+    public function getScans(): Collection
+    {
+        return $this->scans;
+    }
+
+    public function addScan(Scan $scan): static
+    {
+        if (!$this->scans->contains($scan)) {
+            $this->scans->add($scan);
+            $scan->setActivity($this);
+        }
+
+        return $this;
+    }
+
+    public function removeScan(Scan $scan): static
+    {
+        if ($this->scans->removeElement($scan)) {
+            // set the owning side to null (unless already changed)
+            if ($scan->getActivity() === $this) {
+                $scan->setActivity(null);
+            }
+        }
+
+        return $this;
     }
 }

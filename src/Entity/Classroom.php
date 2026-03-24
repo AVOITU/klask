@@ -13,46 +13,40 @@ class Classroom
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private int $idClass;
-    #[ORM\Column]
-    private string $school;
-    #[ORM\Column]
-    private string $nameClass;
+    private ?int $idClassroom = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $nameClassroom = null;
 
     /**
      * @var Collection<int, User>
      */
-    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'classroom')]
+    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'classroom', orphanRemoval: true)]
     private Collection $users;
+
+    #[ORM\ManyToOne(inversedBy: 'classrooms')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Establishment $establishment = null;
+
+    #[ORM\ManyToOne(inversedBy: 'classrooms')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Event $event = null;
 
     public function __construct()
     {
         $this->users = new ArrayCollection();
     }
 
-    public function getIdClass(): int
+    public function getNameClassroom(): ?string
     {
-        return $this->idClass;
+        return $this->nameClassroom;
     }
 
-    public function getSchool(): string
+    public function setNameClassroom(string $nameClassroom): static
     {
-        return $this->school;
-    }
+        $this->nameClassroom = $nameClassroom;
 
-    public function setSchool(string $school): void
-    {
-        $this->school = $school;
-    }
-
-    public function getNameClass(): string
-    {
-        return $this->nameClass;
-    }
-
-    public function setNameClass(string $nameClass): void
-    {
-        $this->nameClass = $nameClass;
+        return $this;
     }
 
     /**
@@ -63,24 +57,50 @@ class Classroom
         return $this->users;
     }
 
-    public function addUsers(User $users): static
+    public function addUser(User $user): static
     {
-        if (!$this->users->contains($users)) {
-            $this->users->add($users);
-            $users->setClassroom($this);
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
+            $user->setClassroom($this);
         }
 
         return $this;
     }
 
-    public function removeUsers(User $users): static
+    public function removeUser(User $user): static
     {
-        if ($this->users->removeElement($users)) {
+        if ($this->users->removeElement($user)) {
             // set the owning side to null (unless already changed)
-            if ($users->getClassroom() === $this) {
-                $users->setClassroom(null);
+            if ($user->getClassroom() === $this) {
+                $user->setClassroom(null);
             }
         }
+
         return $this;
     }
+
+    public function getEstablishment(): ?Establishment
+    {
+        return $this->establishment;
+    }
+
+    public function setEstablishment(?Establishment $establishment): static
+    {
+        $this->establishment = $establishment;
+
+        return $this;
+    }
+
+    public function getEvent(): ?Event
+    {
+        return $this->event;
+    }
+
+    public function setEvent(?Event $event): static
+    {
+        $this->event = $event;
+
+        return $this;
+    }
+
 }

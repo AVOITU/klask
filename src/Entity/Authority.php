@@ -14,49 +14,27 @@ final class Authority
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private int $idAuthority;
-    #[ORM\Column]
-    private string $roleUser;
-    #[ORM\Column]
+    #[ORM\Column(length: 50)]
     private string $authorityUser;
 
     /**
      * @var Collection<int, User>
      */
-    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'authority', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'authority')]
     private Collection $users;
 
     /**
-     * @param int $idAuthority
-     * @param string $roleUser
-     * @param string $authorityUser
+     * @var Collection<int, AuthorityRole>
      */
-    public function __construct(int $idAuthority, string $roleUser, string $authorityUser)
+    #[ORM\OneToMany(targetEntity: AuthorityRole::class, mappedBy: 'authority', orphanRemoval: true)]
+    private Collection $authorityRoles;
+
+    public function __construct()
     {
-        $this->idAuthority = $idAuthority;
-        $this->roleUser = $roleUser;
-        $this->authorityUser = $authorityUser;
         $this->users = new ArrayCollection();
+        $this->authorityRoles = new ArrayCollection();
     }
 
-    public function getIdAuthority(): int
-    {
-        return $this->idAuthority;
-    }
-
-    public function setIdAuthority(int $idAuthority): void
-    {
-        $this->idAuthority = $idAuthority;
-    }
-
-    public function getRoleUser(): string
-    {
-        return $this->roleUser;
-    }
-
-    public function setRoleUser(string $roleUser): void
-    {
-        $this->roleUser = $roleUser;
-    }
 
     public function getAuthorityUser(): string
     {
@@ -94,6 +72,37 @@ final class Authority
                 $user->setAuthority(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, AuthorityRole>
+     */
+    public function getAuthorityRoles(): Collection
+    {
+        return $this->authorityRoles;
+    }
+
+    public function addAuthorityRole(AuthorityRole $authorityRole): static
+    {
+        if (!$this->authorityRoles->contains($authorityRole)) {
+            $this->authorityRoles->add($authorityRole);
+            $authorityRole->setAuthority($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAuthorityRole(AuthorityRole $authorityRole): static
+    {
+        if ($this->authorityRoles->removeElement($authorityRole)) {
+            // set the owning side to null (unless already changed)
+            if ($authorityRole->getAuthority() === $this) {
+                $authorityRole->setAuthority(null);
+            }
+        }
+
         return $this;
     }
 }
