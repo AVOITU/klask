@@ -2,15 +2,14 @@
 
 namespace App\Service\Impl;
 
-use App\Entity\Establishment;
-use App\Repository\EstablishmentRepository;
+use App\Repository\Impl\EstablishmentRepositoryImpl;
 use App\Service\EstablishmentService;
 
 
 class EstablishmentServiceImpl implements EstablishmentService
 {
     public function __construct(
-        private readonly EstablishmentRepository $establishmentRepository
+        private readonly EstablishmentRepositoryImpl $establishmentRepository
     ) {}
 
     public function findDistinctEstablishments(): array {
