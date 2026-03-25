@@ -6,7 +6,7 @@ use App\Entity\Group;
 
 interface GroupService
 {
-    public function findDistinctSchools(): array;
+    public function findDistinctEstablishments(): array;
     public function findById($groupId) : ?Group;
-    public function findClassTotalScore($groupId);
+    // public function findClassTotalScore($groupId);
 }

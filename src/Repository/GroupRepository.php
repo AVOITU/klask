@@ -7,9 +7,9 @@ use Doctrine\ORM\QueryBuilder;
 
 interface GroupRepository
 {
-    public function findDistinctSchools(): array;
-    public function qbBySchool(?string $school): QueryBuilder;
+    //public function findDistinctEstablishments(): array;
+    //public function qbBySchool(?string $school): QueryBuilder;
     public function findById(int $idClass): ?Group;
 
-    public function findClassTotalScore(int $classId): int;
+    //public function findClassTotalScore(int $classId): int;
 }

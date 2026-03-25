@@ -40,8 +40,8 @@ class InscriptionServiceImpl implements InscriptionService
         $this->groupService = $classroomService;
     }
 
-    public function findDistinctSchools(): array {
-        return $this->groupService->findDistinctSchools();
+    public function findDistinctEstablishments(): array {
+        return $this->groupService->findDistinctEstablishments();
     }
 
     public function generateDefaultNickname(): string

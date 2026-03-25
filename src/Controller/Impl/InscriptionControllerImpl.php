@@ -127,7 +127,7 @@ class InscriptionControllerImpl extends AbstractController implements Inscriptio
 
     private function buildForm(User $user, string $selectedSchool, string $pseudo): FormInterface
     {
-        $schools = $this->inscriptionService->findDistinctSchools();
+        $schools = $this->inscriptionService->findDistinctEstablishments();
 
         return $this->createForm(InscriptionFormType::class, $user, [
             'schools' => $schools,
