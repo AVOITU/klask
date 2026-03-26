@@ -7,6 +7,7 @@ use App\Repository\AuthorityRepository;
 use App\Service\GroupService;
 use App\Service\InscriptionService;
 use App\Service\UserService;
+use App\Service\EstablishmentService;
 use RuntimeException;
 
 class InscriptionServiceImpl implements InscriptionService
@@ -14,6 +15,7 @@ class InscriptionServiceImpl implements InscriptionService
     private AuthorityRepository $authorityRepository;
     private UserService $userService;
     private GroupService $groupService;
+    private EstablishmentService $establishmentService;
 
     private array $ANIMALS = [
         'Dauphin', 'Goéland', 'Cormoran', 'Aigrette', 'Phoque', 'Hermine',
@@ -33,15 +35,15 @@ class InscriptionServiceImpl implements InscriptionService
      * @param UserService $userService
      * @param GroupService $classroomService
      */
-    public function __construct(AuthorityRepository $authorityRepository, UserService $userService, GroupService $classroomService)
+    public function __construct(AuthorityRepository $authorityRepository, UserService $userService, EstablishmentService $establishmentService)
     {
         $this->authorityRepository = $authorityRepository;
         $this->userService = $userService;
-        $this->groupService = $classroomService;
+        $this->establishmentService = $establishmentService;
     }
 
     public function findDistinctEstablishments(): array {
-        return $this->groupService->findDistinctEstablishments();
+        return $this->establishmentService->findDistinctEstablishments();
     }
 
     public function generateDefaultNickname(): string

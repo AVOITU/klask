@@ -13,10 +13,6 @@ class GroupServiceImpl implements GroupService
         private readonly GroupRepository $groupRepository
     ) {}
 
-    public function findDistinctEstablishments(): array {
-        return $this->groupRepository->findDistinctEstablishments();
-    }
-
     public function findById($groupId) : ?Group{
         return $this->groupRepository->findById($groupId);
     }

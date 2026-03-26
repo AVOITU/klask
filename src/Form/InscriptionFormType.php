@@ -4,6 +4,8 @@ namespace App\Form;
 
 use App\Entity\Group;
 use App\Entity\User;
+use App\Entity\Establishment;
+use App\Repository\Impl\EstablishmentRepositoryImpl;
 use App\Repository\Impl\GroupRepositoryImpl;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -42,16 +44,16 @@ class InscriptionFormType extends AbstractType
                 'data' => $selectedSchool !== '' ? $selectedSchool : null,
             ])
 
-            ->add('classroom', EntityType::class, [
-                'label' => 'Ma classe',
+            ->add('group', EntityType::class, [
+                'label' => 'Mon groupe',
                 'class' => Group::class,
-                'choice_label' => 'nameClass',
+                'choice_label' => 'nameGroup',
                 'placeholder' => $selectedSchool !== ''
-                    ? '👇 Choisir la classe'
-                    : '🔒 Choisissez d’abord l’école',
+                    ? '👇 Choisir le groupe'
+                    : '🔒 Choisissez d’abord l’établissement',
                 'required' => true,
-                'query_builder' => function (GroupRepositoryImpl $classroomRepository) use ($selectedSchool) {
-                    return $classroomRepository->qbBySchool($selectedSchool);
+                'query_builder' => function (GroupRepositoryImpl $repo) use ($selectedSchool) {
+                return $repo->qbByEstablishment($selectedSchool);
                 },
             ]);
     }

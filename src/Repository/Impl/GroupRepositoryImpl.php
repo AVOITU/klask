@@ -31,6 +31,24 @@ class GroupRepositoryImpl extends ServiceEntityRepository implements GroupReposi
     }
     */
 
+
+
+public function qbByEstablishment(?string $establishmentName): QueryBuilder
+{
+    $qb = $this->createQueryBuilder('g')
+        ->join('g.establishment', 'e')
+        ->orderBy('g.nameGroup', 'ASC');
+
+    if ($establishmentName) {
+        $qb->andWhere('e.name_establishment = :establishment')
+           ->setParameter('establishment', $establishmentName);
+    } else {
+        $qb->andWhere('1 = 0');
+    }
+
+    return $qb;
+}
+
     public function findById(int $idGroup): ?Group
     {
         return $this->createQueryBuilder('g')
