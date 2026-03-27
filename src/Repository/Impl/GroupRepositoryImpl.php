@@ -31,8 +31,6 @@ class GroupRepositoryImpl extends ServiceEntityRepository implements GroupReposi
     }
     */
 
-
-
 public function qbByEstablishment(?string $establishmentName): QueryBuilder
 {
     $qb = $this->createQueryBuilder('g')
