@@ -16,8 +16,8 @@ class AuthorityServiceImpl implements AuthorityService
         $this->authorityRepository = $authorityRepository;
     }
 
-    public function findByRole(string $role) : ?Authority
+    public function findByRole(string $roleName) : ?Authority
     {
-        return $this->authorityRepository->findByRole($role);
+        return $this->authorityRepository->findByRole($roleName);
     }
 }
