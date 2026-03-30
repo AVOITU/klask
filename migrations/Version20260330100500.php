@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20260324150903 extends AbstractMigration
+final class Version20260330100500 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,6 +20,7 @@ final class Version20260324150903 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
+        $this->addSql('DROP TABLE testcommandes');
         $this->addSql('ALTER TABLE activity ADD CONSTRAINT FK_AC74095A75FD4EF9 FOREIGN KEY (sphere_id) REFERENCES sphere (id)');
         $this->addSql('ALTER TABLE activity ADD CONSTRAINT FK_AC74095A12469DE2 FOREIGN KEY (category_id) REFERENCES activity_category (id)');
         $this->addSql('ALTER TABLE activity ADD CONSTRAINT FK_AC74095AFDEF8996 FOREIGN KEY (profession_id) REFERENCES profession (id)');
@@ -37,6 +38,7 @@ final class Version20260324150903 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
+        $this->addSql('CREATE TABLE testcommandes (id INT AUTO_INCREMENT NOT NULL, testcommande12345 VARCHAR(255) CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_0900_ai_ci`, PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_0900_ai_ci` ENGINE = MyISAM COMMENT = \'\' ');
         $this->addSql('ALTER TABLE activity DROP FOREIGN KEY FK_AC74095A75FD4EF9');
         $this->addSql('ALTER TABLE activity DROP FOREIGN KEY FK_AC74095A12469DE2');
         $this->addSql('ALTER TABLE activity DROP FOREIGN KEY FK_AC74095AFDEF8996');

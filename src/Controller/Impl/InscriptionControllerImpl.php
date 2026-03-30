@@ -31,19 +31,19 @@ class InscriptionControllerImpl extends AbstractController implements Inscriptio
 
         $form = $this->buildForm(
             user: $user,
-            selectedSchool: '',
+            selectedEstablishment: '',
             pseudo: $pseudo
         );
 
         return $this->renderForm($form, '', $pseudo);
     }
 
-    #[Route('/inscription/school-change', name: 'app_inscription_school_change', methods: ['POST'])]
-    public function schoolChange(Request $request): Response
+    #[Route('/inscription/establishment-change', name: 'app_inscription_establishment_change', methods: ['POST'])]
+    public function establishmentChange(Request $request): Response
     {
         $data = $this->getPostedFormData($request);
 
-        $selectedSchool = (string) ($data['school'] ?? '');
+        $selectedEstablishment = (string) ($data['establishment'] ?? '');
         $pseudo = (string) ($data['pseudoUser'] ?? $this->inscriptionService->generateDefaultNickname());
 
         $user = new User();
@@ -53,13 +53,13 @@ class InscriptionControllerImpl extends AbstractController implements Inscriptio
 
         $form = $this->buildForm(
             user: $user,
-            selectedSchool: $selectedSchool,
+            selectedEstablishment: $selectedEstablishment,
             pseudo: $pseudo
         );
 
         $form->submit($data, false);
 
-        return $this->renderForm($form, $selectedSchool, $pseudo);
+        return $this->renderForm($form, $selectedEstablishment, $pseudo);
     }
 
     #[Route('/inscription/regen', name: 'app_inscription_regen', methods: ['POST'])]
@@ -67,7 +67,7 @@ class InscriptionControllerImpl extends AbstractController implements Inscriptio
     {
         $data = $this->getPostedFormData($request);
 
-        $selectedSchool = (string) ($data['school'] ?? '');
+        $selectedEstablishment = (string) ($data['establishment'] ?? '');
         $newPseudo = $this->inscriptionService->generateDefaultNickname();
 
         $user = new User();
@@ -75,35 +75,35 @@ class InscriptionControllerImpl extends AbstractController implements Inscriptio
 
         $form = $this->buildForm(
             user: $user,
-            selectedSchool: $selectedSchool,
+            selectedEstablishment: $selectedEstablishment,
             pseudo: $newPseudo
         );
 
         $data['pseudoUser'] = $newPseudo;
         $form->submit($data, false);
 
-        return $this->renderForm($form, $selectedSchool, $newPseudo);
+        return $this->renderForm($form, $selectedEstablishment, $newPseudo);
     }
 
     #[Route('/inscription/save', name: 'app_inscription_save', methods: ['POST'])]
     public function save(Request $request): Response
     {
         $data = $this->getPostedFormData($request);
-        $selectedSchool = (string) ($data['school'] ?? '');
+        $selectedEstablishment = (string) ($data['establishment'] ?? '');
         $pseudo = (string) ($data['pseudoUser'] ?? '');
 
         $user = new User();
 
         $form = $this->buildForm(
             user: $user,
-            selectedSchool: $selectedSchool,
+            selectedEstablishment: $selectedEstablishment,
             pseudo: $pseudo
         );
 
         $form->handleRequest($request);
 
         if (!$form->isSubmitted() || !$form->isValid()) {
-            return $this->renderForm($form, $selectedSchool, $pseudo);
+            return $this->renderForm($form, $selectedEstablishment, $pseudo);
         }
 
         try {
@@ -122,25 +122,25 @@ class InscriptionControllerImpl extends AbstractController implements Inscriptio
             $this->addFlash('error', 'Erreur lors de la création.');
         }
 
-        return $this->renderForm($form, $selectedSchool, $pseudo);
+        return $this->renderForm($form, $selectedEstablishment, $pseudo);
     }
 
-    private function buildForm(User $user, string $selectedSchool, string $pseudo): FormInterface
+    private function buildForm(User $user, string $selectedEstablishment, string $pseudo): FormInterface
     {
-        $schools = $this->inscriptionService->findDistinctEstablishments();
+        $establishments = $this->inscriptionService->findDistinctEstablishments();
 
         return $this->createForm(InscriptionFormType::class, $user, [
-            'schools' => $schools,
-            'selected_school' => $selectedSchool,
+            'establishments' => $establishments,
+            'selected_establishment' => $selectedEstablishment,
             'nom_depart' => $pseudo,
         ]);
     }
 
-    private function renderForm(FormInterface $form, string $selectedSchool, string $pseudo): Response
+    private function renderForm(FormInterface $form, string $selectedEstablishment, string $pseudo): Response
     {
         return $this->render('inscription/inscription.html.twig', [
             'inscriptionForm' => $form->createView(),
-            'selectedSchool' => $selectedSchool,
+            'selectedEstablishment' => $selectedEstablishment,
             'nom_depart' => $pseudo,
         ]);
     }
