@@ -94,6 +94,11 @@ final class User
         return $this->scans;
     }
 
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
     public function addScan(Scan $scan): static
     {
         if (!$this->scans->contains($scan)) {
