@@ -14,12 +14,14 @@ class AuthorityRepositoryImpl extends ServiceEntityRepository implements Authori
         parent::__construct($registry, Authority::class);
     }
 
-    public function findByRole(string $role): ?Authority
+    public function findByRole(string $roleName): ?Authority
     {
-        return $this->createQueryBuilder('a')
-            ->andWhere('a.roleUser = :role')
-            ->setParameter('role', $role)
-            ->getQuery()
-            ->getOneOrNullResult();
+    return $this->createQueryBuilder('a')
+        ->innerJoin('a.authorityRoles', 'ar') // On passe par la table de liaison
+        ->innerJoin('ar.role', 'r')           // On rejoint la table Role
+        ->andWhere('r.nameRole = :roleName')  // On filtre sur le nom du rôle
+        ->setParameter('roleName', $roleName)
+        ->getQuery()
+        ->getOneOrNullResult();
     }
 }
