@@ -2,12 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\EventRepository;
+use App\Repository\Impl\EventRepositoryImpl;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: EventRepository::class)]
+#[ORM\Entity(repositoryClass: EventRepositoryImpl::class)]
 class Event
 {
     #[ORM\Id]

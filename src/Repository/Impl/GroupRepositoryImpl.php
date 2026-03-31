@@ -15,16 +15,7 @@ class GroupRepositoryImpl extends ServiceEntityRepository implements GroupReposi
         parent::__construct($registry, Group::class);
     }
 
-    public function findDistinctSchools(): array
-    {
-        return $this->createQueryBuilder('c')
-            ->select('DISTINCT c.school')
-            ->orderBy('c.school', 'ASC')
-            ->getQuery()
-            ->getSingleColumnResult();
-    }
-
-    public function qbBySchool(?string $school): QueryBuilder
+    /*public function qbByEstablishment(?string $establishment): QueryBuilder
     {
         $qb = $this->createQueryBuilder('c')
             ->orderBy('c.nameClass', 'ASC');

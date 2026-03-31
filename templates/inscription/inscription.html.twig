@@ -56,15 +56,15 @@
         </div>
 
         <div class="form-group">
-            {{ form_label(inscriptionForm.classroom, '2. Ma Classe', {
-                label_attr: { for: 'inscription_form_classroom' }
+            {{ form_label(inscriptionForm.group, '2. Ma Classe', {
+                label_attr: { for: 'inscription_form_group' }
             }) }}
 
             <div class="select-wrapper">
-                {{ form_widget(inscriptionForm.classroom) }}
+                {{ form_widget(inscriptionForm.group) }}
             </div>
 
-            {{ form_errors(inscriptionForm.classroom) }}
+            {{ form_errors(inscriptionForm.group) }}
         </div>
 
         <div class="form-group">

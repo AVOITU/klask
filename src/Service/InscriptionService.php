@@ -5,7 +5,7 @@ use App\Entity\User;
 
 interface InscriptionService
 {
-    public function findDistinctSchools(): array;
+    public function findDistinctEstablishments(): array;
     public function generateDefaultNickname(): string;
     public function registerStudent(User $student): User;
 }

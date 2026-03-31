@@ -25,7 +25,7 @@ class UserRepositoryImpl extends ServiceEntityRepository implements UserReposito
             ->leftJoin('u.validations', 'v')
             ->leftJoin('v.activity', 'act')
             ->leftJoin('act.category', 'cat')
-            ->where('u.idUser = :id')
+            ->where('u.id = :id')
             ->setParameter('id', $id)
             ->getQuery()
             ->getOneOrNullResult();
@@ -38,7 +38,7 @@ class UserRepositoryImpl extends ServiceEntityRepository implements UserReposito
         $em->persist($user);
         $em->flush();
 
-        if ($user->getIdUser() === null) {
+        if ($user->getId() === null) {
             throw new RuntimeException('L\'insertion utilisateur n\'a pas pu être effectuée');
         }
         return $user;

@@ -2,12 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\EstablishmentRepository;
+use App\Repository\Impl\EstablishmentRepositoryImpl;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: EstablishmentRepository::class)]
+#[ORM\Entity(repositoryClass: EstablishmentRepositoryImpl::class)]
 class Establishment
 {
     #[ORM\Id]

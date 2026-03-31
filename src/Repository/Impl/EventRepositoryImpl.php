@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repository;
+namespace App\Repository\Impl;
 
 use App\Entity\Event;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -9,7 +9,7 @@ use Doctrine\Persistence\ManagerRegistry;
 /**
  * @extends ServiceEntityRepository<Event>
  */
-class EventRepository extends ServiceEntityRepository
+class EventRepositoryImpl extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

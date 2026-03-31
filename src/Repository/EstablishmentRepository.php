@@ -3,41 +3,13 @@
 namespace App\Repository;
 
 use App\Entity\Establishment;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\QueryBuilder;
 
-/**
- * @extends ServiceEntityRepository<Establishment>
- */
-class EstablishmentRepository extends ServiceEntityRepository
+interface EstablishmentRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
-        parent::__construct($registry, Establishment::class);
-    }
+    public function findDistinctEstablishments(): array;
+    public function qbByEstablishment(?string $establishment): QueryBuilder;
+    // public function findById(int $id): ?Establisment;
 
-    //    /**
-    //     * @return Establishment[] Returns an array of Establishment objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('e')
-    //            ->andWhere('e.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('e.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Establishment
-    //    {
-    //        return $this->createQueryBuilder('e')
-    //            ->andWhere('e.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    //public function findClassTotalScore(int $classId): int;
 }
