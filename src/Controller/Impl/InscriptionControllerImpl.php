@@ -41,6 +41,16 @@ class InscriptionControllerImpl extends AbstractController implements Inscriptio
     #[Route('/inscription/school-change', name: 'app_inscription_school_change', methods: ['POST'])]
     public function schoolChange(Request $request): Response
     {
+        $params = $request->request->all('inscription_form');
+        $submittedToken = $params['_token'] ?? '';
+
+        // Teste avec l'ID 'inscription_form'
+        // Si ça échoue, Symfony utilise peut-être l'ID par défaut du type
+        if (!$this->isCsrfTokenValid('inscription_form', $submittedToken)) {
+            // Debug : si on arrive ici, on affiche l'ID attendu vs reçu
+            throw $this->createAccessDeniedException('Jeton invalide pour ID inscription_form');
+        }
+
         $data = $this->getPostedFormData($request);
 
         $selectedSchool = (string) ($data['school'] ?? '');
@@ -65,6 +75,16 @@ class InscriptionControllerImpl extends AbstractController implements Inscriptio
     #[Route('/inscription/regen', name: 'app_inscription_regen', methods: ['POST'])]
     public function regeneratePseudo(Request $request): Response
     {
+        $params = $request->request->all('inscription_form');
+        $submittedToken = $params['_token'] ?? '';
+
+        // Teste avec l'ID 'inscription_form'
+        // Si ça échoue, Symfony utilise peut-être l'ID par défaut du type
+        if (!$this->isCsrfTokenValid('inscription_form', $submittedToken)) {
+            // Debug : si on arrive ici, on affiche l'ID attendu vs reçu
+            throw $this->createAccessDeniedException('Jeton invalide pour ID inscription_form');
+        }
+
         $data = $this->getPostedFormData($request);
 
         $selectedSchool = (string) ($data['school'] ?? '');

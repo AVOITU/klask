@@ -29,16 +29,34 @@ class GroupRepositoryImpl extends ServiceEntityRepository implements GroupReposi
 
         return $qb;
     }
+    */
 
-    public function findById(int $idClass): ?Group
+public function qbByEstablishment(?string $establishmentName): QueryBuilder
+{
+    $qb = $this->createQueryBuilder('g')
+        ->join('g.establishment', 'e')
+        ->orderBy('g.nameGroup', 'ASC');
+
+    if ($establishmentName) {
+        $qb->andWhere('e.name_establishment = :establishment')
+           ->setParameter('establishment', $establishmentName);
+    } else {
+        $qb->andWhere('1 = 0');
+    }
+
+    return $qb;
+}
+
+    public function findById(int $idGroup): ?Group
     {
-        return $this->createQueryBuilder('c')
-            ->where('c.idClass = :idClass')
-            ->setParameter('idClass', $idClass)
+        return $this->createQueryBuilder('g')
+            ->where('g.id = :idGroup')
+            ->setParameter('idGroup', $idGroup)
             ->getQuery()
             ->getOneOrNullResult();
     }
 
+    /*
     public function findClassTotalScore(int $classId): int
     {
         return (int) $this->createQueryBuilder('u')
@@ -51,4 +69,5 @@ class GroupRepositoryImpl extends ServiceEntityRepository implements GroupReposi
             ->getQuery()
             ->getSingleScalarResult();
     }
+            */
 }

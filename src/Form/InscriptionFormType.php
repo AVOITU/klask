@@ -65,6 +65,8 @@ class InscriptionFormType extends AbstractType
             'schools' => [],
             'selected_school' => '',
             'nom_depart' => '',
+            'csrf_protection' => true,
+            'csrf_token_id'   => 'inscription_form',
         ]);
 
         $resolver->setAllowedTypes('schools', 'array');
