@@ -14,14 +14,32 @@ class GroupFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-       $group = new Group();
-       $group->setNameGroup("Groupe 1");
-       $group->setEvent($this->getReference(EventFixtures::EVENT_REFERENCE, Event::class));
-    
-       // On récupère spécifiquement 'establishment_0'
-       $group->setEstablishment($this->getReference(EstablishmentFixtures::ESTABLISHMENT_REFERENCE . '_0', Establishment::class));
-       $this->addReference(self::GROUP_REFERENCE, $group);
-       $manager->persist($group);
+        for( $i = 0; $i < 24; $i++ ) {
+            if ( $i < 12 ) {
+                $group = new Group();
+                $group->setNameGroup("Seconde");
+                $group->setEvent($this->getReference(EventFixtures::EVENT_REFERENCE, Event::class));
+                $group->setEstablishment($this->getReference(EstablishmentFixtures::ESTABLISHMENT_REFERENCE . '_'.$i, Establishment::class));
+                $this->addReference(self::GROUP_REFERENCE .'_Seconde_'.$i, $group);
+                $manager->persist($group);
+                $group = new Group();
+                $group->setNameGroup("Première");
+                $group->setEvent($this->getReference(EventFixtures::EVENT_REFERENCE, Event::class));
+                $group->setEstablishment($this->getReference(EstablishmentFixtures::ESTABLISHMENT_REFERENCE . '_'.$i, Establishment::class));
+                $this->addReference(self::GROUP_REFERENCE .'_Première_'.$i, $group);
+                $manager->persist($group);
+            }
+
+              else {
+                $group = new Group();
+                $group->setNameGroup("Troisième");
+                $group->setEstablishment($this->getReference(EstablishmentFixtures::ESTABLISHMENT_REFERENCE . '_'.$i, Establishment::class));
+                $group->setEvent($this->getReference(EventFixtures::EVENT_REFERENCE, Event::class));
+                $this->addReference(self::GROUP_REFERENCE .'_Troisième_'.$i, $group);
+                $manager->persist($group);
+            }
+        }
+
        $manager->flush();
     }
 }

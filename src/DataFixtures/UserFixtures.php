@@ -17,16 +17,35 @@ class UserFixtures extends Fixture implements DependentFixtureInterface // AJOUT
 
     public function load(ObjectManager $manager): void
     {
-        $group = $this->getReference(GroupFixtures::GROUP_REFERENCE, Group::class);
-
-        for ($i = 0; $i < 10; $i++) {
-            $user = new User();
-            $user->setPseudoUser($this->inscriptionService->generateDefaultNickname());
-            $user->setGroup($group);
-            $user->setPassword("test"); // Ajoute un password si nécessaire
-
-            // C'est ici que l'erreur est levée car le service fait une requête en base
-            $this->inscriptionService->registerStudent($user);
+        for ($i = 0; $i < 24; $i++) {
+            if ($i < 12) {
+                $group = $this->getReference(GroupFixtures::GROUP_REFERENCE.'_Seconde_'.$i, Group::class);
+                for ($j = 0; $j < 10; $j++) {
+                    $user = new User();
+                    $user->setPseudoUser($this->inscriptionService->generateDefaultNickname());
+                    $user->setGroup($group);
+                    $this->inscriptionService->registerStudent($user);
+                    $manager->persist($user);
+                    }
+                $group = $this->getReference(GroupFixtures::GROUP_REFERENCE.'_Première_'.$i, Group::class);
+                for ($j = 0; $j < 10; $j++) {
+                    $user = new User();
+                    $user->setPseudoUser($this->inscriptionService->generateDefaultNickname());
+                    $user->setGroup($group);
+                    $this->inscriptionService->registerStudent($user);
+                    $manager->persist($user);
+                    }
+            }
+            else {
+                $group = $this->getReference(GroupFixtures::GROUP_REFERENCE.'_Troisième_'.$i, Group::class);
+                for ($j = 0; $j < 10; $j++) {
+                    $user = new User();
+                    $user->setPseudoUser($this->inscriptionService->generateDefaultNickname());
+                    $user->setGroup($group);
+                    $this->inscriptionService->registerStudent($user);
+                    $manager->persist($user);
+                    }
+            }
         }
         
         $manager->flush();
