@@ -1,7 +1,7 @@
 <?php
 namespace App\Security;
 
-enum Role: string
+enum RoleSecurity: string
 {
     case ADMIN        = 'ADMIN';
     case ACCOMPANYING = 'ACCOMPANYING';

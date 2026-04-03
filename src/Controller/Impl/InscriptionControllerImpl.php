@@ -113,6 +113,7 @@ class InscriptionControllerImpl extends AbstractController implements Inscriptio
 
             return $this->redirectToRoute('app_inscription_show');
         } catch (UniqueConstraintViolationException) {
+            dump("JE SUIS DANS LE CATCH !"); // <--- AJOUTE ÇA
             $this->addFlash('error', 'Le pseudonyme est déjà pris.');
         } catch (Throwable $e) {
             $this->logger->error('Erreur création utilisateur', [

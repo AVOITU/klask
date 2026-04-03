@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Security\RoleSecurity;
 use App\Entity\Authority;
 use App\Entity\Role;
 use App\Entity\AuthorityRole; // Si c'est bien une entité de liaison
@@ -14,8 +15,9 @@ class AuthorityFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
+        $roleSecurity = RoleSecurity::STUDENT->value;
         $authority = new Authority();
-        $authority->setAuthorityUser("STUDENT");
+        $authority->setAuthorityUser($roleSecurity);
         $manager->persist($authority);
 
         

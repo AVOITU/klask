@@ -104,4 +104,9 @@ class Group
         return $this;
     }
 
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
 }
