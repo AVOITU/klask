@@ -15,7 +15,7 @@ final class Activity
     #[ORM\Column]
     private int $id;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 100, unique: true)]
     private ?string $nameActivity = null;
 
     #[ORM\Column(length: 500, nullable: true)]

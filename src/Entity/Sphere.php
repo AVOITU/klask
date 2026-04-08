@@ -15,9 +15,9 @@ final class Sphere
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private int $id;
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 100, unique: true)]
     private string $nameSphere;
-    #[ORM\Column(length: 50)]
+    #[ORM\Column(length: 50, unique: true)]
     private string $colorSphere;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
