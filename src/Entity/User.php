@@ -6,15 +6,17 @@ use App\Repository\Impl\UserRepositoryImpl;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: UserRepositoryImpl::class)]
-final class User
+#[UniqueEntity(fields: ['pseudoUser'], message: 'Le pseudonyme est déjà pris.')]
+class User
 {
     #[ORM\Column]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     private int $id;
-    #[ORM\Column]
+    #[ORM\Column(length: 180, unique: true)]
     private string $pseudoUser;
 
     #[ORM\Column(length: 40, nullable: true)]

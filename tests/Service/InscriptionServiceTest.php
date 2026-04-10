@@ -17,10 +17,8 @@ class InscriptionServiceTest extends TestCase
         $authRepoMock = $this->createMock(AuthorityRepository::class);
         $estServiceStub = $this->createStub(EstablishmentService::class);
         $student = new User();
-
-        // On change l'attente : on s'attend à ce que "insertStudent" ne soit JAMAIS appelé
         $userServiceMock
-            ->expects($this->never()) // <-- C'est ici le changement !
+            ->expects($this->never())
             ->method('insertStudent');
 
         $authRepoMock
@@ -33,25 +31,18 @@ class InscriptionServiceTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Autorité STUDENT introuvable.');
 
-        // Ici, le code va "crasher" comme prévu, donc les lignes après ne seront pas lues
         $inscriptionService->registerStudent($student);
     }
     public function testRegisterStudentSucces(): void
     {
-        // On utilise createStub pour ce qui n'a pas besoin de vérification stricte
         $authRepoStub = $this->createStub(AuthorityRepository::class);
         $estServiceStub = $this->createStub(EstablishmentService::class);
     
-        // On garde createMock pour UserService car on VEUT vérifier l'appel à insertStudent
         $userServiceMock = $this->createMock(UserService::class);
 
-        $authority = new Authority(); // On instancie directement l'entité
+        $authority = new Authority();
         $student = new User();
-
-        // Configuration du Stub (plus simple)
         $authRepoStub->method('findByRole')->willReturn($authority);
-
-        // Configuration du Mock (vérification)
         $userServiceMock
             ->expects($this->once())
             ->method('insertStudent')
@@ -89,8 +80,6 @@ class InscriptionServiceTest extends TestCase
 
         $service = new InscriptionServiceImpl($authRepoStub, $userServiceStub, $estServiceStub);
         $nickname = $service->generateDefaultNickname();
-
-        // On vérifie que le nickname est une combinaison de l'animal et de l'adjectif
         $parts = explode(' ', $nickname);
         $this->assertCount(2, $parts);
         $this->assertContains($parts[0], ['Dauphin', 'Goéland', 'Cormoran', 'Aigrette', 'Phoque', 'Hermine', 'Coccinelle', 'Ragondin', 'Chevreuil', 'Sanglier', 'Renard', 'Requin', 'Oursin', 'Crevette', 'Crabe', 'Mérou', 'Sauterelle', 'Escargot', 'Crapaud', 'Salamandre']);

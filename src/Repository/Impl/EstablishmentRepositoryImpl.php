@@ -36,7 +36,7 @@ class EstablishmentRepositoryImpl extends ServiceEntityRepository implements Est
 
         if ($establishment) {
             $qb->andWhere('est.name_establishment = :name_establishment')
-                ->setParameter('establishment', $establishment);
+                ->setParameter('name_establishment', $establishment);
         } else {
             $qb->andWhere('1 = 0');
         }
