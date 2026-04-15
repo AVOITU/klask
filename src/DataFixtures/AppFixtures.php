@@ -7,7 +7,6 @@ use App\DataFixtures\EstablishmentFixtures;
 use App\DataFixtures\EventFixtures;
 use App\DataFixtures\GroupFixtures;
 use App\DataFixtures\RoleFixtures;
-use App\DataFixtures\UserFixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
