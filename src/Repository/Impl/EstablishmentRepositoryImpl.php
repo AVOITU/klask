@@ -31,7 +31,7 @@ class EstablishmentRepositoryImpl extends ServiceEntityRepository implements Est
     {
         $qb = $this->createQueryBuilder('g')
             ->innerJoin('g.establishment', 'est')
-            ->orderBy('g.nameGroup', 'ASC');
+            ->orderBy('g.name_establishment', 'ASC');
             
 
         if ($establishment) {

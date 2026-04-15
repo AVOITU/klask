@@ -80,7 +80,7 @@ class InscriptionServiceTest extends TestCase
 
         $service = new InscriptionServiceImpl($authRepoStub, $userServiceStub, $estServiceStub);
         $nickname = $service->generateDefaultNickname();
-        $parts = explode(' ', $nickname);
+        $parts = explode(' ', $nickname, 2);
         $this->assertCount(2, $parts);
         $this->assertContains($parts[0], ['Dauphin', 'Goéland', 'Cormoran', 'Aigrette', 'Phoque', 'Hermine', 'Coccinelle', 'Ragondin', 'Chevreuil', 'Sanglier', 'Renard', 'Requin', 'Oursin', 'Crevette', 'Crabe', 'Mérou', 'Sauterelle', 'Escargot', 'Crapaud', 'Salamandre']);
         $this->assertContains($parts[1], ['du rêve', 'cosmique', 'magique', 'intrépide', 'cyber', 'casse-cou', 'chic', 'perplexe', 'à lunettes', 'gastronome', 'scolaire', 'globe-trotter', 'de la royauté', 'aquatique', 'musicos', 'excentrique', 'des îles', 'cool', 'aristocrate', 'héroïque']);

@@ -32,30 +32,23 @@ class EstablishmentRepositoryTest extends KernelTestCase
 
     public function testFindDistinctEstablishmentsReturnsSortedAndUniqueNames(): void
     {
-        // --- ARRANGE ---
-        // On crée des données dans le désordre et AVEC un doublon
         $this->createEstablishment('Lycée Chaptal');
         $this->createEstablishment('Collège Brizeux');
-        $this->createEstablishment('Lycée Chaptal'); // Le doublon !
+        $this->createEstablishment('Lycée Chaptal');
         $this->createEstablishment('École Primaire Jean Macé');
 
         $this->entityManager->flush();
 
-        // --- ACT ---
         $results = $this->repository->findDistinctEstablishments();
 
-        // --- ASSERT ---
         $this->assertIsArray($results);
         
-        // 1. Test du DISTINCT (On a inséré 4 lignes, on n'en attend que 3)
         $this->assertCount(3, $results, 'La méthode devrait filtrer les doublons.');
 
-        // 2. Test de l'ordre alphabétique (C > E > L)
         $this->assertEquals('Collège Brizeux', $results[0]);
         $this->assertEquals('École Primaire Jean Macé', $results[1]);
         $this->assertEquals('Lycée Chaptal', $results[2]);
         
-        // 3. Vérification du getSingleColumnResult (c'est bien une string, pas un objet)
         $this->assertIsString($results[0]);
     }
 
