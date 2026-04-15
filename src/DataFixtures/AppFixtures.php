@@ -30,7 +30,6 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
             EstablishmentFixtures::class,
             EventFixtures::class,
             GroupFixtures::class,
-            UserFixtures::class
         ];
     }
 }
