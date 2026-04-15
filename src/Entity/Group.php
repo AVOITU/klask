@@ -33,6 +33,11 @@ class Group
     #[ORM\JoinColumn(nullable: false)]
     private ?Event $event = null;
 
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
     public function __construct()
     {
         $this->users = new ArrayCollection();

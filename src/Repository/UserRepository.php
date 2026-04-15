@@ -6,7 +6,7 @@ use App\Entity\User;
 
 interface UserRepository
 {
-    public function findUserWithClassAndAuthority(int $id): ?User;
+    public function findUserWithGroupAndAuthority(int $id): ?User;
     public function insertStudent(User $user): User;
 
     public function findUserStats(int $userId): ?UserDTO;

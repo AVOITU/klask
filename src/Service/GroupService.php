@@ -8,5 +8,5 @@ interface GroupService
 {
     //public function findDistinctEstablishments(): array;
     public function findById($groupId) : ?Group;
-    // public function findClassTotalScore($groupId);
+    public function findGroupTotalScore(int $groupId): int;
 }

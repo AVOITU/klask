@@ -16,12 +16,12 @@ class UserRepositoryImpl extends ServiceEntityRepository implements UserReposito
         parent::__construct($registry, User::class);
     }
 
-    public function findUserWithClassAndAuthority(int $id): ?User
+    public function findUserWithGroupAndAuthority(int $id): ?User
     {
         return $this->createQueryBuilder('u')
             ->addSelect('c', 'a')
-            ->join('u.class', 'c')
-            ->join('u.authority', 'a')
+            ->join('u.group_id', 'c')
+            ->join('u.authority_id', 'a')
             ->leftJoin('u.validations', 'v')
             ->leftJoin('v.activity', 'act')
             ->leftJoin('act.category', 'cat')
@@ -53,8 +53,8 @@ class UserRepositoryImpl extends ServiceEntityRepository implements UserReposito
                 COALESCE(SUM(cat.nbrPoint), 0)
             )'
             )
-            ->join('u.classRoom', 'c')
-            ->join('u.authority', 'a')
+            ->join('u.group_id', 'c')
+            ->join('u.authority_id', 'a')
             ->leftJoin('u.validations', 'v')
             ->leftJoin('v.activity', 'act')
             ->leftJoin('act.category', 'cat')

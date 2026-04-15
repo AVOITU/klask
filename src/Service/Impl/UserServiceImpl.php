@@ -11,13 +11,13 @@ use App\Service\UserService;
 class UserServiceImpl implements UserService
 {
     public function __construct( private UserRepository $userRepo,
-                                 private  GroupService  $classroomService) {}
+                                 private  GroupService  $groupService) {}
 
     public function insertStudent($student): User
     { return $this->userRepo->insertStudent($student); }
 
-    public function findUserWithClassAndAuthority(int $idUser) : ?User
-    { return $this->userRepo->findUserWithClassAndAuthority($idUser); }
+    public function findUserWithGroupAndAuthority(int $idUser) : ?User
+    { return $this->userRepo->findUserWithGroupAndAuthority($idUser); }
 
     public function createUserDTObyId(int $idUser): ?UserDTO
     {
@@ -26,15 +26,15 @@ class UserServiceImpl implements UserService
 
         //    findUserStats et findClassTotalScore =Requêtes scindées pour permettre à l'ORM de
         //    fonctionner correctement et d'éviter une mega requête
-        $classId = $dto->getUser()->getGroup()->getIdClass();
-        $classTotal = $this->findClassTotalScore($classId);
+        $groupId = $dto->getUser()->getGroup()->getId();
+        $groupTotal = $this->findGroupTotalScore($groupId);
 
-        return $dto->withClassTotalScore($classTotal);
+        return $dto->withClassTotalScore($groupTotal);
     }
 
     public function findUserStats(int $userId) : ?UserDTO
     { return $this->userRepo->findUserStats($userId); }
 
-    public function findClassTotalScore(int $classId): int
-    { return $this->classroomService->findClassTotalScore($classId); }
+    public function findGroupTotalScore(int $groupId): int
+    { return $this->groupService->findGroupTotalScore($groupId); }
 }
