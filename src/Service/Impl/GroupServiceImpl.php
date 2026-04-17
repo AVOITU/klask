@@ -17,7 +17,7 @@ class GroupServiceImpl implements GroupService
         return $this->groupRepository->findById($groupId);
     }
 
-   /* public function findClassTotalScore($groupId) :int {
-        return $this->groupRepository->findClassTotalScore($groupId);
-    } */
+    public function findGroupTotalScore(int $groupId): int {
+        return $this->groupRepository->findGroupTotalScore($groupId);
+    }
 }

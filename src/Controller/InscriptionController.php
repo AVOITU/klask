@@ -8,7 +8,7 @@ interface InscriptionController
 {
     public function show(): Response;
 
-    public function schoolChange(Request $request): Response;
+    public function establishmentChange(Request $request): Response;
 
     public function regeneratePseudo(Request $request): Response;
 

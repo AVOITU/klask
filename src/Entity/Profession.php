@@ -16,7 +16,7 @@ final class Profession
     private int $id;
     #[ORM\Column(length: 500, nullable: true)]
     private ?string $descriptionProfession = null;
-    #[ORM\Column(length: 5)]
+    #[ORM\Column(length: 5, unique: true)]
     private string $codeRom;
 
     /**

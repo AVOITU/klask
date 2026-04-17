@@ -7,7 +7,7 @@ use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ScanRepositoryImpl::class)]
-final class Scan
+class Scan
 {
     #[ORM\Column]
     #[ORM\Id]

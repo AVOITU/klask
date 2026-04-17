@@ -9,15 +9,15 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SphereRepositoryImpl::class)]
-final class Sphere
+class Sphere
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private int $id;
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 100, unique: true)]
     private string $nameSphere;
-    #[ORM\Column(length: 50)]
+    #[ORM\Column(length: 50, unique: true)]
     private string $colorSphere;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -37,6 +37,10 @@ final class Sphere
         $this->activities = new ArrayCollection();
     }
 
+    public function getId(): int
+    {
+        return $this->id;
+    }
 
     public function getNameSphere(): string
     {

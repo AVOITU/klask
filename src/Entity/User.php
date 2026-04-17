@@ -16,7 +16,7 @@ class User
     #[ORM\Id]
     #[ORM\GeneratedValue]
     private int $id;
-    #[ORM\Column(length: 180, unique: true)]
+    #[ORM\Column (length: 191, unique: true)]
     private string $pseudoUser;
 
     #[ORM\Column(length: 40, nullable: true)]

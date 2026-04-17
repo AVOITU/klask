@@ -51,15 +51,15 @@ class InscriptionControllerTest extends WebTestCase
     public function testEstablishmentChange(): void
     {
         // ARRANGE : On prépare une école en base
-        $school = new Establishment();
-        $school->setNameEstablishment('Lycée Yves Thépot - Quimper');
-        $this->entityManager->persist($school);
+        $establishment = new Establishment();
+        $establishment->setNameEstablishment('Lycée Yves Thépot - Quimper');
+        $this->entityManager->persist($establishment);
         $this->entityManager->flush();
 
         // ACT : On simule la sélection de cette école
-        $this->client->request('POST', '/inscription/school-change', [
+        $this->client->request('POST', '/inscription/establishment-change', [
             'inscription_form' => [
-                'school' => 'Lycée Yves Thépot - Quimper',
+                'establishment' => 'Lycée Yves Thépot - Quimper',
                 'pseudoUser' => 'TestUser',
             ]
         ]);
@@ -73,7 +73,7 @@ class InscriptionControllerTest extends WebTestCase
         $this->assertEquals('TestUser', $actualValue);
 
         // On vérifie que l'école est bien marquée comme sélectionnée
-        $selectedOption = $crawler->filter('select[name="inscription_form[school]"] option[selected="selected"]');
+        $selectedOption = $crawler->filter('select[name="inscription_form[establishment]"] option[selected="selected"]');
         $this->assertEquals('Lycée Yves Thépot - Quimper', $selectedOption->attr('value'));
     }
 
@@ -109,13 +109,13 @@ class InscriptionControllerTest extends WebTestCase
         $event->setNameEvent('Event Test');
         $this->entityManager->persist($event);
 
-        $school = new Establishment();
-        $school->setNameEstablishment('Lycée Yves Thépot - Quimper');
-        $this->entityManager->persist($school);
+        $establishment = new Establishment();
+        $establishment->setNameEstablishment('Lycée Yves Thépot - Quimper');
+        $this->entityManager->persist($establishment);
 
         $group = new Group();
         $group->setNameGroup('BTS 1');
-        $group->setEstablishment($school);
+        $group->setEstablishment($establishment);
         $group->setEvent($event);
         $this->entityManager->persist($group);
         $this->entityManager->flush();
@@ -125,16 +125,16 @@ class InscriptionControllerTest extends WebTestCase
         $groupId = $group->getId();
 
         // --- ACT ---
-        $crawler = $this->client->request('POST', '/inscription/school-change', [
+        $crawler = $this->client->request('POST', '/inscription/establishment-change', [
             'inscription_form' => [
-                'school' => 'Lycée Yves Thépot - Quimper',
+                'establishment' => 'Lycée Yves Thépot - Quimper',
                 'pseudoUser' => 'TestUserUnique'
             ]
         ]);
 
         $form = $crawler->selectButton('Valider l\'inscription')->form();
 
-        $form['inscription_form[school]'] = 'Lycée Yves Thépot - Quimper';
+        $form['inscription_form[establishment]'] = 'Lycée Yves Thépot - Quimper';
         $form['inscription_form[group]'] = $groupId; 
         $form['inscription_form[pseudoUser]'] = 'TestUserUnique';
 
@@ -151,13 +151,13 @@ class InscriptionControllerTest extends WebTestCase
         $event->setNameEvent('Event Test');
         $this->entityManager->persist($event);
 
-        $school = new Establishment();
-        $school->setNameEstablishment('Lycée Yves Thépot - Quimper');
-        $this->entityManager->persist($school);
+        $establishment = new Establishment();
+        $establishment->setNameEstablishment('Lycée Yves Thépot - Quimper');
+        $this->entityManager->persist($establishment);
 
         $group = new Group();
         $group->setNameGroup('BTS 1');
-        $group->setEstablishment($school);
+        $group->setEstablishment($establishment);
         $group->setEvent($event);
         $this->entityManager->persist($group);
 
@@ -175,17 +175,17 @@ class InscriptionControllerTest extends WebTestCase
         $this->entityManager->flush();
 
         // --- ACT ---
-        // CORRECTION : On passe par school-change pour charger les <option> du select
-        $crawler = $this->client->request('POST', '/inscription/school-change', [
+        // CORRECTION : On passe par establishment-change pour charger les <option> du select
+        $crawler = $this->client->request('POST', '/inscription/establishment-change', [
             'inscription_form' => [
-                'school' => 'Lycée Yves Thépot - Quimper',
+                'establishment' => 'Lycée Yves Thépot - Quimper',
                 'pseudoUser' => 'Antoine'
             ]
         ]);
 
         $form = $crawler->selectButton('Valider l\'inscription')->form();
 
-        $form['inscription_form[school]'] = 'Lycée Yves Thépot - Quimper';
+        $form['inscription_form[establishment]'] = 'Lycée Yves Thépot - Quimper';
         $form['inscription_form[group]'] = $group->getId(); 
         $form['inscription_form[pseudoUser]'] = 'Antoine';
 
@@ -193,7 +193,7 @@ class InscriptionControllerTest extends WebTestCase
 
         // --- ASSERT ---
         $this->assertResponseIsSuccessful(); 
-        $this->assertSelectorTextContains('form', 'Le pseudonyme est déjà pris.');
+        $this->assertSelectorTextContains('form', 'Le pseudonyme est déjà pris');
     }
 
     /**

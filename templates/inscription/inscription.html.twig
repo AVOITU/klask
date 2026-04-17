@@ -40,23 +40,23 @@
         }) }}
 
         <div class="form-group">
-            {{ form_label(inscriptionForm.school, '1. Mon Établissement', {
-                label_attr: { for: 'inscription_form_school' }
+            {{ form_label(inscriptionForm.establishment, '1. Mon Établissement', {
+                label_attr: { for: 'inscription_form_establishment' }
             }) }}
 
             <div class="select-wrapper">
-                {{ form_widget(inscriptionForm.school, {
+                {{ form_widget(inscriptionForm.establishment, {
                     attr: {
-                        onchange: "this.form.action='" ~ path('app_inscription_school_change') ~ "'; this.form.submit();"
+                        onchange: "this.form.action='" ~ path('app_inscription_establishment_change') ~ "'; this.form.submit();"
                     }
                 }) }}
             </div>
 
-            {{ form_errors(inscriptionForm.school) }}
+            {{ form_errors(inscriptionForm.establishment) }}
         </div>
 
         <div class="form-group">
-            {{ form_label(inscriptionForm.group, '2. Ma Classe', {
+            {{ form_label(inscriptionForm.group, '2. Mon groupe', {
                 label_attr: { for: 'inscription_form_group' }
             }) }}
 

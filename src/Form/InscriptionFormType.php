@@ -19,8 +19,8 @@ class InscriptionFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $selectedSchool = $options['selected_school'];
-        $schools = $options['schools'];
+        $selectedEstablishment = $options['selected_establishment'];
+        $establishments = $options['establishments'];
         $defaultNickname = $options['nom_depart'];
 
         $builder
@@ -35,25 +35,25 @@ class InscriptionFormType extends AbstractType
                 ],
             ])
 
-            ->add('school', ChoiceType::class, [
+            ->add('establishment', ChoiceType::class, [
                 'label' => 'Mon établissement',
                 'mapped' => false,
                 'required' => true,
                 'placeholder' => '👇 Touchez pour choisir',
-                'choices' => array_combine($schools, $schools),
-                'data' => $selectedSchool !== '' ? $selectedSchool : null,
+                'choices' => array_combine($establishments, $establishments),
+                'data' => $selectedEstablishment !== '' ? $selectedEstablishment : null,
             ])
 
             ->add('group', EntityType::class, [
                 'label' => 'Mon groupe',
                 'class' => Group::class,
                 'choice_label' => 'nameGroup',
-                'placeholder' => $selectedSchool !== ''
+                'placeholder' => $selectedEstablishment !== ''
                     ? '👇 Choisir le groupe'
                     : '🔒 Choisissez d’abord l’établissement',
                 'required' => true,
-                'query_builder' => function (GroupRepositoryImpl $repo) use ($selectedSchool) {
-                return $repo->qbByEstablishment($selectedSchool);
+                'query_builder' => function (GroupRepositoryImpl $repo) use ($selectedEstablishment) {
+                return $repo->qbByEstablishment($selectedEstablishment);
                 },
             ]);
     }
@@ -62,13 +62,13 @@ class InscriptionFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => User::class,
-            'schools' => [],
-            'selected_school' => '',
+            'establishments' => [],
+            'selected_establishment' => '',
             'nom_depart' => '',
         ]);
 
-        $resolver->setAllowedTypes('schools', 'array');
-        $resolver->setAllowedTypes('selected_school', 'string');
+        $resolver->setAllowedTypes('establishments', 'array');
+        $resolver->setAllowedTypes('selected_establishment', 'string');
         $resolver->setAllowedTypes('nom_depart', 'string');
     }
 }

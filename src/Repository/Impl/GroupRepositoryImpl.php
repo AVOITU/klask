@@ -56,18 +56,18 @@ public function qbByEstablishment(?string $establishmentName): QueryBuilder
             ->getOneOrNullResult();
     }
 
-    /*
-    public function findClassTotalScore(int $classId): int
+    
+    public function findGroupTotalScore(int $groupId): int
     {
         return (int) $this->createQueryBuilder('u')
             ->select('COALESCE(SUM(cat.nbrPoint), 0)')
             ->leftJoin('u.validations', 'v')
             ->leftJoin('v.activity', 'act')
             ->leftJoin('act.category', 'cat')
-            ->where('u.classRoom = :classId')
-            ->setParameter('classId', $classId)
+            ->where('u.group = :groupId')
+            ->setParameter('groupId', $groupId)
             ->getQuery()
             ->getSingleScalarResult();
     }
-            */
+            
 }

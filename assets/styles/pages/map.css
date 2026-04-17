@@ -1,29 +1,184 @@
-/* Styles de base pour l'application mobile */
-body, html {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    background-color: #333; /* Fond sombre pour faire ressortir la carte */
+/* ==========================================
+   MODALE D'AIDE
+========================================== */
+.btn-help {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #FFFFFF;
+    border: 2px solid #F39C12;
+    color: #F39C12;
+    font-weight: bold;
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 10000; /* Toujours visible */
 }
 
-/* Conteneur principal qui centre la carte à l'écran */
-.map-wrapper {
-    width: 100%;
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
     height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 11000;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-/* Zone d'affichage du fond de plan */
-.map-background {
-    width: 100%;
-    max-width: 600px; /* Limite la largeur pour simuler un écran mobile */
-    height: 100%;
-    background-image: url('../../images/Fausse_carte.png'); /* Chemin relatif au fichier CSS */
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-color: #FFFFFF;
+.modal-content {
+    background-color: #FFF;
+    width: 80%;
+    max-width: 400px;
+    max-height: 70vh;
+    border-radius: 10px;
+    padding: 20px;
     position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-body {
+    overflow-y: auto;
+    flex-grow: 1;
+    margin-top: 15px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.btn-close-modal {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* ==========================================
+   CARTE ET NAVIGATION
+========================================== */
+
+/* La fenêtre de l'écran (Fixe) */
+.map-wrapper {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden; 
+    position: relative;
+    background-color: #EAD8C3; 
+    touch-action: none; /* Désactive le rafraîchissement tactile du navigateur */
+}
+
+/* La grande toile (Mobile) */
+.map-background {
+    width: 2400px;
+    height: 1600px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-image: url('../../images/Fausse_carte.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-color: #FFFFFF;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.map-background:active {
+    cursor: grabbing;
+}
+
+/* ==========================================
+   ÉLÉMENTS SUR LA CARTE (Sphères & Points)
+========================================== */
+
+/* Les Sphères */
+.sphere-circle {
+    position: absolute;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    aspect-ratio: 1 / 1; /* Maintient un cercle parfait */
+    opacity: 0.6;
+    z-index: 1; /* Derrière les points */
+}
+
+/* Les Activités (Stands) */
+.activity-dot {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: #FFFFFF;
+    border: 2px solid #333;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    z-index: 2; /* Au-dessus des sphères */
+    transition: transform 0.2s;
+}
+
+.activity-dot:hover {
+    transform: translate(-50%, -50%) scale(1.3);
+}
+
+/* ==========================================
+   BULLES ET SIDEBAR
+========================================== */
+
+/* Bulle d'information */
+.activity-bubble {
+    position: absolute;
+    background-color: #FFFFFF;
+    border: 2px solid #000;
+    border-radius: 50%;
+    padding: 15px 25px;
+    min-width: 100px;
+    text-align: center;
+    z-index: 10;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+}
+
+.bubble-text {
+    margin: 0;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.btn-close-bubble {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #FFF;
+    border: 2px solid #000;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Flèche de la future Sidebar (Fixe à l'écran) */
+.nav-arrow-right {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #F4E4C4;
+    border: 2px solid #000;
+    border-right: none;
+    padding: 15px 5px;
+    border-radius: 20px 0 0 20px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 9999; /* Par-dessus la carte */
 }

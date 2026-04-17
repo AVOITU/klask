@@ -8,18 +8,18 @@ class UserDTO
 {
     private User $user;
     private int $totalScore;
-    private int $totalScoreClasse;
+    private int $totalScoreGroup;
 
     /**
      * @param User $user
      * @param int $totalScore
-     * @param int $totalScoreClasse
+     * @param int $totalScoreGroup
      */
-    public function __construct(User $user, int $totalScore, int $totalScoreClasse)
+    public function __construct(User $user, int $totalScore, int $totalScoreGroup)
     {
         $this->user = $user;
         $this->totalScore = $totalScore;
-        $this->totalScoreClasse = $totalScoreClasse;
+        $this->totalScoreGroup = $totalScoreGroup;
     }
 
 
@@ -52,14 +52,14 @@ class UserDTO
         $this->totalScore = $totalScore;
     }
 
-    public function getTotalScoreClasse(): int
+    public function getTotalScoreGroup(): int
     {
-        return $this->totalScoreClasse;
+        return $this->totalScoreGroup;
     }
 
-    public function setTotalScoreClasse(int $totalScoreClasse): void
+    public function setTotalScoreGroup(int $totalScoreGroup): void
     {
-        $this->totalScoreClasse = $totalScoreClasse;
+        $this->totalScoreGroup = $totalScoreGroup;
     }
 
 

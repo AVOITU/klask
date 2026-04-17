@@ -4,7 +4,6 @@ namespace App\Tests;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Service\GroupService;
-use App\Service\UserService;
 use App\Service\Impl\UserServiceImpl;
 use PHPUnit\Framework\TestCase;
 use App\DTO\UserDTO;
@@ -29,7 +28,7 @@ class UserServiceTest extends TestCase
         $this->assertEquals($student, $result);
     }
 
-    public function testFindUserWithClassAndAuthority(): void
+    public function testFindUserWithGroupAndAuthority(): void
     {
         $userRepoMock = $this->createMock(UserRepository::class);
         $groupServiceStub = $this->createStub(GroupService::class);
@@ -37,12 +36,12 @@ class UserServiceTest extends TestCase
 
         $userRepoMock
             ->expects($this->once())
-            ->method('findUserWithClassAndAuthority')
+            ->method('findUserWithGroupAndAuthority')
             ->with(1)
             ->willReturn($user);
 
         $userService = new UserServiceImpl($userRepoMock, $groupServiceStub);
-        $result = $userService->findUserWithClassAndAuthority(1);
+        $result = $userService->findUserWithGroupAndAuthority(1);
         $this->assertEquals($user, $result);
     }
 
@@ -108,13 +107,13 @@ class UserServiceTest extends TestCase
 
         $groupServiceMock
             ->expects($this->once())
-            ->method('findClassTotalScore')
+            ->method('findGroupTotalScore')
             ->with($user->getGroup()->getId())
             ->willReturn(100);
 
         $userService = new UserServiceImpl($userRepoMock, $groupServiceMock);
         $result = $userService->createUserDTObyId(1);
-        $expectedDTO = (new UserDTO($user, 10, 20))->withClassTotalScore(100);
+        $expectedDTO = (new UserDTO($user, 10, 20))->withGroupTotalScore(100);
         $this->assertEquals($expectedDTO, $result);
     } */
 

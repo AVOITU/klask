@@ -3,7 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Group;
-use Doctrine\ORM\QueryBuilder;
+//use Doctrine\ORM\QueryBuilder;
 
 interface GroupRepository
 {
@@ -11,5 +11,5 @@ interface GroupRepository
     //public function qbBySchool(?string $school): QueryBuilder;
     public function findById(int $idClass): ?Group;
 
-    //public function findClassTotalScore(int $classId): int;
+    public function findGroupTotalScore(int $groupId): int;
 }
