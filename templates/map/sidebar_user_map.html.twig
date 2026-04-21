@@ -1,68 +1,54 @@
-{% extends 'base.html.twig' %}
+<div id="sidebar-trigger-zone" class="trigger-tab">
+    <span class="arrow-icon">◀</span>
+</div>
 
-{% block title %}Sidebar{% endblock %}
+<div id="sidebar-panel" class="sidebar-container">
 
-{% block stylesheets %}
-    {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('styles/pages/sidebarUserMap.css') }}">
-{% endblock %}
+    <div class="sidebar-main-box">
+        
+        <button id="btn-close-sidebar" class="tab-close">
+            <span>◀</span>
+        </button>
 
-{% block javascripts %}
-    {{ parent() }}
-    <script type="module" src="{{ asset('js/sidebarUserMap.js') }}"></script>
-{% endblock %}
-
-{% block body %}
-
-    <h1>Page Sidebar user map</h1>
-
-    <div id="sidebar-trigger-zone" class="trigger-tab">
-        <span class="arrow-icon">◀</span>
-    </div>
-
-    <div id="sidebar-panel" class="sidebar-container">
-
-        <div class="sidebar-header">
-            <div class="header-icon">?</div>
-            <h2>PAGE ANNEXE</h2>
-        </div>
-
-        <div class="sidebar-body">
-
-            <div class="left-strip">
-                <span class="vertical-text">CARTE</span>
-                <button id="btn-close-sidebar" class="tab-close">▶</button>
-            </div>
-
-            <div class="user-card">
-                <h3>UTILISATEUR</h3>
-
-                    $pseudo = "";
-                    $score = 0;
-
-                    {% if (isset($currentUser)) %}
-                        {
-                            {{ form_label(sidebarForm.currentUser, "1. pseudo") }}
-                            
-                            $pseudo = $currentUser->getUser()->getPseudoUser();
-                            $totalScore = $currentUser->getTotalScore();
-                            $totalScoreClass = $currentUser->getTotalScoreClasse();
-
-                        }
-                    {% endif %}
-
-                <div class="info-group">
-                    <span class="label">PSEUDO :</span>
-                    <span class="value pseudo"><?= htmlspecialchars($pseudo) ?></span>
-                    <span class="label">SCORE TOTAL :</span>
-                    <span class="value pseudo"><?= htmlspecialchars($totalScore) ?></span>
-                    <span class="label">SCORE CLASSE :</span>
-                    <span class="value pseudo"><?= htmlspecialchars($totalScoreClass) ?></span>
+        <div class="sidebar-content">
+            {% if currentUser and userStats %}
+                
+                <div class="info-block">
+                    <span class="value">{{ currentUser.pseudoUser }}</span>
                 </div>
 
+                <div class="avatar-block">
+                    <img src="{{ asset('images/' ~ currentUser.pseudoUser ~ '.png') }}" 
+                         onerror="this.src='{{ asset('images/coccitest.png') }}'" 
+                         alt="Avatar de {{ currentUser.pseudoUser }}" 
+                         class="avatar-img">
+                </div>
 
+                <div class="info-block school-block">
+                    <span class="value">{{ currentUser.group?.establishment?.nameEstablishment|default('ÉTABLISSEMENT') }}</span>
+                    <span class="value">{{ currentUser.group?.nameGroup|default('CLASSE') }}</span>
+                </div>
+
+                <div class="info-block score-block">
+                    <span class="label">SCORE PERSO:</span>
+                    <span class="value">{{ userStats.totalScore|default(0) }}</span>
+                </div>
+
+                <div class="info-block score-block">
+                    <span class="label">SCORE GROUPE:</span>
+                    <span class="value">{{ userStats.totalScoreGroup|default(0) }}</span>
+                </div>
+
+            {% else %}
+                <div class="info-block">
+                    <p>Données indisponibles.</p>
+                </div>
+            {% endif %}
+
+            <div class="footer-block">
+                <a href="#" class="mentions-link">MENTIONS LEGALES</a>
             </div>
+
         </div>
     </div>
-
-{% endblock %}
+</div>

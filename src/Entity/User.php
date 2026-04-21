@@ -7,15 +7,17 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepositoryImpl::class)]
 #[UniqueEntity(fields: ['pseudoUser'], message: 'Le pseudonyme est déjà pris.')]
-class User
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Column]
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    private int $id;
+    private ?int $id = null;
     #[ORM\Column (length: 191, unique: true)]
     private string $pseudoUser;
 
@@ -96,7 +98,7 @@ class User
         return $this->scans;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -121,5 +123,36 @@ class User
         }
 
         return $this;
+    }
+
+    // ======================================================
+    // MÉTHODES OBLIGATOIRES POUR SYMFONY SECURITY
+    // ======================================================
+
+    /**
+     * Un identifiant visuel qui représente l'utilisateur.
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->pseudoUser;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getRoles(): array
+    {
+        // On donne au moins le rôle USER à tout le monde
+        return ['ROLE_USER'];
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials(): void
+    {
+        // Si tu stockes des données temporaires sensibles sur l'utilisateur, nettoie-les ici
+        // $this->plainPassword = null;
     }
 }

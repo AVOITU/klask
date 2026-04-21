@@ -79,16 +79,20 @@
 .map-background {
     width: 2400px;
     height: 1600px;
-    position: absolute;
+    position: absolute; /* Reste en absolu dans le map-wrapper */
     top: 0;
     left: 0;
+    transform-origin: center center; /* Le zoom se fera depuis le centre de l'image */
     background-image: url('../../images/Fausse_carte.png');
     background-size: 100% 100%;
     background-repeat: no-repeat;
     background-color: #FFFFFF;
     cursor: grab;
+    
+    /* Empêche de sélectionner le texte ou de télécharger l'image en glissant */
     user-select: none;
     -webkit-user-select: none;
+    -webkit-user-drag: none; 
 }
 
 .map-background:active {

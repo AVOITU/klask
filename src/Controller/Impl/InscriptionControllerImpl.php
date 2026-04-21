@@ -13,6 +13,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Bundle\SecurityBundle\Security;
 use Throwable;
 
 class InscriptionControllerImpl extends AbstractController implements InscriptionController
@@ -20,6 +21,7 @@ class InscriptionControllerImpl extends AbstractController implements Inscriptio
     public function __construct(
         private readonly LoggerInterface $logger,
         private readonly InscriptionService $inscriptionService,
+        private readonly Security $security,
     ) {
     }
 
@@ -108,10 +110,11 @@ class InscriptionControllerImpl extends AbstractController implements Inscriptio
         
         try {
             $this->inscriptionService->registerStudent($user);
+           // On connecte automatiquement l'utilisateur
+            $this->security->login($user);
 
-            $this->addFlash('success', 'Utilisateur créé avec succès.');
-
-            return $this->redirectToRoute('app_inscription_show');
+            // On redirige vers la carte
+            return $this->redirectToRoute('app_map');
         } catch (UniqueConstraintViolationException) {
             $this->addFlash('error', 'Le pseudonyme est déjà pris.');
         } catch (Throwable $e) {

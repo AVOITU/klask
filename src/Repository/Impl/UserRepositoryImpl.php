@@ -20,10 +20,12 @@ class UserRepositoryImpl extends ServiceEntityRepository implements UserReposito
     {
         return $this->createQueryBuilder('u')
             ->addSelect('c', 'a')
-            ->join('u.group_id', 'c')
-            ->join('u.authority_id', 'a')
-            ->leftJoin('u.validations', 'v')
-            ->leftJoin('v.activity', 'act')
+            ->join('u.group', 'c')
+            ->join('u.authority', 'a')
+            // 1. On remplace 'validations' par 'scans' (Le nom de la propriété dans User)
+            ->leftJoin('u.scans', 's') 
+            // 2. Je suppose que dans ton entité Scan, la relation s'appelle $activity (et non $name_activity)
+            ->leftJoin('s.activity', 'act')
             ->leftJoin('act.category', 'cat')
             ->where('u.id = :id')
             ->setParameter('id', $id)
@@ -50,17 +52,20 @@ class UserRepositoryImpl extends ServiceEntityRepository implements UserReposito
             ->select(
                 'NEW App\DTO\UserDTO(
                 u,
-                COALESCE(SUM(cat.nbrPoint), 0)
+                COALESCE(SUM(cat.nbrPoints), 0),
+                0
             )'
             )
-            ->join('u.group_id', 'c')
-            ->join('u.authority_id', 'a')
-            ->leftJoin('u.validations', 'v')
-            ->leftJoin('v.activity', 'act')
+            ->join('u.group', 'c')
+            ->join('u.authority', 'a')
+            ->leftJoin('u.scans', 's') // Même correction ici
+            ->leftJoin('s.activity', 'act') // Même correction ici
             ->leftJoin('act.category', 'cat')
-            ->where('u.idUser = :id')
+            // 3. Dans l'entité User, la propriété s'appelle $id et non $idUser
+            ->where('u.id = :id') 
             ->setParameter('id', $userId)
-            ->groupBy('u.idUser')
+            // 4. Même chose pour le groupBy
+            ->groupBy('u.id') 
             ->getQuery()
             ->getOneOrNullResult();
     }

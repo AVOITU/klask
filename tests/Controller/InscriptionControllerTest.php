@@ -142,7 +142,7 @@ class InscriptionControllerTest extends WebTestCase
 
         // --- ASSERT ---
         // On vérifie qu'on est bien redirigé (succès)
-        $this->assertResponseRedirects('/inscription');
+        $this->assertResponseRedirects('/map');
     }
     public function testSaveInscriptionWithDuplicatePseudo(): void
     {

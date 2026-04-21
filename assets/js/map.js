@@ -121,4 +121,129 @@ document.addEventListener('DOMContentLoaded', () => {
         window.addEventListener('touchmove', drag, { passive: false });
         window.addEventListener('touchend', endDrag);
     }
+    // ==========================================
+    // 4. GESTION DE LA SIDEBAR UTILISATEUR
+    // ==========================================
+    const sidebar = document.getElementById('sidebar-panel');
+    const btnOpenSidebar = document.getElementById('sidebar-trigger-zone');
+    const btnCloseSidebar = document.getElementById('btn-close-sidebar');
+
+    if (sidebar && btnOpenSidebar && btnCloseSidebar) {
+        btnOpenSidebar.addEventListener('click', () => {
+            sidebar.classList.add('open');
+            btnOpenSidebar.style.display = 'none'; // Cache la flèche d'ouverture
+        });
+
+        btnCloseSidebar.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            setTimeout(() => {
+                btnOpenSidebar.style.display = 'flex'; // Réaffiche la flèche après l'animation
+            }, 400);
+        });
+    }
+    
+    // ==========================================
+    // 5. GESTION DE LA CARTE (Façon Google Maps)
+    // ==========================================
+    // On met toute notre logique dans une fonction qu'on pourra appeler à volonté
+    function initInteractiveMap() {
+        const mapBackground = document.getElementById('map-background');
+    
+        // Si on n'est pas sur la page de la carte, on arrête tout silencieusement
+        if (!mapBackground) return; 
+
+        // --- VARIABLES D'ÉTAT ---
+        let scale = 1;         // Niveau de zoom (1 = 100%)
+        let panX = 0;          // Position X de la carte
+        let panY = 0;          // Position Y de la carte
+    
+        let isDragging = false;
+        let startX = 0;
+        let startY = 0;
+
+        // --- FONCTION DE MISE À JOUR VISUELLE ---
+        const updateMapTransform = () => {
+            mapBackground.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+        };
+
+        // ==========================================
+        // 1. LE ZOOM (Molette de la souris)
+        // ==========================================
+        mapBackground.addEventListener('wheel', (e) => {
+            e.preventDefault(); 
+            const zoomSensitivity = 0.1;
+            const minScale = 0.3; 
+            const maxScale = 4.0; 
+
+            if (e.deltaY < 0) {
+                scale += zoomSensitivity; 
+            } else {
+                scale -= zoomSensitivity; 
+            }
+
+            scale = Math.min(Math.max(minScale, scale), maxScale);
+            updateMapTransform();
+        }, { passive: false });
+
+        // ==========================================
+        // 2. LE DÉPLACEMENT (Souris / Ordinateur)
+        // ==========================================
+        mapBackground.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX - panX;
+            startY = e.clientY - panY;
+            mapBackground.style.cursor = 'grabbing';
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            panX = e.clientX - startX;
+            panY = e.clientY - startY;
+            updateMapTransform();
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+            mapBackground.style.cursor = 'grab';
+        });
+
+        // ==========================================
+        // 3. LE DÉPLACEMENT (Tactile / Téléphone)
+        // ==========================================
+        mapBackground.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) { 
+                isDragging = true;
+                startX = e.touches[0].clientX - panX;
+                startY = e.touches[0].clientY - panY;
+            }
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            if (!isDragging || e.touches.length !== 1) return;
+            panX = e.touches[0].clientX - startX;
+            panY = e.touches[0].clientY - startY;
+            updateMapTransform();
+        }, { passive: false });
+
+        window.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+
+        // Initialisation
+        updateMapTransform();
+    }
+
+    // ==========================================
+    // DÉCLENCHEURS (Compatibilité Symfony Turbo)
+    // ==========================================
+    // 1. Pour les chargements de page classiques
+    document.addEventListener('DOMContentLoaded', initInteractiveMap);
+
+    // 2. Pour les navigations via Symfony UX Turbo
+    document.addEventListener('turbo:load', initInteractiveMap);
+
+    // 3. Si le script est exécuté alors que le DOM est déjà prêt
+    if (document.readyState !== 'loading') {
+        initInteractiveMap();
+    }
 });

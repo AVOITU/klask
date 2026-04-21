@@ -1,167 +1,176 @@
-/* CSS pour $classe */
-
-body {
-    background: #f8f8f8;
-}
-
-
+/* ==========================================
+   CONTENEUR GLOBAL
+========================================== */
 .sidebar-container {
-    position: fixed;
+    position: absolute;
     top: 0;
-    right: -100%;
+    right: -100%; /* Caché hors de l'écran par défaut */
     width: 100%;
-    height: 100%;
-    background-color: #F2D7D5; 
-    z-index: 9999;
+    height: 100vh;
+    z-index: 10000;
     transition: right 0.4s cubic-bezier(0.25, 1, 0.5, 1);
     display: flex;
-    flex-direction: column;
-    font-family: 'Fredoka One', cursive;
+    align-items: center;
+    justify-content: flex-end; /* Aligne la boîte à droite */
+    pointer-events: none; /* Permet de cliquer sur la carte à travers la zone transparente */
 }
 
 .sidebar-container.open {
     right: 0;
+    pointer-events: auto; /* Réactive les clics une fois ouvert */
 }
 
-
-.sidebar-header {
-    height: 80px;
-    display: flex;
-    align-items: center;
-    padding-left: 20px;
-}
-
-.header-icon {
-    width: 40px; height: 40px;
-    background-color: #E3C08D;
-    border-radius: 50%;
-    display: flex; justify-content: center; align-items: center;
-    border: 1px solid #333;
-    font-size: 1.2rem;
-    color: white;
-    margin-right: 15px;
-    box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
-}
-
-.sidebar-header h2 {
-    font-size: 1.2rem;
-    color: #333;
-    margin: 0;
-    letter-spacing: 1px;
-}
-
-
-.sidebar-body {
-    flex: 1;
-    display: flex;
-    position: relative;
-}
-
-
-.left-strip {
-    width: 60px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-}
-
-.vertical-text {
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
-    transform: rotate(180deg);
-    font-size: 1.5rem;
-    font-weight: bold;
-    letter-spacing: 3px;
-    color: #333;
-}
-
-
-.tab-close {
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 30px;
-    height: 60px;
-    /* Couleur Beige */
-    background-color: #E3C08D;
-    border-radius: 0 30px 30px 0;
-    border: 2px solid #333;
-    border-left: none;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.2rem;
-}
-
+/* ==========================================
+   LANGUETTE D'OUVERTURE (Fixée à l'écran)
+========================================== */
 .trigger-tab {
-    position: fixed;
+    position: fixed; /* Reste toujours visible à l'écran */
     right: 0;
     top: 50%;
     transform: translateY(-50%);
     width: 30px;
     height: 60px;
-
-    background-color: #E3C08D;
-    border-radius: 30px 0 0 30px;
-    border: 2px solid #333;
+    background-color: #E1B878; /* La couleur moutarde de ta maquette */
+    border: 3px solid #000;
     border-right: none;
-    z-index: 9998;
+    border-radius: 40px 0 0 40px; /* Coins arrondis à gauche */
     cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-}
-.trigger-tab .arrow-icon { font-size: 1.2rem; color: #333; margin-left: 5px;}
-
-
-.user-card {
-    flex: 1;
-
-    background-color: #E3C08D;
-    border-radius: 30px 0 0 30px;
-    margin-bottom: 20px;
-    margin-right: -5px;
-    border: 2px solid #333;
-    border-right: none;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 20px;
-    box-shadow: -5px 5px 0 rgba(0,0,0,0.1);
+    font-size: 1.2rem;
+    font-weight: bold;
+    font-family: sans-serif;
+    color: #000;
+    z-index: 9999; /* Par-dessus la carte */
 }
 
-.user-card h3 {
-    font-size: 1.8rem;
-    text-transform: uppercase;
-    margin-bottom: 40px;
-    border-bottom: 2px solid #333;
-    padding-bottom: 10px;
-    width: 80%;
-    text-align: center;
+/* ==========================================
+   TEXTE FLOTTANT "CARTE"
+========================================== */
+.sidebar-backdrop-text {
+    position: absolute;
+    left: 8%;
+    top: 50%;
+    transform: translateY(-50%) rotate(-90deg);
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #000;
+    letter-spacing: 5px;
+    opacity: 0;
+    transition: opacity 0.3s;
 }
 
-.info-group {
+.sidebar-container.open .sidebar-backdrop-text {
+    opacity: 1; /* Apparaît quand la sidebar s'ouvre */
+}
+
+/* ==========================================
+   BOÎTE PRINCIPALE BEIGE
+========================================== */
+.sidebar-main-box {
+    position: relative;
+    width: 75%; /* Prend 75% de l'écran (Laisse la place à gauche) */
+    height: 100vh;
+    background-color: #E1B878; /* La couleur moutarde/beige de ta maquette */
+    border-left: 3px solid #000;
+    border-radius: 40px 0 0 40px; /* Coins très arrondis à gauche */
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 30px;
+    box-sizing: border-box;
+    padding-top: 60px;
+    padding-bottom: 30px;
+}
+
+/* ==========================================
+   LANGUETTE DE FERMETURE
+========================================== */
+.tab-close {
+    position: absolute;
+    left: 0px; /* Dépasse sur la ligne noire */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 30px;
+    height: 60px;
+    background-color: #E1B878;
+    border: 3px solid #000;
+    border-right: none;
+    border-radius: 40px 0 0 40px; /* Forme arrondie en "D" */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    font-family: sans-serif;
+    color: #000;
+    transform: rotate(180deg);
+}
+
+/* Gérer l'orientation du "V" */
+.tab-close span {
+    display: inline-block;
+}
+
+/* ==========================================
+   CONTENU INTERNE
+========================================== */
+.sidebar-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
     width: 100%;
+    text-align: center;
+    font-family: 'Open Sans', Arial, sans-serif;
+}
+
+.info-block {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
 }
 
 .label {
-    font-family: 'Open Sans', sans-serif;
-    font-size: 0.9rem;
-    margin-bottom: 5px;
-    color: #444;
+    font-size: 1.1rem;
+    font-weight: normal;
 }
 
-.value { font-size: 1.4rem; color: #000; }
-.value.pseudo { font-size: 1.2rem; word-break: break-word; text-align: center;}
-.value.score { font-size: 2rem; font-weight: bold; }
+.value {
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
 
-.color-box {
-    width: 40px; height: 40px;
-    border-radius: 8px;
-    border: 2px solid #333;
-    box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+/* ==========================================
+   AVATAR (ROND GRIS / IMAGE)
+========================================== */
+.avatar-block {
+    margin: 30px 0;
+}
+
+.avatar-img {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%; /* Fait un rond parfait */
+    object-fit: cover;
+    border: none;
+}
+
+/* Espacements spécifiques */
+.school-block { margin-top: 10px; margin-bottom: 40px; }
+.score-block { margin-bottom: 25px; }
+
+/* ==========================================
+   FOOTER (MENTIONS LÉGALES)
+========================================== */
+.footer-block {
+    margin-top: auto; /* Repousse le footer tout en bas */
+}
+
+.mentions-link {
+    color: #000;
+    text-decoration: underline;
+    font-size: 0.9rem;
 }

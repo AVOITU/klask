@@ -33,7 +33,7 @@ class InscriptionServiceImpl implements InscriptionService
     /**
      * @param AuthorityRepository $authorityRepository
      * @param UserService $userService
-     * @param GroupService $classroomService
+     * @param GroupService $groupService
      */
     public function __construct(AuthorityRepository $authorityRepository, UserService $userService, EstablishmentService $establishmentService)
     {
@@ -60,7 +60,7 @@ class InscriptionServiceImpl implements InscriptionService
         if ($authority === null) {
             throw new RuntimeException('Autorité STUDENT introuvable.');
         }
-
+        
         $student->setAuthority($authority);
 
         return $this->userService->insertStudent($student);
