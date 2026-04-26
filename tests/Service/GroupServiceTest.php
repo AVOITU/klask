@@ -1,5 +1,5 @@
 <?php
-namespace App\Tests;
+namespace App\Tests\Service\Service;
 
 use PHPUnit\Framework\TestCase;
 use App\Entity\Group;

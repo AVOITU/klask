@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\Repository\Impl\AuthorityRoleRepository;
+use App\Repository\AuthorityRoleRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AuthorityRoleRepository::class)]

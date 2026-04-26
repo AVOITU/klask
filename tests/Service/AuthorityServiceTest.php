@@ -1,6 +1,7 @@
 <?php
-namespace App\Tests;
+namespace App\Tests\Service\Service;
 
+use App\Security\RoleSecurity;
 use PHPUnit\Framework\TestCase;
 use App\Service\Impl\AuthorityServiceImpl;
 use App\Repository\AuthorityRepository;
@@ -12,7 +13,7 @@ class AuthorityServiceTest extends TestCase
         $authorityRepositoryMock = $this->createMock(AuthorityRepository::class);
         $authorityService = new AuthorityServiceImpl($authorityRepositoryMock);
 
-        $roleName = 'ADMIN';
+        $roleName = RoleSecurity::ADMIN->value;
         $expectedAuthority = new Authority();
 
         $authorityRepositoryMock

@@ -1,5 +1,5 @@
 <?php
-namespace App\Tests;
+namespace App\Tests\Service\Service;
 
 use App\Entity\User;
 use App\Repository\UserRepository;

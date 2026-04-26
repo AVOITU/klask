@@ -2,11 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\Impl\ScanRepositoryImpl;
+use App\Repository\ScanRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: ScanRepositoryImpl::class)]
+#[ORM\Entity(repositoryClass: ScanRepository::class)]
 final class Scan
 {
     #[ORM\Column]

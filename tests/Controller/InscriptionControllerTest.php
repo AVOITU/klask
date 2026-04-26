@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Controller;
+namespace App\Tests\Service\Controller;
 
 use App\Entity\Establishment;
 use App\Entity\Event;
@@ -26,11 +26,11 @@ class InscriptionControllerTest extends WebTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
-        // 1. On crée le client en PREMIER. 
+
+        // 1. On crée le client en PREMIER.
         // Cela démarre le Kernel de Symfony de manière propre.
         $this->client = static::createClient();
-        
+
         // 2. On récupère l'EntityManager depuis le container qui est maintenant booté.
         $this->entityManager = static::getContainer()->get('doctrine')->getManager();
     }
@@ -41,7 +41,7 @@ class InscriptionControllerTest extends WebTestCase
     public function testInscriptionPageIsUp(): void
     {
         $this->client->request('GET', '/inscription');
-        
+
         $this->assertResponseIsSuccessful();
     }
 
@@ -67,7 +67,7 @@ class InscriptionControllerTest extends WebTestCase
         // ASSERT
         $this->assertResponseIsSuccessful();
         $crawler = $this->client->getCrawler();
-        
+
         // On vérifie que le pseudo est conservé
         $actualValue = $crawler->filter('input[name="inscription_form[pseudoUser]"]')->attr('value');
         $this->assertEquals('TestUser', $actualValue);
@@ -95,7 +95,7 @@ class InscriptionControllerTest extends WebTestCase
         $authority->setAuthorityUser($roleSecurity);
         $this->entityManager->persist($authority);
         $this->entityManager->flush();
-        
+
         $authorityRole = new AuthorityRole();
         $authorityRole->setAuthority($authority);
         $authorityRole->setRole($role);
@@ -120,7 +120,7 @@ class InscriptionControllerTest extends WebTestCase
         $this->entityManager->persist($group);
         $this->entityManager->flush();
 
-        
+
 
         $groupId = $group->getId();
 
@@ -135,7 +135,7 @@ class InscriptionControllerTest extends WebTestCase
         $form = $crawler->selectButton('Valider l\'inscription')->form();
 
         $form['inscription_form[establishment]'] = 'Lycée Yves Thépot - Quimper';
-        $form['inscription_form[group]'] = $groupId; 
+        $form['inscription_form[group]'] = $groupId;
         $form['inscription_form[pseudoUser]'] = 'TestUserUnique';
 
         $this->client->submit($form);
@@ -186,13 +186,13 @@ class InscriptionControllerTest extends WebTestCase
         $form = $crawler->selectButton('Valider l\'inscription')->form();
 
         $form['inscription_form[establishment]'] = 'Lycée Yves Thépot - Quimper';
-        $form['inscription_form[group]'] = $group->getId(); 
+        $form['inscription_form[group]'] = $group->getId();
         $form['inscription_form[pseudoUser]'] = 'Antoine';
 
         $this->client->submit($form);
 
         // --- ASSERT ---
-        $this->assertResponseIsSuccessful(); 
+        $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('body', 'Erreur lors de la création.');
     }
 

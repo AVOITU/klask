@@ -2,12 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\Impl\ActivityCategoryRepositoryImpl;
+use App\Repository\ActivityCategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: ActivityCategoryRepositoryImpl::class)]
+#[ORM\Entity(repositoryClass: ActivityCategoryRepository::class)]
 final class ActivityCategory
 {
     #[ORM\Id]

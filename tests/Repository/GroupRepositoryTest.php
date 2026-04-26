@@ -2,29 +2,29 @@
 namespace App\Tests\Repository;
 
 use App\Entity\Establishment;
-use App\Entity\Group;
 use App\Entity\Event;
-use App\Repository\Impl\GroupRepositoryImpl;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use App\Entity\Group;
+use App\Repository\GroupRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class GroupRepositoryTest extends KernelTestCase
 {
     private ?EntityManagerInterface $entityManager;
-    private ?GroupRepositoryImpl $repository;
+    private ?GroupRepository $repository;
 
     protected function setUp(): void
     {
         self::bootKernel();
         $this->entityManager = self::getContainer()->get('doctrine')->getManager();
-        $this->repository = self::getContainer()->get(GroupRepositoryImpl::class);
+        $this->repository = self::getContainer()->get(GroupRepository::class);
     }
 
     public function testQbByEstablishmentReturnsCorrectGroups(): void
     {
         $event = new Event();
         $event->setNameEvent('Test Event');
-        $this->entityManager->persist($event); 
+        $this->entityManager->persist($event);
 
         $ecoleA = new Establishment();
         $ecoleA->setNameEstablishment('Collège Brizeux');

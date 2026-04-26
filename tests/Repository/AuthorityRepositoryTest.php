@@ -2,23 +2,23 @@
 namespace App\Tests\Repository;
 
 use App\Entity\Authority;
-use App\Entity\Role;
 use App\Entity\AuthorityRole;
-use App\Repository\Impl\AuthorityRepositoryImpl;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use App\Entity\Role;
+use App\Repository\AuthorityRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class AuthorityRepositoryTest extends KernelTestCase
 {
     private ?EntityManagerInterface $entityManager;
-    private ?AuthorityRepositoryImpl $repository;
+    private ?AuthorityRepository $repository;
 
     protected function setUp(): void
     {
         self::bootKernel();
 
         $this->entityManager = self::getContainer()->get('doctrine')->getManager();
-        $this->repository = self::getContainer()->get(AuthorityRepositoryImpl::class);
+        $this->repository = self::getContainer()->get(AuthorityRepository::class);
     }
 
     public function testFindByRoleReturnsCorrectAuthority(): void
@@ -47,7 +47,7 @@ class AuthorityRepositoryTest extends KernelTestCase
 
     public function testFindByRoleReturnsNullIfRoleDoesNotExist(): void
     {
-        $result = $this->repository->findByRole('ROLE_NON_EXISTENT');
+        $result = $this->repository->findByRole('ROLE_NON_EXISTANT');
         $this->assertNull($result);
     }
 

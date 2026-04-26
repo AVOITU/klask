@@ -2,12 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\Impl\ProfessionRepositoryImpl;
+use App\Repository\ProfessionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: ProfessionRepositoryImpl::class)]
+#[ORM\Entity(repositoryClass: ProfessionRepository::class)]
 final class Profession
 {
     #[ORM\Id]

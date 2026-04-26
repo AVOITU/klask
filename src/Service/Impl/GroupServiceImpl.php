@@ -7,10 +7,10 @@ use App\Repository\GroupRepository;
 use App\Service\GroupService;
 
 
-class GroupServiceImpl implements GroupService
+readonly class GroupServiceImpl implements GroupService
 {
     public function __construct(
-        private readonly GroupRepository $groupRepository
+        private GroupRepository $groupRepository
     ) {}
 
     public function findById($groupId) : ?Group{

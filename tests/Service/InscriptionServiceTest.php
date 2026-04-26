@@ -1,6 +1,7 @@
 <?php
-namespace App\Tests;
+namespace App\Tests\Service\Service;
 
+use App\Security\RoleSecurity;
 use App\Service\UserService;
 use App\Repository\AuthorityRepository;
 use App\Service\Impl\InscriptionServiceImpl;
@@ -23,21 +24,21 @@ class InscriptionServiceTest extends TestCase
 
         $authRepoMock
             ->method('findByRole')
-            ->with('STUDENT')
+            ->with(RoleSecurity::STUDENT->value)
             ->willReturn(null);
 
         $inscriptionService = new InscriptionServiceImpl($authRepoMock, $userServiceMock, $estServiceStub);
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Autorité STUDENT introuvable.');
+        $this->expectExceptionMessage('Autorité ' . RoleSecurity::STUDENT->value . ' introuvable.');
 
         $inscriptionService->registerStudent($student);
     }
-    public function testRegisterStudentSucces(): void
+    public function testRegisterStudentSuccess(): void
     {
         $authRepoStub = $this->createStub(AuthorityRepository::class);
         $estServiceStub = $this->createStub(EstablishmentService::class);
-    
+
         $userServiceMock = $this->createMock(UserService::class);
 
         $authority = new Authority();
@@ -55,13 +56,13 @@ class InscriptionServiceTest extends TestCase
         $this->assertSame($student, $result);
     }
 
-    public function testfindDistinctEstablishments(): void
+    public function testingDistinctEstablishments(): void
     {
         $authRepoStub = $this->createStub(AuthorityRepository::class);
         $estServiceMock = $this->createMock(EstablishmentService::class);
         $userServiceStub = $this->createStub(UserService::class);
 
-        $expected = ['Etablissement A', 'Etablissement B', 'Etablissement C'];
+        $expected = ['Établissement A', 'Établissement B', 'Établissement C'];
         $estServiceMock
             ->expects($this->once())
             ->method('findDistinctEstablishments')
@@ -86,6 +87,6 @@ class InscriptionServiceTest extends TestCase
         $this->assertContains($parts[1], ['du rêve', 'cosmique', 'magique', 'intrépide', 'cyber', 'casse-cou', 'chic', 'perplexe', 'à lunettes', 'gastronome', 'scolaire', 'globe-trotter', 'de la royauté', 'aquatique', 'musicos', 'excentrique', 'des îles', 'cool', 'aristocrate', 'héroïque']);
     }
 
-    
-    
+
+
 }

@@ -4,9 +4,7 @@ namespace App\Form;
 
 use App\Entity\Group;
 use App\Entity\User;
-//use App\Entity\Establishment;
-//use App\Repository\Impl\EstablishmentRepositoryImpl;
-use App\Repository\Impl\GroupRepositoryImpl;
+use App\Repository\GroupRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -52,7 +50,7 @@ class InscriptionFormType extends AbstractType
                     ? '👇 Choisir le groupe'
                     : '🔒 Choisissez d’abord l’établissement',
                 'required' => true,
-                'query_builder' => function (GroupRepositoryImpl $repo) use ($selectedEstablishment) {
+                'query_builder' => function (GroupRepository $repo) use ($selectedEstablishment) {
                 return $repo->qbByEstablishment($selectedEstablishment);
                 },
             ]);

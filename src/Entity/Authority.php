@@ -2,12 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\Impl\AuthorityRepositoryImpl;
+use App\Repository\AuthorityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: AuthorityRepositoryImpl::class)]
+#[ORM\Entity(repositoryClass: AuthorityRepository::class)]
 final class Authority
 {
     #[ORM\Id]
