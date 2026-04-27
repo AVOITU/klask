@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Score{% endblock %}
+
+{# {% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/pages/score.css') }}">
+{% endblock %} #}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="module" src="{{ asset('js/shared_body.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+    <div>
+
+        <h2>La journée se termine</h2>
+        <h2>Merci pour votre participation !</h2>
+
+        <h1>Meilleurs scores de votre groupe:</h1>
+        <h2>Grand gagnant:</h2>
+            {% if winner %}
+                <div class="winner-name">
+                    {{ winner.name }}
+                </div>
+            {% endif %}
+
+            <ul>
+                {% for player in topScores %}
+                    <li>{{ player.name }} : {{ player.score }}</li>
+                {% endfor %}
+            </ul>
+
+        <h2>Votre score:</h2>
+
+            {% if userScore %}
+                <p>{{ userScore.score }}</p>
+            {% else %}
+                <p>Aucun score trouvé</p>
+            {% endif %}
+
+        <h2>Votre groupe a totalisé:</h2>
+
+            <p>{{ groupTotal }}</p>
+
+        <button>Valider</button>
+
+    </div>
+{% endblock %}

@@ -193,7 +193,7 @@ class InscriptionControllerTest extends WebTestCase
 
         // --- ASSERT ---
         $this->assertResponseIsSuccessful(); 
-        $this->assertSelectorTextContains('body', 'Erreur lors de la création.');
+        $this->assertSelectorTextContains('form', 'Le pseudonyme est déjà pris');
     }
 
     /**

@@ -6,6 +6,9 @@ use App\Repository\Impl\UserRepositoryImpl;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+
+#[UniqueEntity(fields: ['pseudoUser'], message: 'Le pseudonyme est déjà pris')]
 
 #[ORM\Entity(repositoryClass: UserRepositoryImpl::class)]
 final class User
