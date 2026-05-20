@@ -2,57 +2,74 @@
 
 namespace App\Form;
 
-use App\Entity\Group;
+use App\Entity\Establishment;
 use App\Entity\User;
 use App\Repository\GroupRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Regex;
 
 class InscriptionFormType extends AbstractType
 {
+    public function __construct(private readonly GroupRepository $groupRepository)
+    {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $selectedEstablishment = $options['selected_establishment'];
-        $establishments = $options['establishments'];
-        $defaultNickname = $options['nom_depart'];
+        $levels = $this->groupRepository->findDistinctLevels();
+        $levelChoices = array_combine($levels, $levels);
 
         $builder
-            ->add('pseudoUser', TextType::class, [
-                'label' => 'Mon identité secrète',
+            ->add('pseudo', TextType::class, [
+                'label'       => 'Mon identité secrète',
+                'data'        => $options['nom_depart'],
+                'attr'        => ['readonly' => true],
+                'constraints' => [new NotBlank()],
+            ])
+            ->add('establishment', EntityType::class, [
+                'label'        => 'Mon établissement',
+                'mapped'       => false,
+                'class'        => Establishment::class,
+                'choice_label' => 'name',
+                'placeholder'  => '-- Sélectionnez votre établissement --',
+                'constraints'  => [
+                    new NotBlank(message: 'Veuillez sélectionner votre établissement.'),
+                ],
+            ])
+            ->add('groupLevel', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+                'label'       => 'Ma classe',
+                'mapped'      => false,
+                'placeholder' => '-- Sélectionnez votre classe --',
+                'choices'     => $levelChoices,
                 'constraints' => [
-                    new NotBlank(),
-                ],
-                'data' => $defaultNickname,
-                'attr' => [
-                    'readonly' => true,
+                    new NotBlank(message: 'Veuillez sélectionner votre classe.'),
                 ],
             ])
-
-            ->add('establishment', ChoiceType::class, [
-                'label' => 'Mon établissement',
-                'mapped' => false,
-                'required' => true,
-                'placeholder' => '👇 Touchez pour choisir',
-                'choices' => array_combine($establishments, $establishments),
-                'data' => $selectedEstablishment !== '' ? $selectedEstablishment : null,
-            ])
-
-            ->add('group', EntityType::class, [
-                'label' => 'Mon groupe',
-                'class' => Group::class,
-                'choice_label' => 'nameGroup',
-                'placeholder' => $selectedEstablishment !== ''
-                    ? '👇 Choisir le groupe'
-                    : '🔒 Choisissez d’abord l’établissement',
-                'required' => true,
-                'query_builder' => function (GroupRepository $repo) use ($selectedEstablishment) {
-                return $repo->qbByEstablishment($selectedEstablishment);
-                },
+            ->add('groupCode', TextType::class, [
+                'label' => 'Code de groupe',
+                'attr'  => [
+                    'placeholder'  => 'Ex : GRP0001',
+                    'maxlength'    => 10,
+                    'autocomplete' => 'off',
+                ],
+                'help'        => 'Fourni par votre accompagnateur avant l\'événement.',
+                'constraints' => [
+                    new NotBlank(message: 'Le code de groupe est obligatoire.'),
+                    new Length(
+                        max: 10,
+                        maxMessage: 'Le code ne peut pas dépasser {{ limit }} caractères.'
+                    ),
+                    new Regex(
+                        pattern: '/^[A-Z]{3}\d{4}$/i',
+                        message: 'Format attendu : 3 lettres suivies de 4 chiffres (ex : GRP0001).'
+                    ),
+                ],
             ]);
     }
 
@@ -60,13 +77,9 @@ class InscriptionFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => User::class,
-            'establishments' => [],
-            'selected_establishment' => '',
             'nom_depart' => '',
         ]);
 
-        $resolver->setAllowedTypes('establishments', 'array');
-        $resolver->setAllowedTypes('selected_establishment', 'string');
         $resolver->setAllowedTypes('nom_depart', 'string');
     }
 }
