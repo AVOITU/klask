@@ -3,14 +3,14 @@
 namespace App\Service;
 
 use App\DTO\UserDTO;
-use App\Entity\User;
 
-/**
- * Service :
- * Contient la logique applicative.
- */
+// délègue uniquement à UserService::createUserDTOById
+// peut être supprimée en injectant UserService directement dans MapController? à voir
+// si aucune logique propre à la sidebar
 interface SidebarUserMapService
 {
-    public function findUserWithClassAndAuthority(int $idUser): ?User;
-    public function createUserDTOById(int $idUser) :? UserDTO;
+    // pas appelé en prod
+    // public function findUserWithGroupAndAuthority(int $userId): ?User;
+
+    public function createUserDTOById(int $userId): ?UserDTO;
 }

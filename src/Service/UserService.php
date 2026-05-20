@@ -7,9 +7,11 @@ use App\Entity\User;
 
 interface UserService
 {
-    public function insertStudent($student): User;
-    public function findUserWithGroupAndAuthority(int $idUser) :?User;
-    public function createUserDTObyId(int $idUser) :?UserDTO;
+    public function insertStudent(User $student): User;
+    // jamais appelé en prod
+    // public function findUserWithGroupAndAuthority(int $idUser): ?User;
+    public function createUserDTOById(int $idUser): ?UserDTO; // I8 — renommé (b→B)
     public function findUserStats(int $userId) : ?UserDTO;
-    public function findGroupTotalScore(int $groupId): int;
+    // findGroupTotalScore est un doublon de GroupService::findGroupTotalScore
+    // public function findGroupTotalScore(int $groupId): int;
 }
