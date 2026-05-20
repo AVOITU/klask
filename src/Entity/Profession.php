@@ -8,16 +8,26 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProfessionRepository::class)]
-final class Profession
+class Profession
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private int $id;
+    private ?int $id = null;
+
+    #[ORM\Column(length: 100)]
+    private string $name;
+
     #[ORM\Column(length: 500, nullable: true)]
-    private ?string $descriptionProfession = null;
-    #[ORM\Column(length: 5, unique: true)]
-    private string $codeRom;
+    private ?string $description = null;
+
+    // code ROME officiel France Travail
+    #[ORM\Column(length: 5, unique: true, nullable: true)]
+    private ?string $codeRome = null;
+
+    // prénom du professionnel conteur. Pop-up de quête affichée lors du scan si non null
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $narrator = null;
 
     /**
      * @var Collection<int, Activity>
@@ -25,50 +35,62 @@ final class Profession
     #[ORM\OneToMany(targetEntity: Activity::class, mappedBy: 'profession')]
     private Collection $activities;
 
-    #[ORM\Column(length: 50, nullable: true)]
-    private ?string $narratorProfession = null;
-
-    /**
-     * @param int $idProfession
-     * @param string $descriptionProfession
-     * @param string $codeRom
-     */
     public function __construct()
     {
         $this->activities = new ArrayCollection();
     }
 
-
-
-    public function getDescriptionProfession(): string
+    public function getId(): ?int
     {
-        return $this->descriptionProfession;
+        return $this->id;
     }
 
-    public function setDescriptionProfession(string $descriptionProfession): void
+    public function getName(): string
     {
-        $this->descriptionProfession = $descriptionProfession;
+        return $this->name;
     }
 
-    public function getCodeRom(): string
+    public function setName(string $name): static
     {
-        return $this->codeRom;
-    }
-    public function getNarratorProfession(): ?string
-    {
-        return $this->narratorProfession;
-    }
-
-    public function setNarratorProfession(?string $narratorProfession): static
-    {
-        $this->narratorProfession = $narratorProfession;
+        $this->name = $name;
 
         return $this;
     }
 
-    public function setCodeRom(string $codeRom): void
+    public function getDescription(): ?string
     {
-        $this->codeRom = $codeRom;
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getCodeRome(): ?string
+    {
+        return $this->codeRome;
+    }
+
+    public function setCodeRome(?string $codeRome): static
+    {
+        $this->codeRome = $codeRome;
+
+        return $this;
+    }
+
+    public function getNarrator(): ?string
+    {
+        return $this->narrator;
+    }
+
+    public function setNarrator(?string $narrator): static
+    {
+        $this->narrator = $narrator;
+
+        return $this;
     }
 
     /**
@@ -79,25 +101,21 @@ final class Profession
         return $this->activities;
     }
 
-    public function addActivity(Activity $activity): static
-    {
-        if (!$this->activities->contains($activity)) {
-            $this->activities->add($activity);
-            $activity->setProfession($this);
-        }
+    // addActivity/removeActivity inutilisés (relation Profession↔Activity non active pour le moment!)
+    // public function addActivity(Activity $activity): static
+    // {
+    //     if (!$this->activities->contains($activity)) {
+    //         $this->activities->add($activity);
+    //         $activity->setProfession($this);
+    //     }
+    //     return $this;
+    // }
 
-        return $this;
-    }
-
-    public function removeActivity(Activity $activity): static
-    {
-        if ($this->activities->removeElement($activity)) {
-            // set the owning side to null (unless already changed)
-            if ($activity->getProfession() === $this) {
-                $activity->setProfession(null);
-            }
-        }
-
-        return $this;
-    }
+    // public function removeActivity(Activity $activity): static
+    // {
+    //     if ($this->activities->removeElement($activity) && $activity->getProfession() === $this) {
+    //         $activity->setProfession(null);
+    //     }
+    //     return $this;
+    // }
 }

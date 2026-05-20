@@ -8,28 +8,52 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ActivityRepository::class)]
-final class Activity
+class Activity
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private int $id;
+    private ?int $id = null;
 
     #[ORM\Column(length: 100, unique: true)]
-    private ?string $nameActivity = null;
+    private string $name;
 
     #[ORM\Column(length: 500, nullable: true)]
-    private ?string $descriptionActivity = null;
+    private ?string $description = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $qrcodeActivity = null;
+    private ?string $qrcode = null;
+
+   // Token secret encodé dans le QR code physique qui protège contre les soumissions de scans MANUELS
+    #[ORM\Column(length: 255, unique: true, nullable: true)]
+    private ?string $qrcodeToken = null;
 
     #[ORM\Column(nullable: true)]
-    private ?float $pointXActivity = null;
+    private ?float $pointX = null;
 
     #[ORM\Column(nullable: true)]
-    private ?float $pointYActivity = null;
+    private ?float $pointY = null;
 
+    #[ORM\Column(options: ['default' => 0])]
+    private int $softLimit = 0;
+
+    #[ORM\Column(options: ['default' => 0])]
+    private int $hardLimit = 0;
+
+    #[ORM\Column(options: ['default' => false])]
+    private bool $isInternship = false;
+
+    #[ORM\Column(options: ['default' => true])]
+    private bool $isAvailable = true;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $estimatedWaitMinutes = null;
+
+    //Dernière mise à jour des infos stand (dispo / attente)
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $standUpdatedAt = null;
+
+    // Nullable pour les repères et conférences
     #[ORM\ManyToOne(inversedBy: 'activities')]
     #[ORM\JoinColumn(nullable: true)]
     private ?Sphere $sphere = null;
@@ -38,11 +62,11 @@ final class Activity
     #[ORM\JoinColumn(nullable: false)]
     private ?ActivityCategory $category = null;
 
-    #[ORM\ManyToOne(inversedBy: 'activities')]
-    #[ORM\JoinColumn(nullable: true)]
+    
     private ?Profession $profession = null;
 
-    /**
+    // compteur d'occupation calculé depuis cette collection
+    /*
      * @var Collection<int, Scan>
      */
     #[ORM\OneToMany(targetEntity: Scan::class, mappedBy: 'activity')]
@@ -53,62 +77,152 @@ final class Activity
         $this->scans = new ArrayCollection();
     }
 
-    public function getNameActivity(): ?string
+    public function getId(): ?int
     {
-        return $this->nameActivity;
+        return $this->id;
     }
 
-    public function setNameActivity(string $nameActivity): static
+    public function getName(): string
     {
-        $this->nameActivity = $nameActivity;
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
 
         return $this;
     }
 
-    public function getDescriptionActivity(): ?string
+    public function getDescription(): ?string
     {
-        return $this->descriptionActivity;
+        return $this->description;
     }
 
-    public function setDescriptionActivity(?string $descriptionActivity): static
+    public function setDescription(?string $description): static
     {
-        $this->descriptionActivity = $descriptionActivity;
+        $this->description = $description;
 
         return $this;
     }
 
-    public function getQrcodeActivity(): ?string
+    public function getQrcode(): ?string
     {
-        return $this->qrcodeActivity;
+        return $this->qrcode;
     }
 
-    public function setQrcodeActivity(?string $qrcodeActivity): static
+    public function setQrcode(?string $qrcode): static
     {
-        $this->qrcodeActivity = $qrcodeActivity;
+        $this->qrcode = $qrcode;
 
         return $this;
     }
 
-    public function getPointXActivity(): ?float
+    public function getQrcodeToken(): ?string
     {
-        return $this->pointXActivity;
+        return $this->qrcodeToken;
     }
 
-    public function setPointXActivity(?float $pointXActivity): static
+    public function setQrcodeToken(?string $qrcodeToken): static
     {
-        $this->pointXActivity = $pointXActivity;
+        $this->qrcodeToken = $qrcodeToken;
 
         return $this;
     }
 
-    public function getPointYActivity(): ?float
+    public function getPointX(): ?float
     {
-        return $this->pointYActivity;
+        return $this->pointX;
     }
 
-    public function setPointYActivity(?float $pointYActivity): static
+    public function setPointX(?float $pointX): static
     {
-        $this->pointYActivity = $pointYActivity;
+        $this->pointX = $pointX;
+
+        return $this;
+    }
+
+    public function getPointY(): ?float
+    {
+        return $this->pointY;
+    }
+
+    public function setPointY(?float $pointY): static
+    {
+        $this->pointY = $pointY;
+
+        return $this;
+    }
+
+    public function getSoftLimit(): int
+    {
+        return $this->softLimit;
+    }
+
+    public function setSoftLimit(int $softLimit): static
+    {
+        $this->softLimit = $softLimit;
+
+        return $this;
+    }
+
+    public function getHardLimit(): int
+    {
+        return $this->hardLimit;
+    }
+
+    public function setHardLimit(int $hardLimit): static
+    {
+        $this->hardLimit = $hardLimit;
+
+        return $this;
+    }
+
+    public function isInternship(): bool
+    {
+        return $this->isInternship;
+    }
+
+    public function setIsInternship(bool $isInternship): static
+    {
+        $this->isInternship = $isInternship;
+
+        return $this;
+    }
+
+    public function isAvailable(): bool
+    {
+        return $this->isAvailable;
+    }
+
+    public function setIsAvailable(bool $isAvailable): static
+    {
+        $this->isAvailable = $isAvailable;
+
+        return $this;
+    }
+
+    public function getEstimatedWaitMinutes(): ?int
+    {
+        return $this->estimatedWaitMinutes;
+    }
+
+    public function setEstimatedWaitMinutes(?int $estimatedWaitMinutes): static
+    {
+        $this->estimatedWaitMinutes = $estimatedWaitMinutes;
+
+        return $this;
+    }
+
+    // À utiliser quand la gestion "dispo/indispo" des stands sera active (dans admin)
+    public function getStandUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->standUpdatedAt;
+    }
+
+    public function setStandUpdatedAt(?\DateTimeImmutable $standUpdatedAt): static
+    {
+        $this->standUpdatedAt = $standUpdatedAt;
 
         return $this;
     }
@@ -137,17 +251,9 @@ final class Activity
         return $this;
     }
 
-    public function getProfession(): ?Profession
-    {
-        return $this->profession;
-    }
-
-    public function setProfession(?Profession $profession): static
-    {
-        $this->profession = $profession;
-
-        return $this;
-    }
+    // getter/setter Profession jamais appelés, à voir si on les garde
+    // public function getProfession(): ?Profession { return $this->profession; }
+    // public function setProfession(?Profession $profession): static { $this->profession = $profession; return $this; }
 
     /**
      * @return Collection<int, Scan>
@@ -169,11 +275,8 @@ final class Activity
 
     public function removeScan(Scan $scan): static
     {
-        if ($this->scans->removeElement($scan)) {
-            // set the owning side to null (unless already changed)
-            if ($scan->getActivity() === $this) {
-                $scan->setActivity(null);
-            }
+        if ($this->scans->removeElement($scan) && $scan->getActivity() === $this) {
+            $scan->setActivity(null);
         }
 
         return $this;

@@ -8,12 +8,13 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AuthorityRepository::class)]
-final class Authority
+class Authority
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private int $id;
+    private ?int $id = null;
+
     #[ORM\Column(length: 50)]
     private string $authorityUser;
 
@@ -35,15 +36,21 @@ final class Authority
         $this->authorityRoles = new ArrayCollection();
     }
 
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
     public function getAuthorityUser(): string
     {
         return $this->authorityUser;
     }
 
-    public function setAuthorityUser(string $authorityUser): void
+    public function setAuthorityUser(string $authorityUser): static
     {
         $this->authorityUser = $authorityUser;
+
+        return $this;
     }
 
     /**
@@ -66,11 +73,8 @@ final class Authority
 
     public function removeUser(User $user): static
     {
-        if ($this->users->removeElement($user)) {
-            // set the owning side to null (unless already changed)
-            if ($user->getAuthority() === $this) {
-                $user->setAuthority(null);
-            }
+        if ($this->users->removeElement($user) && $user->getAuthority() === $this) {
+            $user->setAuthority(null);
         }
 
         return $this;
@@ -96,11 +100,8 @@ final class Authority
 
     public function removeAuthorityRole(AuthorityRole $authorityRole): static
     {
-        if ($this->authorityRoles->removeElement($authorityRole)) {
-            // set the owning side to null (unless already changed)
-            if ($authorityRole->getAuthority() === $this) {
-                $authorityRole->setAuthority(null);
-            }
+        if ($this->authorityRoles->removeElement($authorityRole) && $authorityRole->getAuthority() === $this) {
+            $authorityRole->setAuthority(null);
         }
 
         return $this;

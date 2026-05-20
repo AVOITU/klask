@@ -18,7 +18,6 @@ class AuthorityRole
     #[ORM\JoinColumn(nullable: false)]
     private ?Role $role = null;
 
-
     public function getAuthority(): ?Authority
     {
         return $this->authority;

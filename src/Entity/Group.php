@@ -17,13 +17,15 @@ class Group
     private ?int $id = null;
 
     #[ORM\Column(length: 50, nullable: true)]
-    private ?string $nameGroup = null;
+    private ?string $name = null;
 
-    /**
-     * @var Collection<int, User>
-     */
-    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'group', orphanRemoval: true)]
-    private Collection $users;
+    // Couleur hexadécimale de l'équipe
+    #[ORM\Column(length: 50)]
+    private string $color;
+
+    // Code unique auto-généré
+    #[ORM\Column(length: 10, unique: true)]
+    private string $code;
 
     #[ORM\ManyToOne(inversedBy: 'groups')]
     #[ORM\JoinColumn(nullable: false)]
@@ -33,54 +35,55 @@ class Group
     #[ORM\JoinColumn(nullable: false)]
     private ?Event $event = null;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    //Maximum 40 élèves hors accompagnateurs, limite à revoir? 30?
+    /**
+     * @var Collection<int, User>
+     */
+    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'group', orphanRemoval: true)]
+    private Collection $users;
 
     public function __construct()
     {
         $this->users = new ArrayCollection();
     }
 
-    public function getNameGroup(): ?string
+    public function getId(): ?int
     {
-        return $this->nameGroup;
+        return $this->id;
     }
 
-    public function setNameGroup(string $nameGroup): static
+    public function getName(): ?string
     {
-        $this->nameGroup = $nameGroup;
+        return $this->name;
+    }
+
+    public function setName(?string $name): static
+    {
+        $this->name = $name;
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, User>
-     */
-    public function getUsers(): Collection
+    public function getColor(): string
     {
-        return $this->users;
+        return $this->color;
     }
 
-    public function addUser(User $user): static
+    public function setColor(string $color): static
     {
-        if (!$this->users->contains($user)) {
-            $this->users->add($user);
-            $user->setGroup($this);
-        }
+        $this->color = $color;
 
         return $this;
     }
 
-    public function removeUser(User $user): static
+    public function getCode(): string
     {
-        if ($this->users->removeElement($user)) {
-            // set the owning side to null (unless already changed)
-            if ($user->getGroup() === $this) {
-                $user->setGroup(null);
-            }
-        }
+        return $this->code;
+    }
+
+    public function setCode(string $code): static
+    {
+        $this->code = $code;
 
         return $this;
     }
@@ -109,4 +112,30 @@ class Group
         return $this;
     }
 
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): static
+    {
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
+            $user->setGroup($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): static
+    {
+        if ($this->users->removeElement($user) && $user->getGroup() === $this) {
+            $user->setGroup(null);
+        }
+
+        return $this;
+    }
 }

@@ -6,27 +6,50 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-final class User
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    #[ORM\Column]
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    private int $id;
-    #[ORM\Column (length: 191, unique: true)]
-    private string $pseudoUser;
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\Column(length: 40, nullable: true)]
+    #[ORM\Column(length: 255, unique: true, nullable: true)]
+    private ?string $pseudo = null;
+
+    #[ORM\Column(length: 180, unique: true, nullable: true)]
+    private ?string $email = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $password = null;
+
+    // Null = non bloqué
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $blockedUntil = null;
+
+    // horodatage du dernier poke envoyé par l'accompagnateur. Null = pas de poke en attente
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $pokedAt = null;
+
+    //compteur de scans invalides consécutifs. Remis à 0 après tout scan valide
+    #[ORM\Column(options: ['default' => 0])]
+    private int $invalidScanCount = 0;
+
+    #[ORM\Column(length: 10, nullable: true)]
+    private ?string $groupCode = null;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Authority $authority = null;
 
+    // Null pour les admins
     #[ORM\ManyToOne(inversedBy: 'users')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Group $group = null;
+
 
     /**
      * @var Collection<int, Scan>
@@ -39,15 +62,59 @@ final class User
         $this->scans = new ArrayCollection();
     }
 
-
-    public function getPseudoUser(): string
+    // id unique Security : email pour staff, pseudo pour les élèves (pas d'email)
+    public function getUserIdentifier(): string
     {
-        return $this->pseudoUser;
+        return $this->email ?? $this->pseudo ?? '';
     }
 
-    public function setPseudoUser(string $pseudoUser): void
+    // La BDD stocke STUDENT/ADMIN — Symfony exige le préfixe ROLE_
+    public function getRoles(): array
     {
-        $this->pseudoUser = $pseudoUser;
+        $roles = [];
+
+        foreach ($this->authority?->getAuthorityRoles() ?? [] as $authorityRole) {
+            $name = $authorityRole->getRole()?->getNameRole();
+            if ($name !== null) {
+                $roles[] = 'ROLE_' . $name;
+            }
+        }
+
+        return $roles ?: ['ROLE_STUDENT'];
+    }
+
+    //efface les données sensibles en clair dans la mémoire
+    public function eraseCredentials(): void
+    {
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getPseudo(): ?string
+    {
+        return $this->pseudo;
+    }
+
+    public function setPseudo(?string $pseudo): static
+    {
+        $this->pseudo = $pseudo;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(?string $email): static
+    {
+        $this->email = $email;
+
+        return $this;
     }
 
     public function getPassword(): ?string
@@ -58,6 +125,54 @@ final class User
     public function setPassword(?string $password): static
     {
         $this->password = $password;
+
+        return $this;
+    }
+
+    public function getBlockedUntil(): ?\DateTimeImmutable
+    {
+        return $this->blockedUntil;
+    }
+
+    public function setBlockedUntil(?\DateTimeImmutable $blockedUntil): static
+    {
+        $this->blockedUntil = $blockedUntil;
+
+        return $this;
+    }
+
+    public function getInvalidScanCount(): int
+    {
+        return $this->invalidScanCount;
+    }
+
+    public function setInvalidScanCount(int $invalidScanCount): static
+    {
+        $this->invalidScanCount = $invalidScanCount;
+
+        return $this;
+    }
+
+    public function getPokedAt(): ?\DateTimeImmutable
+    {
+        return $this->pokedAt;
+    }
+
+    public function setPokedAt(?\DateTimeImmutable $pokedAt): static
+    {
+        $this->pokedAt = $pokedAt;
+
+        return $this;
+    }
+
+    public function getGroupCode(): ?string
+    {
+        return $this->groupCode;
+    }
+
+    public function setGroupCode(?string $groupCode): static
+    {
+        $this->groupCode = $groupCode;
 
         return $this;
     }
@@ -86,17 +201,13 @@ final class User
         return $this;
     }
 
+
     /**
      * @return Collection<int, Scan>
      */
     public function getScans(): Collection
     {
         return $this->scans;
-    }
-
-    public function getId(): int
-    {
-        return $this->id;
     }
 
     public function addScan(Scan $scan): static
@@ -111,11 +222,8 @@ final class User
 
     public function removeScan(Scan $scan): static
     {
-        if ($this->scans->removeElement($scan)) {
-            // set the owning side to null (unless already changed)
-            if ($scan->getUser() === $this) {
-                $scan->setUser(null);
-            }
+        if ($this->scans->removeElement($scan) && $scan->getUser() === $this) {
+            $scan->setUser(null);
         }
 
         return $this;

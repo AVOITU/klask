@@ -13,10 +13,10 @@ class Role
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private int $id;
+    private ?int $id = null;
 
     #[ORM\Column(length: 50)]
-    private ?string $nameRole = null;
+    private string $nameRole;
 
     /**
      * @var Collection<int, AuthorityRole>
@@ -29,8 +29,12 @@ class Role
         $this->authorityRoles = new ArrayCollection();
     }
 
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getNameRole(): ?string
+    public function getNameRole(): string
     {
         return $this->nameRole;
     }
@@ -62,11 +66,8 @@ class Role
 
     public function removeAuthorityRole(AuthorityRole $authorityRole): static
     {
-        if ($this->authorityRoles->removeElement($authorityRole)) {
-            // set the owning side to null (unless already changed)
-            if ($authorityRole->getRole() === $this) {
-                $authorityRole->setRole(null);
-            }
+        if ($this->authorityRoles->removeElement($authorityRole) && $authorityRole->getRole() === $this) {
+            $authorityRole->setRole(null);
         }
 
         return $this;

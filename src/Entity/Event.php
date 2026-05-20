@@ -13,10 +13,10 @@ class Event
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private int $id;
+    private ?int $id = null;
 
     #[ORM\Column(length: 50)]
-    private ?string $nameEvent = null;
+    private string $name;
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $beginningHourEvent = null;
@@ -35,14 +35,19 @@ class Event
         $this->groups = new ArrayCollection();
     }
 
-    public function getNameEvent(): ?string
+    public function getId(): ?int
     {
-        return $this->nameEvent;
+        return $this->id;
     }
 
-    public function setNameEvent(string $nameEvent): static
+    public function getName(): string
     {
-        $this->nameEvent = $nameEvent;
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
 
         return $this;
     }
@@ -91,15 +96,10 @@ class Event
 
     public function removeGroup(Group $group): static
     {
-        if ($this->groups->removeElement($group)) {
-            // set the owning side to null (unless already changed)
-            if ($group->getEvent() === $this) {
-                $group->setEvent(null);
-            }
+        if ($this->groups->removeElement($group) && $group->getEvent() === $this) {
+            $group->setEvent(null);
         }
 
         return $this;
     }
-
-
 }

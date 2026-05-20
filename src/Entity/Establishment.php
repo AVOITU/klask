@@ -13,10 +13,10 @@ class Establishment
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private int $id;
+    private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    private ?string $name_establishment = null;
+    private string $name;
 
     /**
      * @var Collection<int, Group>
@@ -29,14 +29,19 @@ class Establishment
         $this->groups = new ArrayCollection();
     }
 
-    public function getNameEstablishment(): ?string
+    public function getId(): ?int
     {
-        return $this->name_establishment;
+        return $this->id;
     }
 
-    public function setNameEstablishment(string $name_establishment): static
+    public function getName(): string
     {
-        $this->name_establishment = $name_establishment;
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
 
         return $this;
     }
@@ -61,14 +66,10 @@ class Establishment
 
     public function removeGroup(Group $group): static
     {
-        if ($this->groups->removeElement($group)) {
-            // set the owning side to null (unless already changed)
-            if ($group->getEstablishment() === $this) {
-                $group->setEstablishment(null);
-            }
+        if ($this->groups->removeElement($group) && $group->getEstablishment() === $this) {
+            $group->setEstablishment(null);
         }
 
         return $this;
     }
-
 }

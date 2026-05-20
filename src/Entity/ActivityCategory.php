@@ -8,21 +8,27 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ActivityCategoryRepository::class)]
-final class ActivityCategory
+class ActivityCategory
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private int $id;
-    #[ORM\Column(length: 191, unique: true)]
-    private string $typeCategory;
-    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\Column(length: 50, unique: true)]
+    private string $type;
+
+    #[ORM\Column(options: ['unsigned' => true])]
     private int $nbrPoints;
+
     #[ORM\Column]
     private int $nbrMaxActivity;
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $beginningHourCategory = null;
+
+    #[ORM\Column(type: 'text', length: 500, nullable: true)]
+    private ?string $restrictions = null;
 
     /**
      * @var Collection<int, Activity>
@@ -42,27 +48,33 @@ final class ActivityCategory
         $this->spheres = new ArrayCollection();
     }
 
-
-
-    public function getTypeCategory(): string
+    public function getId(): ?int
     {
-        return $this->typeCategory;
+        return $this->id;
     }
 
-    public function setTypeCategory(string $typeCategory): void
+    public function getType(): string
     {
-        $this->typeCategory = $typeCategory;
+        return $this->type;
     }
 
+    public function setType(string $type): static
+    {
+        $this->type = $type;
+
+        return $this;
+    }
 
     public function getNbrPoints(): int
     {
         return $this->nbrPoints;
     }
 
-    public function setNbrPoints(int $nbrPoints): void
+    public function setNbrPoints(int $nbrPoints): static
     {
         $this->nbrPoints = $nbrPoints;
+
+        return $this;
     }
 
     public function getNbrMaxActivity(): int
@@ -70,9 +82,11 @@ final class ActivityCategory
         return $this->nbrMaxActivity;
     }
 
-    public function setNbrMaxActivity(int $nbrMaxActivity): void
+    public function setNbrMaxActivity(int $nbrMaxActivity): static
     {
         $this->nbrMaxActivity = $nbrMaxActivity;
+
+        return $this;
     }
 
     public function getBeginningHourCategory(): ?\DateTimeImmutable
@@ -87,6 +101,18 @@ final class ActivityCategory
         return $this;
     }
 
+    public function getRestrictions(): ?string
+    {
+        return $this->restrictions;
+    }
+
+    public function setRestrictions(?string $restrictions): static
+    {
+        $this->restrictions = $restrictions;
+
+        return $this;
+    }
+
     /**
      * @return Collection<int, Activity>
      */
@@ -95,23 +121,20 @@ final class ActivityCategory
         return $this->activities;
     }
 
-    public function addActivities(Activity $activities): static
+    public function addActivity(Activity $activity): static
     {
-        if (!$this->activities->contains($activities)) {
-            $this->activities->add($activities);
-            $activities->setCategory($this);
+        if (!$this->activities->contains($activity)) {
+            $this->activities->add($activity);
+            $activity->setCategory($this);
         }
 
         return $this;
     }
 
-    public function removeActivities(Activity $activities): static
+    public function removeActivity(Activity $activity): static
     {
-        if ($this->activities->removeElement($activities)) {
-            // set the owning side to null (unless already changed)
-            if ($activities->getCategory() === $this) {
-                $activities->setCategory(null);
-            }
+        if ($this->activities->removeElement($activity) && $activity->getCategory() === $this) {
+            $activity->setCategory(null);
         }
 
         return $this;
@@ -137,14 +160,10 @@ final class ActivityCategory
 
     public function removeSphere(Sphere $sphere): static
     {
-        if ($this->spheres->removeElement($sphere)) {
-            // set the owning side to null (unless already changed)
-            if ($sphere->getCategory() === $this) {
-                $sphere->setCategory(null);
-            }
+        if ($this->spheres->removeElement($sphere) && $sphere->getCategory() === $this) {
+            $sphere->setCategory(null);
         }
 
         return $this;
     }
-
 }

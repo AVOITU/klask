@@ -5,23 +5,40 @@ namespace App\Entity;
 use App\Repository\SphereRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SphereRepository::class)]
-final class Sphere
+class Sphere
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private int $id;
-    #[ORM\Column(length: 100, unique: true)]
-    private string $nameSphere;
-    #[ORM\Column(length: 50, unique: true)]
-    private string $colorSphere;
+    private ?int $id = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $descriptionSphere = null;
+    #[ORM\Column(length: 100, unique: true)]
+    private string $name;
+
+    #[ORM\Column(length: 50, unique: true)]
+    private string $color;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $icon = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $description = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $pointX = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $pointY = null;
+
+    #[ORM\Column]
+    private float $radius = 10.0;
+
+    #[ORM\ManyToOne(inversedBy: 'spheres')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?ActivityCategory $category = null;
 
     /**
      * @var Collection<int, Activity>
@@ -29,73 +46,96 @@ final class Sphere
     #[ORM\OneToMany(targetEntity: Activity::class, mappedBy: 'sphere')]
     private Collection $activities;
 
-    #[ORM\ManyToOne(inversedBy: 'spheres')]
-    private ?ActivityCategory $category = null;
-
     public function __construct()
     {
         $this->activities = new ArrayCollection();
     }
 
-
-    public function getNameSphere(): string
+    public function getId(): ?int
     {
-        return $this->nameSphere;
+        return $this->id;
     }
 
-    public function setNameSphere(string $nameSphere): void
+    public function getName(): string
     {
-        $this->nameSphere = $nameSphere;
+        return $this->name;
     }
 
-    public function getColorSphere(): string
+    public function setName(string $name): static
     {
-        return $this->colorSphere;
-    }
-
-    public function setColorSphere(string $colorSphere): void
-    {
-        $this->colorSphere = $colorSphere;
-    }
-
-    public function getDescriptionSphere(): ?string
-    {
-        return $this->descriptionSphere;
-    }
-
-    public function setDescriptionSphere(?string $descriptionSphere): static
-    {
-        $this->descriptionSphere = $descriptionSphere;
+        $this->name = $name;
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, Activity>
-     */
-    public function getActivities(): Collection
+    public function getColor(): string
     {
-        return $this->activities;
+        return $this->color;
     }
 
-    public function addActivities(Activity $activities): static
+    public function setColor(string $color): static
     {
-        if (!$this->activities->contains($activities)) {
-            $this->activities->add($activities);
-            $activities->setSphere($this);
-        }
+        $this->color = $color;
 
         return $this;
     }
 
-    public function removeActivities(Activity $activities): static
+    public function getIcon(): ?string
     {
-        if ($this->activities->removeElement($activities)) {
-            // set the owning side to null (unless already changed)
-            if ($activities->getSphere() === $this) {
-                $activities->setSphere(null);
-            }
-        }
+        return $this->icon;
+    }
+
+    public function setIcon(?string $icon): static
+    {
+        $this->icon = $icon;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getPointX(): ?float
+    {
+        return $this->pointX;
+    }
+
+    public function setPointX(?float $pointX): static
+    {
+        $this->pointX = $pointX;
+
+        return $this;
+    }
+
+    public function getPointY(): ?float
+    {
+        return $this->pointY;
+    }
+
+    public function setPointY(?float $pointY): static
+    {
+        $this->pointY = $pointY;
+
+        return $this;
+    }
+
+    public function getRadius(): float
+    {
+        return $this->radius;
+    }
+
+    public function setRadius(float $radius): static
+    {
+        $this->radius = $radius;
 
         return $this;
     }
@@ -111,5 +151,31 @@ final class Sphere
 
         return $this;
     }
-}
 
+    /**
+     * @return Collection<int, Activity>
+     */
+    public function getActivities(): Collection
+    {
+        return $this->activities;
+    }
+
+    public function addActivity(Activity $activity): static
+    {
+        if (!$this->activities->contains($activity)) {
+            $this->activities->add($activity);
+            $activity->setSphere($this);
+        }
+
+        return $this;
+    }
+
+    public function removeActivity(Activity $activity): static
+    {
+        if ($this->activities->removeElement($activity) && $activity->getSphere() === $this) {
+            $activity->setSphere(null);
+        }
+
+        return $this;
+    }
+}

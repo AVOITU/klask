@@ -7,16 +7,16 @@ use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ScanRepository::class)]
-final class Scan
+class Scan
 {
-    #[ORM\Column]
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    private int $id;
-
-
     #[ORM\Column]
-    private ?DateTimeImmutable $hourValidation = null;
+    private ?int $id = null;
+
+    //Immuable "normalement" (c'est à dire non modifiable) - plus le cas si on démarre avec un timestamp à 0
+    #[ORM\Column]
+    private DateTimeImmutable $hourValidation;
 
     #[ORM\ManyToOne(inversedBy: 'scans')]
     #[ORM\JoinColumn(nullable: false)]
@@ -26,19 +26,19 @@ final class Scan
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-    public function __construct()
-    {    }
-
-    public function getHourValidation(): ?\DateTimeImmutable
-    {
-        return $this->hourValidation;
-    }
-
-    public function setHourValidation(\DateTimeImmutable $hourValidation): static
+    public function __construct(DateTimeImmutable $hourValidation)
     {
         $this->hourValidation = $hourValidation;
+    }
 
-        return $this;
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getHourValidation(): DateTimeImmutable
+    {
+        return $this->hourValidation;
     }
 
     public function getActivity(): ?Activity
