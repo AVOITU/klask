@@ -3,30 +3,51 @@
 namespace App\DataFixtures;
 
 use App\Entity\Authority;
+use App\Entity\AuthorityRole;
 use App\Entity\Role;
-use App\Entity\AuthorityRole; // Si c'est bien une entité de liaison
+use App\Security\RoleSecurity;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class AuthorityFixtures extends Fixture
+class AuthorityFixtures extends Fixture implements DependentFixtureInterface
 {
-    public const AUTHORITY_REFERENCE = 'authority_student';
+    public const AUTHORITY_ADMIN_REFERENCE        = 'authority_admin';
+    public const AUTHORITY_ACCOMPANYING_REFERENCE = 'authority_accompanying';
+    public const AUTHORITY_STUDENT_REFERENCE      = 'authority_student';
 
     public function load(ObjectManager $manager): void
     {
-        $authority = new Authority();
-        $authority->setAuthorityUser("STUDENT");
-        $manager->persist($authority);
+        foreach ($this->getAuthorityDefinitions() as [$roleName, $roleReference, $authorityReference]) {
+            $authority = new Authority();
+            $authority->setAuthorityUser($roleName);
+            $manager->persist($authority);
 
-        
-        $authorityRole = new AuthorityRole();
-        $authorityRole->setAuthority($authority);
-        $authorityRole->setRole($this->getReference(RoleFixtures::ROLE_REFERENCE, Role::class));
-        $manager->persist($authorityRole);
+            $authorityRole = new AuthorityRole();
+            $authorityRole->setAuthority($authority);
+            $authorityRole->setRole($this->getReference($roleReference, Role::class));
+            $manager->persist($authorityRole);
 
-        // On garde une référence pour plus tard si besoin
-        $this->addReference(self::AUTHORITY_REFERENCE, $authority);
+            $this->addReference($authorityReference, $authority);
+        }
 
         $manager->flush();
+    }
+
+    public function getDependencies(): array
+    {
+        return [RoleFixtures::class];
+    }
+
+    /**
+     * @return array<array{string, string, string}>
+     */
+    private function getAuthorityDefinitions(): array
+    {
+        return [
+            [RoleSecurity::ADMIN->value,        RoleFixtures::ROLE_ADMIN_REFERENCE,        self::AUTHORITY_ADMIN_REFERENCE],
+            [RoleSecurity::ACCOMPANYING->value,  RoleFixtures::ROLE_ACCOMPANYING_REFERENCE, self::AUTHORITY_ACCOMPANYING_REFERENCE],
+            [RoleSecurity::STUDENT->value,       RoleFixtures::ROLE_STUDENT_REFERENCE,      self::AUTHORITY_STUDENT_REFERENCE],
+        ];
     }
 }

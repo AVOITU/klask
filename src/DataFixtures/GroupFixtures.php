@@ -2,44 +2,47 @@
 
 namespace App\DataFixtures;
 
-use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Persistence\ObjectManager;
-use App\Entity\Group;
 use App\Entity\Establishment;
 use App\Entity\Event;
+use App\Entity\Group;
+use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Persistence\ObjectManager;
 
 class GroupFixtures extends Fixture
 {
     public const GROUP_REFERENCE = 'group';
 
+    private const LEVELS = [
+        ['name' => 'Seconde',  'color' => '#4A90E2'],
+        ['name' => 'Première', 'color' => '#7ED321'],
+        ['name' => 'Troisième','color' => '#F5A623'],
+    ];
+
     public function load(ObjectManager $manager): void
     {
-        for( $i = 0; $i < 24; $i++ ) {
-            if ( $i < 12 ) {
-                $group = new Group();
-                $group->setNameGroup("Seconde");
-                $group->setEvent($this->getReference(EventFixtures::EVENT_REFERENCE, Event::class));
-                $group->setEstablishment($this->getReference(EstablishmentFixtures::ESTABLISHMENT_REFERENCE . '_'.$i, Establishment::class));
-                $this->addReference(self::GROUP_REFERENCE .'_Seconde_'.$i, $group);
-                $manager->persist($group);
-                $group = new Group();
-                $group->setNameGroup("Première");
-                $group->setEvent($this->getReference(EventFixtures::EVENT_REFERENCE, Event::class));
-                $group->setEstablishment($this->getReference(EstablishmentFixtures::ESTABLISHMENT_REFERENCE . '_'.$i, Establishment::class));
-                $this->addReference(self::GROUP_REFERENCE .'_Première_'.$i, $group);
-                $manager->persist($group);
-            }
+        $counter = 1;
 
-              else {
+        for ($i = 0; $i < 24; $i++) {
+            $levels = $i < 12
+                ? [self::LEVELS[0], self::LEVELS[1]]
+                : [self::LEVELS[2]];
+
+            foreach ($levels as $level) {
                 $group = new Group();
-                $group->setNameGroup("Troisième");
-                $group->setEstablishment($this->getReference(EstablishmentFixtures::ESTABLISHMENT_REFERENCE . '_'.$i, Establishment::class));
-                $group->setEvent($this->getReference(EventFixtures::EVENT_REFERENCE, Event::class));
-                $this->addReference(self::GROUP_REFERENCE .'_Troisième_'.$i, $group);
+                $group->setName($level['name'])
+                      ->setColor($level['color'])
+                      ->setCode(sprintf('GRP%04d', $counter++))
+                      ->setEvent($this->getReference(EventFixtures::EVENT_REFERENCE, Event::class))
+                      ->setEstablishment($this->getReference(
+                          EstablishmentFixtures::ESTABLISHMENT_REFERENCE . '_' . $i,
+                          Establishment::class
+                      ));
+
                 $manager->persist($group);
+                $this->addReference(self::GROUP_REFERENCE . '_' . $level['name'] . '_' . $i, $group);
             }
         }
 
-       $manager->flush();
+        $manager->flush();
     }
 }
