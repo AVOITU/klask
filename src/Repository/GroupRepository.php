@@ -7,6 +7,9 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @extends ServiceEntityRepository<Group>
+ */
 class GroupRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -14,59 +17,66 @@ class GroupRepository extends ServiceEntityRepository
         parent::__construct($registry, Group::class);
     }
 
-    /*public function qbByEstablishment(?string $establishment): QueryBuilder
+    // queryBuilder par établissement, plus utilisé (remplacé par code groupe). Garder pour les tests.
+    public function qbByEstablishment(?string $establishmentName): QueryBuilder
     {
-        $qb = $this->createQueryBuilder('c')
-            ->orderBy('c.nameClass', 'ASC');
+        $qb = $this->createQueryBuilder('g')
+            ->join('g.establishment', 'e')
+            ->orderBy('g.name', 'ASC');
 
-        if ($school) {
-            $qb->andWhere('c.school = :school')
-                ->setParameter('school', $school);
+        if ($establishmentName) {
+            $qb->andWhere('e.name = :establishment')
+               ->setParameter('establishment', $establishmentName);
         } else {
             $qb->andWhere('1 = 0');
         }
 
         return $qb;
     }
-    */
 
-public function qbByEstablishment(?string $establishmentName): QueryBuilder
-{
-    $qb = $this->createQueryBuilder('g')
-        ->join('g.establishment', 'e')
-        ->orderBy('g.nameGroup', 'ASC');
-
-    if ($establishmentName) {
-        $qb->andWhere('e.name_establishment = :establishment')
-           ->setParameter('establishment', $establishmentName);
-    } else {
-        $qb->andWhere('1 = 0');
-    }
-
-    return $qb;
-}
-
-    public function findById(int $idGroup): ?Group
+    // niveaux distincts en bdd pour le select du formulaire d'inscription
+    /** @return string[] */
+    public function findDistinctLevels(): array
     {
-        return $this->createQueryBuilder('g')
-            ->where('g.id = :idGroup')
-            ->setParameter('idGroup', $idGroup)
+        $rows = $this->createQueryBuilder('g')
+            ->select('DISTINCT g.name')
+            ->where('g.name IS NOT NULL')
+            ->orderBy('g.name', 'ASC')
             ->getQuery()
-            ->getOneOrNullResult();
+            ->getScalarResult();
+
+        return array_column($rows, 'name');
     }
 
-
-    public function findGroupTotalScore(int $groupId): int
+    // groupe par code unique saisi à l'inscription
+    public function findByCode(string $code): ?Group
     {
-        return (int) $this->createQueryBuilder('u')
-            ->select('COALESCE(SUM(cat.nbrPoint), 0)')
-            ->leftJoin('u.validations', 'v')
-            ->leftJoin('v.activity', 'act')
-            ->leftJoin('act.category', 'cat')
-            ->where('u.group = :groupId')
+        return $this->findOneBy(['code' => strtoupper(trim($code))]);
+    }
+
+    public function countUsersByGroupId(int $groupId): int
+    {
+        return (int) $this->createQueryBuilder('g')
+            ->select('COUNT(u.id)')
+            ->join('g.users', 'u')
+            ->where('g.id = :groupId')
             ->setParameter('groupId', $groupId)
             ->getQuery()
             ->getSingleScalarResult();
     }
 
+    // somme des points de tous les scans des membres du groupe
+    public function findGroupTotalScore(int $groupId): int
+    {
+        return (int) $this->createQueryBuilder('g')
+            ->select('COALESCE(SUM(cat.nbrPoints), 0)')
+            ->join('g.users', 'u')
+            ->join('u.scans', 's')
+            ->join('s.activity', 'act')
+            ->join('act.category', 'cat')
+            ->where('g.id = :groupId')
+            ->setParameter('groupId', $groupId)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }
