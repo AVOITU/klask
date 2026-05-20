@@ -2,8 +2,11 @@
 framework:
     secret: '%env(APP_SECRET)%'
 
-    # Note that the session will be started ONLY if you read or write from it.
-    session: true
+    # Session : durée 24h pour couvrir toute la journée de l'event.
+    # Les élèves n'ont pas de mot de passe — leur pseudo est leur identifiant de session.
+    session:
+        cookie_lifetime: 86400    # 24h — cookie persiste même si le browser se ferme
+        gc_maxlifetime: 86400     # 24h — serveur conserve les données de session
 
     #esi: true
     #fragments: true
