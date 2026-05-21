@@ -1,0 +1,209 @@
+/* KLASK · map.css · tactical HUD */
+
+:root {
+    --c-ink:    #1a1a1a;
+    --c-map-bg: #e8e2d8;
+    --c-muted:  #777;
+    --c-panel:  #faf8f4;
+}
+
+main:has(.map-wrapper) { padding: 0; display: block; height: 100vh; overflow: hidden; }
+
+body:has(.map-wrapper) .accessibility-bar {
+    top: 52px;
+    left: 20px;
+    right: auto;
+    transform: none;
+    flex-direction: row;
+}
+@media (min-width: 768px) {
+    body:has(.map-wrapper) .accessibility-bar { top: 52px; left: 20px; right: auto; transform: none; }
+}
+
+/* ── Layout carte ── */
+.map-wrapper {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    background: var(--c-map-bg);
+    position: relative;
+}
+.map-area {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    cursor: grab;
+}
+.map-area:active { cursor: grabbing; }
+
+.map-canvas {
+    position: absolute;
+    inset: 0 auto auto 0;
+    transform-origin: 0 0;
+    will-change: transform;
+}
+.map-plan {
+    display: block;
+    width: 100vw;
+    height: auto;
+    max-width: none;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 20px rgba(0,0,0,.12);
+    user-select: none;
+    pointer-events: none;
+    -webkit-user-drag: none;
+}
+.map-overlays { position: absolute; inset: 0; }
+.map-loading  { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: .9rem; color: var(--c-muted); }
+
+/* ── Zones ── */
+.sphere-zone {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--c, #ccc);
+    opacity: .75;
+    border: 2px solid rgba(0,0,0,.16);
+    box-shadow: 0 4px 16px rgba(0,0,0,.14);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+.sphere-label {
+    font: 700 clamp(.42rem, 1vw, .72rem)/1.2 'Open Sans', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: #fff;
+    text-shadow: 0 1px 4px rgba(0,0,0,.5);
+    text-align: center;
+    padding: 0 4px;
+    pointer-events: none;
+}
+
+/* ── Pins (réticule de ciblage) ── */
+.activity-pin {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    width: clamp(9px, 1.6vw, 17px);
+    height: clamp(9px, 1.6vw, 17px);
+    border-radius: 50%;
+    background: #F48176;
+    border: 2px solid rgba(255,255,255,.85);
+    cursor: pointer;
+    z-index: 5;
+    box-shadow: 0 0 0 1px rgba(139,0,0,.4), 0 0 8px rgba(244,129,118,.7);
+    padding: 0;
+    transition: transform .15s, box-shadow .15s;
+}
+.activity-pin:hover {
+    transform: translate(-50%, -50%) scale(1.7);
+    box-shadow: 0 0 0 2px #F48176, 0 0 16px rgba(244,129,118,.9);
+    z-index: 10;
+}
+.activity-pin.unavailable { background: #bbb; border-color: rgba(255,255,255,.5); opacity: .5; box-shadow: none; }
+
+/* ── Bulle info + modal (partagé) ── */
+.activity-bubble,
+.modal-content {
+    background: var(--c-panel);
+    border: 1.5px solid var(--c-ink);
+    font-family: 'Open Sans', sans-serif;
+    box-shadow: 0 0 0 1px rgba(244,129,118,.25), 0 6px 24px rgba(0,0,0,.18);
+}
+.activity-bubble {
+    position: absolute;
+    bottom: 16px; left: 50%;
+    transform: translateX(-50%);
+    min-width: 180px;
+    max-width: min(300px, 90vw);
+    border-radius: 3px;
+    padding: 12px 14px 10px;
+    z-index: 20;
+}
+.activity-bubble[hidden] { display: none; }
+
+.bubble-name { font-weight: 700; font-size: .88rem; margin: 0 24px 6px 0; color: var(--c-ink); }
+.bubble-desc { font-size: .79rem; color: #555; margin: 0 0 4px; line-height: 1.4; }
+.bubble-wait { font-size: .74rem; color: var(--c-muted); font-style: italic; margin: 0; }
+
+.btn-close,
+.btn-close-bubble,
+.btn-close-modal {
+    position: absolute;
+    top: 8px; right: 10px;
+    background: none;
+    border: none;
+    font-size: .95rem;
+    cursor: pointer;
+    color: #888;
+    line-height: 1;
+    padding: 0;
+    transition: color .12s;
+}
+.btn-close:hover, .btn-close-bubble:hover, .btn-close-modal:hover { color: var(--c-ink); }
+.modal-content .btn-close, .modal-content .btn-close-modal { top: 10px; right: 12px; }
+
+/* ── Help ── */
+.btn-help {
+    position: fixed;
+    bottom: 18px; right: 18px;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: #8B0000;
+    color: #fff;
+    border: none;
+    font: 700 1rem/1 'Open Sans', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 0 0 1px rgba(139,0,0,.5), 0 0 14px rgba(139,0,0,.6);
+    transition: box-shadow .15s;
+    z-index: 500;
+}
+.btn-help:hover { box-shadow: 0 0 0 1px #b50000, 0 0 22px rgba(181,0,0,.8); }
+
+/* ── Modal overlay ── */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.55);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.modal-overlay[hidden] { display: none; }
+.modal-content {
+    border-radius: 3px;
+    max-width: 440px;
+    width: 100%;
+    padding: 26px 22px 22px;
+    position: relative;
+}
+.modal-content h2 { font-size: 1.05rem; font-weight: 700; margin: 0 0 14px; color: var(--c-ink); text-transform: uppercase; letter-spacing: 2px; }
+.modal-body p { font-size: .84rem; color: #555; margin: 0 0 8px; line-height: 1.5; }
+
+/* ── Poke ── */
+.poke-notif {
+    position: fixed;
+    bottom: 24px; left: 50%;
+    transform: translateX(-50%);
+    background: var(--c-ink);
+    color: #F48176;
+    padding: 10px 22px;
+    border-radius: 2px;
+    font: .85rem/1 'Courier New', monospace;
+    letter-spacing: 1px;
+    border: 1px solid #F48176;
+    box-shadow: 0 0 14px rgba(244,129,118,.4);
+    z-index: 200;
+    white-space: nowrap;
+    animation: slideUp .3s ease;
+}
+@keyframes slideUp {
+    from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    to   { opacity: 1; transform: translateX(-50%); }
+}
