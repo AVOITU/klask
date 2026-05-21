@@ -1,0 +1,110 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Choisis ton parcours{% endblock %}
+
+{% block stylesheets %}{{ parent() }}{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>Choisis ton parcours</h1>
+
+        <p class="quiz-instruction">
+            <strong>1</strong> ce que tu préfères &nbsp;·&nbsp;
+            <strong>6</strong> ce qui te ressemble le moins.<br>
+            <em>Attention : tu ne peux utiliser chaque chiffre qu'une seule fois !</em>
+        </p>
+
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="resultat {{ label == 'success' ? 'success-anim' : 'error-anim' }}">
+                    <p><strong>{{ message }}</strong></p>
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        {# ne pas oublier token CSRF #}
+        <form method="post" action="{{ path('app_questionnaire_save') }}" id="quiz-form" novalidate>
+
+            <table class="quiz-table">
+                <tbody>
+                    {% for letter, affirmation in affirmations %}
+                        <tr>
+                            <td>
+                                <strong>{{ letter }}.</strong> {{ affirmation.text }}
+                            </td>
+                            <td>
+                                <select name="ratings[{{ letter }}]" class="rating-select" required>
+                                    <option value="">—</option>
+                                    {% for i in 1..6 %}
+                                        <option value="{{ i }}">{{ i }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('questionnaire') }}">
+
+            <p class="quiz-error" id="quiz-error" aria-live="polite"></p>
+
+            <button type="submit" class="btn-submit" id="btn-submit">
+                Valider mon parcours
+            </button>
+
+        </form>
+    </div>
+
+    {# JS pour le traitement des notes - à améliorer}
+    <script>
+        const selects   = [...document.querySelectorAll('.rating-select')];
+        const errorEl   = document.getElementById('quiz-error');
+
+        function getValues() {
+            return selects.map(s => s.value).filter(v => v !== '');
+        }
+
+        function isValid() {
+            const vals = getValues();
+            return vals.length === 6 && new Set(vals).size === 6;
+        }
+
+        function refreshState() {
+            const vals   = selects.map(s => s.value);
+            const counts = {};
+            vals.forEach(v => { if (v) counts[v] = (counts[v] ?? 0) + 1; });
+
+            let hasDuplicate = false;
+            selects.forEach(s => {
+                const dup = s.value && counts[s.value] > 1;
+                s.classList.toggle('duplicate', dup);
+                if (dup) hasDuplicate = true;
+            });
+
+            const filled = vals.filter(v => v !== '').length;
+
+            if (hasDuplicate) {
+                errorEl.textContent = 'Deux affirmations ont la même note — chaque chiffre doit être unique.';
+            } else if (filled > 0 && filled < 6) {
+                errorEl.textContent = '';
+            } else {
+                errorEl.textContent = '';
+            }
+        }
+
+        selects.forEach(s => s.addEventListener('change', refreshState));
+
+        document.getElementById('quiz-form').addEventListener('submit', (e) => {
+            if (!isValid()) {
+                e.preventDefault();
+                const vals = getValues();
+                if (vals.length < 6) {
+                    errorEl.textContent = 'Note toutes les affirmations avant de valider.';
+                } else {
+                    errorEl.textContent = 'Utilise chaque chiffre de 1 à 6 une seule fois.';
+                }
+            }
+        });
+    </script>
+{% endblock %}

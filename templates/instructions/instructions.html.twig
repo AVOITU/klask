@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Instructions accompagnateur{% endblock %}
+
+{% block stylesheets %}{{ parent() }}{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        history.replaceState(null, '', '/instructions');
+    </script>
+{% endblock %}
+
+{% block body %}
+<div class="hud-window">
+
+    <div class="hud-cap hud-cap--top">
+        <h1>Bienvenue, accompagnateur·rice</h1>
+    </div>
+
+    <div class="hud-body">
+        <p class="subtitle">Voici comment utiliser l'application pendant l'événement.</p>
+
+        <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-text">
+                <strong>Accéder à la carte</strong>
+                <p>La carte interactive affiche les 6 zones métiers et les stands disponibles.</p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-text">
+                <strong>Suivre votre groupe</strong>
+                <p>Sur la carte, le bouton à droite ouvre le panneau de votre groupe.
+                   Vous voyez en temps réel les scores de chaque élève.</p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-text">
+                <strong>Envoyer un rappel (poke)</strong>
+                <p>Si un élève a un score qui ne bouge pas, cliquez sur son nom.
+                   Il recevra une notification d'encouragement sur sa carte.</p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">4</div>
+            <div class="step-text">
+                <strong>Scores mis à jour automatiquement</strong>
+                <p>Le panneau groupe se rafraîchit toutes les 15 secondes sans recharger la page.</p>
+            </div>
+        </div>
+
+        <a href="{{ path('app_instructions_map') }}" class="btn-map">Accéder à la carte →</a>
+    </div>
+
+    <div class="hud-cap hud-cap--bot"></div>
+
+</div>
+{% endblock %}
