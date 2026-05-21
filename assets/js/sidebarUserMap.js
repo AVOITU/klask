@@ -1,28 +1,11 @@
-console.log('JS chargé pour Sidebar user map');
-
-
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const sidebar = document.getElementById('sidebar-panel');
-    const btnOpen = document.getElementById('sidebar-trigger-zone');
-    const btnClose = document.getElementById('btn-close-sidebar');
+    const trigger = document.getElementById('sidebar-trigger-zone');
 
-    if (!sidebar || !btnOpen || !btnClose) return;
+    if (!sidebar || !trigger) return;
 
-
-    btnOpen.addEventListener('click', function() {
-        sidebar.classList.add('open');
-        btnOpen.style.display = 'none';
+    trigger.addEventListener('click', function () {
+        const open = sidebar.classList.toggle('open');
+        trigger.classList.toggle('is-open', open);
     });
-
-
-    function closeSidebar() {
-        sidebar.classList.remove('open');
-        
-        
-        setTimeout(() => {
-            btnOpen.style.display = 'flex'; 
-        }, 400);
-    }
-
-    btnClose.addEventListener('click', closeSidebar);
 });
