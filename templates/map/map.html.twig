@@ -1,0 +1,161 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Carte interactive{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/map.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/sidebar.css') }}">
+{% endblock %}
+
+{% block body %}
+
+    {# Bouton aide en bas à droite #}
+    <button id="btn-help" class="btn-help" aria-label="Aide">?</button>
+
+    {# Modale aide - à changer en fonction du texte #}
+    <div id="help-modal" class="modal-overlay" hidden>
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+            <button id="btn-close-help" class="btn-close-modal" aria-label="Fermer">✕</button>
+            <h2 id="modal-title">Comment utiliser la carte ?</h2>
+            <div class="modal-body">
+                <p>La carte affiche les <strong>6 zones métiers</strong> de l'événement.</p>
+                <p>Chaque <strong>point blanc</strong> sur une zone est un stand ou atelier à visiter.</p>
+                <p>Appuie sur un point pour voir la description du stand.</p>
+                <p>Le panneau latéral <strong>▶</strong> affiche ton score et tes informations.</p>
+            </div>
+        </div>
+    </div>
+
+    {# wrapper principal #}
+    <div class="map-wrapper">
+
+        <div class="map-area">
+            <div class="map-canvas">
+                <img
+                    class="map-plan"
+                    src="{{ asset('images/Fausse_carte.png') }}"
+                    alt="Plan de la salle"
+                    draggable="false"
+                >
+                {# Calque sphères et activités — rempli par map.js #}
+                <div class="map-overlays" id="map-overlays" aria-live="polite">
+                    <p class="map-loading" id="map-loading">Chargement…</p>
+
+                    {# Bulle info #}
+                    <div id="activity-bubble" class="activity-bubble" hidden>
+                        <button id="btn-close-bubble" class="btn-close-bubble" aria-label="Fermer">✕</button>
+                        <p id="bubble-name" class="bubble-name"></p>
+                        <p id="bubble-desc" class="bubble-desc"></p>
+                        <p id="bubble-wait" class="bubble-wait"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{ include('map/sidebar_user_map.html.twig') }}
+
+    </div>
+
+{% endblock %}
+
+{% block importmap %}{{ importmap('app') }}{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {# données carte : map.js les lit sans fetch supplémentaire #}
+    <script type="application/json" id="map-data">{{ spheresJson|raw }}</script>
+    <script type="module" src="{{ asset('js/map.js') }}"></script>
+    <script src="{{ asset('js/sidebarUserMap.js') }}"></script>
+
+    {% if is_granted('ROLE_ACCOMPANYING') %}
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const list           = document.getElementById('group-list');
+        const studentAvatar  = '{{ asset('images/coccitest.webp') }}';
+        const pokeUrl        = '{{ path('app_accompanying_poke', {id: '__ID__'}) }}';
+        const scoresUrl      = '{{ path('app_accompanying_group_scores') }}';
+
+        if (!list) return;
+
+        list.addEventListener('click', async function (e) {
+            const card = e.target.closest('.student-card');
+            if (!card) return;
+            if (!confirm('Envoyer un signal à ' + card.dataset.pseudo + ' ?')) return;
+            await fetch(pokeUrl.replace('__ID__', card.dataset.id), { method: 'POST' });
+        });
+
+        async function loadGroup() {
+            try {
+                const res = await fetch(scoresUrl);
+                if (!res.ok) { list.innerHTML = '<p class="group-loading">Groupe non configuré.</p>'; return; }
+                const students = await res.json();
+                if (!Array.isArray(students) || !students.length) {
+                    list.innerHTML = '<p class="group-loading">Aucun élève dans ce groupe.</p>';
+                    return;
+                }
+                const frag = document.createDocumentFragment();
+                students.forEach(function (s) {
+                    const card = document.createElement('div');
+                    card.className = 'student-card';
+                    card.dataset.id     = s.id;
+                    card.dataset.pseudo = s.pseudo;
+                    card.innerHTML =
+                        '<span class="avatar avatar--sm">' +
+                            '<img src="' + studentAvatar + '" alt="' + s.pseudo + '">' +
+                        '</span>' +
+                        '<span class="student-pseudo">' + s.pseudo + '</span>' +
+                        '<span class="student-score">' + s.score + ' pts</span>';
+                    frag.appendChild(card);
+                });
+                list.innerHTML = '';
+                list.appendChild(frag);
+            } catch (err) {
+                console.error('loadGroup:', err);
+                list.innerHTML = '<p class="group-loading">Erreur de chargement.</p>';
+            }
+        }
+
+        loadGroup();
+        setInterval(loadGroup, 15000);
+    });
+    </script>
+    {% endif %}
+
+    {% if is_granted('ROLE_STUDENT') %}
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var pokeUrl = '{{ path('app_map_poke_check') }}';
+
+        function showPokeNotif() {
+            var notif = document.getElementById('poke-notif');
+            if (!notif) {
+                notif = document.createElement('div');
+                notif.id = 'poke-notif';
+                notif.className = 'poke-notif';
+                document.body.appendChild(notif);
+            }
+            notif.textContent = 'COUCOU ! Ton accompagnateur te fait signe. BOUGE TON BOUL !';
+            notif.hidden = false;
+            setTimeout(function () { notif.hidden = true; }, 6000);
+        }
+
+        async function checkPoke() {
+            try {
+                var res  = await fetch(pokeUrl);
+                var data = await res.json();
+                if (data.poked) showPokeNotif();
+            } catch (e) { /* silencieux */ }
+        }
+
+        checkPoke();
+        setInterval(checkPoke, 30000);
+
+        // Vérification immédiate si le tab redevient actif
+        document.addEventListener('visibilitychange', function () {
+            if (!document.hidden) checkPoke();
+        });
+    });
+    </script>
+    {% endif %}
+{% endblock %}
