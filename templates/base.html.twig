@@ -5,12 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Page d'accueil{% endblock %}</title>
     <link rel="icon" href="{{ asset('images/favicon.png') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800;900&family=Fredoka+One&family=Science+Gothic:wght@100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
     {% block stylesheets %}
     {% endblock %}
 
     {% block javascripts %}
-        {% block importmap %}{{ importmap('app') }}{% endblock %}
+        {% block importmap %}{% endblock %}
+        <script type="module" src="{{ asset('js/shared_body.js') }}"></script>
     {% endblock %}
 </head>
 <body data-theme="standard">
