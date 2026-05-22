@@ -25,12 +25,11 @@ security:
                 target: app_login
 
     access_control:
-        - { path: ^/$,            roles: PUBLIC_ACCESS }  # accès anonyme explicite à la page d'accueil
+        - { path: ^/$,            roles: PUBLIC_ACCESS }  # I4 — accès anonyme explicite à la page d'accueil
         - { path: ^/login,        roles: PUBLIC_ACCESS }
         - { path: ^/inscription,  roles: PUBLIC_ACCESS }
         - { path: ^/bienvenue,    roles: ROLE_STUDENT }
         - { path: ^/questionnaire, roles: ROLE_STUDENT }
-        - { path: ^/instructions,   roles: ROLE_ACCOMPANYING }
         - { path: ^/accompanying,   roles: ROLE_ACCOMPANYING }
         - { path: ^/map,            roles: [ROLE_STUDENT, ROLE_ACCOMPANYING, ROLE_ADMIN] }
         - { path: ^/admin,          roles: ROLE_ADMIN }
