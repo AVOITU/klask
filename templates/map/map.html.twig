@@ -10,22 +10,18 @@
 
 {% block body %}
 
-    {# Bouton aide en bas à droite #}
+    {% if instructionImage %}
     <button id="btn-help" class="btn-help" aria-label="Aide">?</button>
 
-    {# Modale aide - à changer en fonction du texte #}
-    <div id="help-modal" class="modal-overlay" hidden>
-        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-            <button id="btn-close-help" class="btn-close-modal" aria-label="Fermer">✕</button>
-            <h2 id="modal-title">Comment utiliser la carte ?</h2>
-            <div class="modal-body">
-                <p>La carte affiche les <strong>6 zones métiers</strong> de l'événement.</p>
-                <p>Chaque <strong>point blanc</strong> sur une zone est un stand ou atelier à visiter.</p>
-                <p>Appuie sur un point pour voir la description du stand.</p>
-                <p>Le panneau latéral <strong>▶</strong> affiche ton score et tes informations.</p>
+    <div id="help-modal" class="intro-overlay" hidden role="dialog" aria-modal="true" aria-label="Instructions">
+        <div class="intro-panel">
+            <button id="btn-close-help" class="intro-close" aria-label="Fermer">✕</button>
+            <div class="intro-scroll">
+                <img class="intro-img" src="{{ asset(instructionImage) }}" alt="Instructions">
             </div>
         </div>
     </div>
+    {% endif %}
 
     {# wrapper principal #}
     <div class="map-wrapper">
@@ -56,6 +52,17 @@
         {{ include('map/sidebar_user_map.html.twig') }}
 
     </div>
+
+    {% if showIntro and instructionImage %}
+    <aside id="intro-overlay" class="intro-overlay" role="dialog" aria-modal="true" aria-label="Instructions">
+        <div class="intro-panel">
+            <div class="intro-scroll">
+                <img class="intro-img" src="{{ asset(instructionImage) }}" alt="Instructions">
+            </div>
+            <button type="button" class="intro-ack" data-intro-ack="{{ path('app_map_intro_ack') }}">J'ai compris</button>
+        </div>
+    </aside>
+    {% endif %}
 
 {% endblock %}
 
