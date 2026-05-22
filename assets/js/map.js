@@ -87,12 +87,13 @@ document.getElementById("btn-help")?.addEventListener("click", () => {
     helpModal.hidden = false;
 });
 
-document.getElementById("btn-close-help")?.addEventListener("click", () => {
-    helpModal.hidden = true;
+helpModal?.addEventListener("click", (e) => {
+    if (e.target === helpModal || e.target.closest(".intro-close")) helpModal.hidden = true;
 });
 
-helpModal?.addEventListener("click", (e) => {
-    if (e.target === helpModal) helpModal.hidden = true;
+document.querySelector("[data-intro-ack]")?.addEventListener("click", function () {
+    fetch(this.dataset.introAck, { method: "POST", credentials: "same-origin" })
+        .then((r) => { if (r.ok) document.getElementById("intro-overlay")?.remove(); });
 });
 
 // Pan + Zoom -> aide par Claude
