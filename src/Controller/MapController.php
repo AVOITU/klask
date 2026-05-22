@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\User;
-// use App\Repository\UserRepository; // injecté mais non utilisé
 use App\Service\MapService;
 use App\Service\SidebarUserMapService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,10 +14,14 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class MapController extends AbstractController
 {
+    public const SESSION_INTRO_ACCOMPANYING = 'accompanying_instructions_seen';
+    public const SESSION_INTRO_STUDENT = 'student_guide_seen';
+    private const IMG_ACCOMPANYING = 'images/instructions_accompanying.webp';
+    private const IMG_STUDENT = 'images/instructions_student.webp';
+
     public function __construct(
         private readonly MapService $mapService,
         private readonly SidebarUserMapService $sidebarService,
-        // private readonly UserRepository $userRepository, à garder?
         private readonly EntityManagerInterface $em,
         private readonly RequestStack $requestStack,
     ) {
@@ -30,44 +33,55 @@ class MapController extends AbstractController
         $sessionUser = $this->getUser();
         $userStats   = null;
         $currentUser = $sessionUser;
-
-        if (
-            $sessionUser instanceof User
-            && in_array('ROLE_ACCOMPANYING', $sessionUser->getRoles(), true)
-            && !$this->requestStack->getSession()->get(InstructionsController::SESSION_INSTRUCTIONS_SEEN)
-        ) {
-            return $this->redirectToRoute('app_instructions');
-        }
+        $showIntro         = false;
+        $instructionImage  = null;
 
         if ($sessionUser instanceof User) {
+            $roles   = $sessionUser->getRoles();
+            $session = $this->requestStack->getSession();
+
+            if (in_array('ROLE_ACCOMPANYING', $roles, true)) {
+                $instructionImage = self::IMG_ACCOMPANYING;
+                $showIntro        = !$session->get(self::SESSION_INTRO_ACCOMPANYING);
+            } elseif (in_array('ROLE_STUDENT', $roles, true)) {
+                $instructionImage = self::IMG_STUDENT;
+                $showIntro        = !$session->get(self::SESSION_INTRO_STUDENT);
+            }
+
             $userStats = $this->sidebarService->createUserDTOById($sessionUser->getId());
 
-            // Le DTO contient un User déjà chargé avec group + establissements (JOIN eager)
             if ($userStats !== null) {
                 $currentUser = $userStats->getUser();
             }
         }
 
-        // données carte embarquées dans le HTML
         return $this->render('map/map.html.twig', [
             'currentUser' => $currentUser,
             'userStats'   => $userStats,
             'spheresJson' => json_encode($this->mapService->getPreparedSpheres()),
+            'showIntro'        => $showIntro,
+            'instructionImage' => $instructionImage,
         ]);
     }
 
-    // /map/data non appelé depuis map.js (données embarquées via spheresJson dans map.html.twig) - route morte depuis l'optimisation JSON embarqué
-    // À réactiver si un client externe a besoin de l'API carte
-    // #[Route('/map/data', name: 'app_map_data', methods: ['GET'])]
-    // public function data(): JsonResponse
-    // {
-    //     $response = $this->json($this->mapService->getPreparedSpheres());
-    //     $response->setMaxAge(300);
-    //     return $response;
-    // }
+    #[Route('/map/intro/ack', name: 'app_map_intro_ack', methods: ['POST'])]
+    public function ackIntro(): JsonResponse
+    {
+        $user = $this->getUser();
+        if ($user instanceof User) {
+            $roles   = $user->getRoles();
+            $session = $this->requestStack->getSession();
 
-    //étudiant vérifie si accompagnateur a envoyé un poke
-    // Si oui, retourne poked=true ET efface le pokedAt pour ne pas re notifier
+            if (in_array('ROLE_ACCOMPANYING', $roles, true)) {
+                $session->set(self::SESSION_INTRO_ACCOMPANYING, true);
+            } elseif (in_array('ROLE_STUDENT', $roles, true)) {
+                $session->set(self::SESSION_INTRO_STUDENT, true);
+            }
+        }
+
+        return $this->json(['ok' => true]);
+    }
+
     #[Route('/map/poke-check', name: 'app_map_poke_check', methods: ['GET'])]
     public function pokeCheck(): JsonResponse
     {
