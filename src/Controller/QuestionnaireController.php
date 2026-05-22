@@ -45,7 +45,7 @@ class QuestionnaireController extends AbstractController
     public function __construct(
         private readonly SphereRepository $sphereRepository,
         private readonly EntityManagerInterface $em,
-        private readonly CsrfTokenManagerInterface $csrf, // I3
+        private readonly CsrfTokenManagerInterface $csrf,
     ) {
     }
 
