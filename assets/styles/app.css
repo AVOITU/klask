@@ -1,4 +1,4 @@
-/* KLASK · app.css · mobile-first */
+/* KLASK · app.css · arcade terminal 1992 · mobile-first */
 
 /* ── Tokens ── */
 :root {
@@ -96,6 +96,15 @@ main {
     text-shadow: 0 0 16px rgba(139,0,0,.45), 0 0 4px rgba(0,0,0,.1);
 }
 .site-header__nav { display: flex; gap: 16px; align-items: center; }
+.site-header__link {
+    color: var(--txt);
+    font: 700 .85rem/1 var(--f-mono);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-decoration: none;
+    opacity: .85;
+}
+.site-header__link:hover { opacity: 1; }
 
 footer {
     text-align: center;
@@ -417,23 +426,6 @@ body.page-splash { align-items: center; justify-content: center; overflow: hidde
 }
 @keyframes blink  { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 @keyframes fillBar { from { width: 0; } to { width: 100%; } }
-
-/* ── Instructions / Steps ── */
-.hud-body .subtitle { color: rgba(255,199,199,.65); font-size: .92rem; text-shadow: none; margin-bottom: 1.4rem; }
-
-.step { display: flex; gap: 1rem; margin-bottom: 1.3rem; align-items: flex-start; }
-.step-num {
-    background: var(--btn);
-    color: var(--btn-c);
-    border-radius: var(--r);
-    min-width: 2rem; height: 2rem;
-    display: flex; align-items: center; justify-content: center;
-    font: 900 .82rem/1 var(--f-mono);
-    flex-shrink: 0;
-    box-shadow: var(--glow-btn);
-}
-.step-text strong { display: block; margin-bottom: .2rem; color: var(--txt); font-size: .95rem; }
-.step-text p { color: var(--txt-m); font-size: .87rem; line-height: 1.5; }
 
 /* ── Bienvenue ── */
 .welcome-card { display: flex; flex-direction: column; align-items: center; gap: 1.2rem; padding: .5rem 0; }
