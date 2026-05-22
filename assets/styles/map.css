@@ -1,4 +1,4 @@
-/* KLASK · map.css · tactical HUD */
+/* KLASK · map.css */
 
 :root {
     --c-ink:    #1a1a1a;
@@ -164,28 +164,6 @@ body:has(.map-wrapper) .accessibility-bar {
 }
 .btn-help:hover { box-shadow: 0 0 0 1px #b50000, 0 0 22px rgba(181,0,0,.8); }
 
-/* ── Modal overlay ── */
-.modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.55);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-}
-.modal-overlay[hidden] { display: none; }
-.modal-content {
-    border-radius: 3px;
-    max-width: 440px;
-    width: 100%;
-    padding: 26px 22px 22px;
-    position: relative;
-}
-.modal-content h2 { font-size: 1.05rem; font-weight: 700; margin: 0 0 14px; color: var(--c-ink); text-transform: uppercase; letter-spacing: 2px; }
-.modal-body p { font-size: .84rem; color: #555; margin: 0 0 8px; line-height: 1.5; }
-
 /* ── Poke ── */
 .poke-notif {
     position: fixed;
@@ -206,4 +184,54 @@ body:has(.map-wrapper) .accessibility-bar {
 @keyframes slideUp {
     from { opacity: 0; transform: translateX(-50%) translateY(10px); }
     to   { opacity: 1; transform: translateX(-50%); }
+}
+
+/* ── Intro instructions (mobile-first) ── */
+.intro-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10001;
+    background: rgba(0,0,0,.5);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+.intro-overlay[hidden] { display: none; }
+.intro-panel {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    max-height: 94vh;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 14px 14px 0 0;
+    overflow: hidden;
+}
+.intro-close {
+    position: absolute;
+    top: 8px; right: 10px;
+    z-index: 1;
+    width: 32px; height: 32px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0,0,0,.55);
+    color: #fff;
+    font-size: .9rem;
+    cursor: pointer;
+}
+.intro-scroll { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.intro-img { width: 100%; height: auto; display: block; }
+.intro-ack {
+    flex-shrink: 0;
+    width: 100%;
+    padding: 15px;
+    border: none;
+    background: #8B0000;
+    color: #fff;
+    text-align: center;
+    font: 800 .95rem/1 'Open Sans', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
 }
