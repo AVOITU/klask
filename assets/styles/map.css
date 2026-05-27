@@ -1,4 +1,4 @@
-/* KLASK · map.css */
+/* KLASK · map.css · tactical HUD */
 
 :root {
     --c-ink:    #1a1a1a;
@@ -84,6 +84,23 @@ body:has(.map-wrapper) .accessibility-bar {
     pointer-events: none;
 }
 
+/* ── Sphères prioritaires / secondaires (questionnaire) ── */
+.sphere-zone--muted {
+    opacity: .28;
+    filter: grayscale(40%);
+}
+.sphere-zone--priority {
+    opacity: .92;
+    border-color: rgba(255,255,255,.6);
+    box-shadow: 0 0 0 3px rgba(255,255,255,.35), 0 0 26px 8px var(--c), 0 4px 16px rgba(0,0,0,.14);
+    z-index: 2;
+    animation: sphere-pulse 2.8s ease-in-out infinite;
+}
+@keyframes sphere-pulse {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(255,255,255,.35), 0 0 26px  8px var(--c), 0 4px 16px rgba(0,0,0,.14); }
+    50%       { box-shadow: 0 0 0 5px rgba(255,255,255,.55), 0 0 44px 16px var(--c), 0 4px 16px rgba(0,0,0,.14); }
+}
+
 /* ── Pins (réticule de ciblage) ── */
 .activity-pin {
     position: absolute;
@@ -105,6 +122,7 @@ body:has(.map-wrapper) .accessibility-bar {
     z-index: 10;
 }
 .activity-pin.unavailable { background: #bbb; border-color: rgba(255,255,255,.5); opacity: .5; box-shadow: none; }
+.activity-pin.internship  { border-radius: 0; clip-path: polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%); }
 
 /* ── Bulle info + modal (partagé) ── */
 .activity-bubble,
@@ -116,8 +134,6 @@ body:has(.map-wrapper) .accessibility-bar {
 }
 .activity-bubble {
     position: absolute;
-    bottom: 16px; left: 50%;
-    transform: translateX(-50%);
     min-width: 180px;
     max-width: min(300px, 90vw);
     border-radius: 3px;
