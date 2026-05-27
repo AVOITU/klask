@@ -2,8 +2,11 @@
 
 namespace App\Service\Impl;
 
+use App\Entity\Activity;
+use App\Entity\Sphere;
 use App\Repository\SphereRepository;
 use App\Service\MapService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 
 #[AsAlias]
@@ -11,8 +14,8 @@ class MapServiceImpl implements MapService
 {
     public function __construct(
         private readonly SphereRepository $sphereRepository,
-    ) {
-    }
+        private readonly EntityManagerInterface $em,
+    ) {}
 
     public function getPreparedSpheres(): array
     {
@@ -32,6 +35,7 @@ class MapServiceImpl implements MapService
                     'pointYActivity'      => $activity->getPointY() ?? 50.0,
                     'descriptionActivity' => $activity->getDescription() ?? 'Aucune description',
                     'isAvailable'         => $activity->isAvailable(),
+                    'isInternship'        => $activity->isInternship(),
                     'waitMinutes'         => $activity->getEstimatedWaitMinutes(),
                 ];
             }
@@ -69,5 +73,15 @@ class MapServiceImpl implements MapService
         }
 
         return $result;
+    }
+
+    public function savePosition(Sphere|Activity $entity, float $x, float $y, ?float $radius = null): void
+    {
+        $entity->setPointX($x);
+        $entity->setPointY($y);
+        if ($entity instanceof Sphere && $radius !== null) {
+            $entity->setRadius($radius);
+        }
+        $this->em->flush();
     }
 }
