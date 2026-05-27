@@ -1,0 +1,169 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Placer : {{ label }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="placement-wrap">
+
+    {% for msg in app.flashes('success') %}
+        <p class="flash-success">{{ msg }}</p>
+    {% endfor %}
+    {% for msg in app.flashes('error') %}
+        <p class="flash-error">{{ msg }}</p>
+    {% endfor %}
+
+    <p class="placement-hint">Cliquez sur le plan pour positionner <strong>{{ label }}</strong>.</p>
+
+    {% if type == 'sphere' %}
+    <div class="mode-bar">
+        <label><input type="radio" name="mapMode" value="sphere" checked> Déplacer la sphère</label>
+        <label><input type="radio" name="mapMode" value="activity"> Ajouter une activité</label>
+    </div>
+    {% endif %}
+
+    <div class="placement-map-box" id="map-box">
+        <img src="{{ asset('images/Fausse_carte.png') }}" alt="Plan" draggable="false">
+        <div class="placement-layer" id="ghosts"></div>
+        <div class="placement-marker {{ type == 'sphere' ? 'sphere' : 'pin' }}" id="marker"></div>
+        {% if type == 'sphere' %}
+        <div class="placement-marker pin" id="act-pin" style="display:none"></div>
+        {% endif %}
+    </div>
+
+    <form method="post" class="placement-form">
+        <label>X (%) <input type="number" step="0.01" name="pointX" id="pointX" value="{{ pointX }}" required></label>
+        <label>Y (%) <input type="number" step="0.01" name="pointY" id="pointY" value="{{ pointY }}" required></label>
+        {% if radius is not null %}
+        <label>Rayon (%) <input type="number" step="0.01" name="radius" id="radius" value="{{ radius }}" required></label>
+        {% endif %}
+        <button type="submit" class="btn btn-primary">Enregistrer la position</button>
+        <a href="{{ backUrl }}" class="btn btn-secondary">Retour</a>
+        {% if type == 'sphere' %}
+        <button type="button" id="auto-bound" class="btn btn-outline-secondary" title="Recalcule le centre et le rayon en englobant toutes les activités de cette sphère">↔ Ajuster à mes activités</button>
+        {% endif %}
+    </form>
+
+    {% if type == 'sphere' and categories is not empty %}
+    <form id="activity-form" class="act-form" action="{{ path('admin_activity_new_on_map') }}" method="post" style="display:none">
+        <input type="hidden" name="sphereId" value="{{ id }}">
+        <input type="hidden" name="pointX" id="act-x">
+        <input type="hidden" name="pointY" id="act-y">
+        <strong class="act-form__heading">Nouvelle activité</strong>
+        <label>Nom <input type="text" name="name" required placeholder="Nom de l'activité"></label>
+        <label>Description <input type="text" name="description" placeholder="Optionnel"></label>
+        <label>Catégorie
+            <select name="categoryId" required>
+                {% for cat in categories %}
+                <option value="{{ cat.id }}">{{ cat.type }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <button type="submit" class="btn btn-primary">✓ Créer l'activité</button>
+    </form>
+    {% endif %}
+
+</div>
+
+<script type="application/json" id="map-data">{{ mapJson|raw }}</script>
+<script>
+(function () {
+    const type     = {{ type|json_encode|raw }};
+    const sphereId = {{ id }};
+    const box      = document.getElementById('map-box');
+    const img      = box.querySelector('img');
+    const marker   = document.getElementById('marker');
+    const ghosts   = document.getElementById('ghosts');
+    const inpX     = document.getElementById('pointX');
+    const inpY     = document.getElementById('pointY');
+    const inpR     = document.getElementById('radius');
+    const actPin   = document.getElementById('act-pin');
+    const actForm  = document.getElementById('activity-form');
+    const actX     = document.getElementById('act-x');
+    const actY     = document.getElementById('act-y');
+    const data     = JSON.parse(document.getElementById('map-data').textContent);
+    let   addMode  = false;
+
+    function place(x, y) {
+        inpX.value = x.toFixed(2);
+        inpY.value = y.toFixed(2);
+        marker.style.left = x + '%';
+        marker.style.top  = y + '%';
+        if (type === 'sphere' && inpR) {
+            marker.style.width  = inpR.value + '%';
+            marker.style.height = marker.style.width;
+        }
+    }
+
+    // mode toggle
+    document.querySelectorAll('[name="mapMode"]').forEach(r =>
+        r.addEventListener('change', e => { addMode = e.target.value === 'activity'; })
+    );
+
+    // activités de cette sphère en plus opaque
+    data.forEach(function (s) {
+        const z = document.createElement('div');
+        z.className = 'ghost sphere';
+        z.style.cssText = 'left:' + s.centerX + '%;top:' + s.centerY + '%;width:' + s.size + '%;aspect-ratio:1;background:' + s.color;
+        ghosts.appendChild(z);
+        s.activities.forEach(function (a) {
+            const p = document.createElement('div');
+            p.className = 'ghost pin';
+            if (s.id === sphereId) p.style.opacity = '0.8';
+            p.style.cssText += 'left:' + a.pointXActivity + '%;top:' + a.pointYActivity + '%';
+            ghosts.appendChild(p);
+        });
+    });
+
+    place(parseFloat(inpX.value), parseFloat(inpY.value));
+
+    if (inpR) inpR.addEventListener('input', function () {
+        marker.style.width  = inpR.value + '%';
+        marker.style.height = marker.style.width;
+    });
+
+    // Clic sur la carte
+    box.addEventListener('click', function (e) {
+        const r = img.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width  * 100;
+        const y = (e.clientY - r.top)  / r.height * 100;
+
+        if (addMode && actPin && actForm) {
+            actX.value         = x.toFixed(2);
+            actY.value         = y.toFixed(2);
+            actPin.style.left  = x + '%';
+            actPin.style.top   = y + '%';
+            actPin.style.display = '';
+            actForm.style.display = '';
+        } else {
+            place(x, y);
+        }
+    });
+
+    // Bouton "Ajuster à mes activités"
+    const autoBoundBtn = document.getElementById('auto-bound');
+    if (autoBoundBtn) {
+        autoBoundBtn.addEventListener('click', function () {
+            const sphere = data.find(s => s.id === sphereId);
+            if (!sphere || !sphere.activities.length) {
+                alert('Aucune activité positionnée pour cette sphère.');
+                return;
+            }
+            const xs  = sphere.activities.map(a => a.pointXActivity);
+            const ys  = sphere.activities.map(a => a.pointYActivity);
+            const cx  = (Math.min(...xs) + Math.max(...xs)) / 2;
+            const cy  = (Math.min(...ys) + Math.max(...ys)) / 2;
+            const rad = Math.max(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys)) / 2 + 5;
+            inpX.value = cx.toFixed(2);
+            inpY.value = cy.toFixed(2);
+            if (inpR) inpR.value = rad.toFixed(2);
+            place(cx, cy);
+        });
+    }
+})();
+</script>
+{% endblock %}

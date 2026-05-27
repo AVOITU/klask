@@ -1,0 +1,48 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block main %}
+<div class="admin-dashboard">
+    <h1>Bienvenue dans le dashboard Klask</h1>
+
+    <div class="admin-cards">
+
+        <a href="{{ links.activities }}" class="admin-card admin-card--activities">
+            <div class="admin-card__icon">🗺️</div>
+            <div class="admin-card__label">Activités / Stands</div>
+        </a>
+
+        <a href="{{ links.spheres }}" class="admin-card admin-card--spheres">
+            <div class="admin-card__icon">⭕</div>
+            <div class="admin-card__label">Sphères</div>
+        </a>
+
+        <a href="{{ links.categories }}" class="admin-card admin-card--categories">
+            <div class="admin-card__icon">🏷️</div>
+            <div class="admin-card__label">Catégories</div>
+        </a>
+
+        <a href="{{ links.groups }}" class="admin-card admin-card--groups">
+            <div class="admin-card__icon">👥</div>
+            <div class="admin-card__label">Groupes</div>
+        </a>
+
+        <a href="{{ links.establishments }}" class="admin-card admin-card--establishments">
+            <div class="admin-card__icon">🏫</div>
+            <div class="admin-card__label">Établissements</div>
+        </a>
+
+        <a href="{{ links.users }}" class="admin-card admin-card--users">
+            <div class="admin-card__icon">👤</div>
+            <div class="admin-card__label">Élèves</div>
+        </a>
+
+        <a href="{{ links.accompanying }}" class="admin-card admin-card--accompanying">
+            <div class="admin-card__icon">🧑‍🏫</div>
+            <div class="admin-card__label">Accompagnateurs</div>
+        </a>
+
+    </div>
+</div>
+{% endblock %}
