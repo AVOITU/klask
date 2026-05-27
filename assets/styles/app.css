@@ -25,6 +25,11 @@
     --btn-h:var(--c-crim-h);
     --btn-c:#fff;
 
+    --c-hud:     #3a081e;
+    --c-hud-txt: #ffc7c7;
+    --c-hud-glo: #e9324b;
+    --c-metal:   #505050;
+
     --r: 3px;
     --shadow:     0 8px 32px rgba(0,0,0,.22);
     --glow-surf:  0 0 0 1px var(--c-gold-b), 0 0 22px rgba(207,170,101,.45), inset 0 0 40px rgba(207,170,101,.07);
@@ -88,13 +93,20 @@ main {
     z-index: 100;
 }
 .site-header__brand {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     font: 900 1.4rem/1 var(--f-sci);
     color: var(--txt);
     text-transform: uppercase;
     letter-spacing: 7px;
-    text-decoration: none;
     text-shadow: 0 0 16px rgba(139,0,0,.45), 0 0 4px rgba(0,0,0,.1);
 }
+.site-header__brand img { height: 36px; width: auto; }
+.logo--dark { display: none; }
+[data-theme="dark"] .logo--std  { display: none; }
+[data-theme="dark"] .logo--dark { display: block; }
 .site-header__nav { display: flex; gap: 16px; align-items: center; }
 .site-header__link {
     color: var(--txt);
@@ -105,6 +117,8 @@ main {
     opacity: .85;
 }
 .site-header__link:hover { opacity: 1; }
+.site-header__logout { opacity: .6; }
+.site-header__logout:hover { opacity: 1; color: #8B0000; }
 
 footer {
     text-align: center;
@@ -384,6 +398,14 @@ input[type="submit"]:active, .btn:active, .btn-submit:active, .btn-continuer:act
 /* ── Splash ── */
 body.page-splash { align-items: center; justify-content: center; overflow: hidden; }
 
+.splash-logo {
+    width: min(240px, 60vw);
+    height: auto;
+    margin-bottom: 1.5rem;
+    filter: drop-shadow(0 0 24px rgba(139,0,0,.55));
+    animation: flicker 4s ease-in-out infinite;
+}
+
 .splash-title {
     font: 900 clamp(3.5rem, 15vw, 9rem)/1 var(--f-sci);
     letter-spacing: .18em;
@@ -468,13 +490,6 @@ body.page-splash { align-items: center; justify-content: center; overflow: hidde
 .quiz-error { color: var(--c-err); font: .82rem var(--f-mono); min-height: 1.2em; margin-top: .5rem; }
 
 /* ── HUD Window (fenêtre métallique sci-fi) ── */
-:root {
-    --c-hud:     #3a081e;
-    --c-hud-txt: #ffc7c7;
-    --c-hud-glo: #e9324b;
-    --c-metal:   #505050;
-}
-
 .hud-window { width: min(92%, 950px); margin: 2rem auto; }
 
 .hud-cap {
