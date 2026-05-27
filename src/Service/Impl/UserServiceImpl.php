@@ -4,9 +4,13 @@ namespace App\Service\Impl;
 
 use App\DTO\UserDTO;
 use App\Entity\User;
+use App\Entity\UserSphereRating;
+use App\Repository\SphereRepository;
 use App\Repository\UserRepository;
+use App\Repository\UserSphereRatingRepository;
 use App\Service\GroupService;
 use App\Service\UserService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 
 #[AsAlias]
@@ -15,21 +19,22 @@ class UserServiceImpl implements UserService
     public function __construct(
         private readonly UserRepository $userRepository,
         private readonly GroupService $groupService,
-    ) {
-    }
+        private readonly SphereRepository $sphereRepository,
+        private readonly UserSphereRatingRepository $userSphereRatingRepository,
+        private readonly EntityManagerInterface $em,
+    ) {}
 
     public function insertStudent(User $student): User
     {
         return $this->userRepository->insertStudent($student);
     }
 
-    // jamais appelé en prod mais à garder si besoin
-    // public function findUserWithGroupAndAuthority(int $idUser): ?User
-    // {
-    //     return $this->userRepository->findUserWithGroupAndAuthority($idUser);
-    // }
+    public function findById(int $id): ?User
+    {
+        return $this->userRepository->find($id);
+    }
 
-    public function createUserDTOById(int $idUser): ?UserDTO 
+    public function createUserDTOById(int $idUser): ?UserDTO
     {
         $dto = $this->findUserStats($idUser);
 
@@ -39,21 +44,57 @@ class UserServiceImpl implements UserService
 
         $groupId = $dto->getUser()->getGroup()?->getId();
 
-        if ($groupId === null) {
-            return $dto;
-        }
-
-        return $dto->withGroupTotalScore($this->groupService->findGroupTotalScore($groupId));
+        return $groupId !== null
+            ? $dto->withGroupTotalScore($this->groupService->findGroupTotalScore($groupId))
+            : $dto;
     }
 
-    public function findUserStats(int $userId): ?UserDTO
+    private function findUserStats(int $userId): ?UserDTO
     {
         return $this->userRepository->findUserStats($userId);
     }
 
-    // doublon de GroupService::findGroupTotalScore
-    // public function findGroupTotalScore(int $groupId): int
-    // {
-    //     return $this->groupService->findGroupTotalScore($groupId);
-    // }
+    public function getStudentScoresByGroupCode(string $groupCode): array
+    {
+        return $this->userRepository->findStudentScoresByGroupCode($groupCode);
+    }
+
+    public function pokeStudent(User $user): void
+    {
+        $user->setPokedAt(new \DateTimeImmutable());
+        $this->em->flush();
+    }
+
+    public function clearPoke(User $user): void
+    {
+        $user->setPokedAt(null);
+        $this->em->flush();
+    }
+
+    public function getTopSphereIds(User $user): array
+    {
+        return $this->userSphereRatingRepository->findTopSphereIdsByUser($user);
+    }
+
+    public function getBottomSphereIds(User $user): array
+    {
+        return $this->userSphereRatingRepository->findTopSphereIdsByUser($user, 3, 'ASC');
+    }
+
+    public function saveRatings(User $user, array $zoneRatings): void
+    {
+        $this->em->createQuery('DELETE FROM App\Entity\UserSphereRating r WHERE r.user = :user')
+            ->setParameter('user', $user)
+            ->execute();
+
+        foreach ($zoneRatings as $zoneName => $rating) {
+            $sphere = $this->sphereRepository->findOneBy(['name' => $zoneName]);
+            if ($sphere === null) {
+                continue;
+            }
+            $this->em->persist(new UserSphereRating($user, $sphere, $rating));
+        }
+
+        $this->em->flush();
+    }
 }
