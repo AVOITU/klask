@@ -2,6 +2,7 @@
 
 namespace App\Service\Impl;
 
+use App\Entity\Establishment;
 use App\Entity\Group;
 use App\Entity\User;
 use App\Repository\AuthorityRepository;
@@ -29,30 +30,41 @@ class InscriptionServiceImpl implements InscriptionService
         'musicos', 'excentrique', 'des îles', 'cool', 'aristocrate', 'héroïque',
     ];
 
+    private const GROUP_MAX_SIZE = 40;
+
     public function __construct(
         private readonly AuthorityRepository $authorityRepository,
         private readonly UserRepository $userRepository,
         private readonly GroupRepository $groupRepository,
         private readonly UserService $userService,
-    ) {
-    }
+    ) {}
 
     public function generateUniquePseudo(): string
     {
         for ($i = 0; $i < 30; $i++) {
-            $pseudo = $this->generateRandomPseudo();
-
+            $pseudo = $this->randomPseudo();
             if ($this->userRepository->findByPseudo($pseudo) === null) {
                 return $pseudo;
             }
         }
 
-        return $this->generateRandomPseudo() . ' ' . time();
+        return $this->randomPseudo() . ' ' . time();
     }
 
     public function findGroupByCode(string $code): ?Group
     {
         return $this->groupRepository->findByCode($code);
+    }
+
+    public function validateGroupForRegistration(Group $group, Establishment $establishment, string $level): bool
+    {
+        return $group->getEstablishment()?->getId() === $establishment->getId()
+            && $group->getName() === $level;
+    }
+
+    public function isGroupFull(Group $group): bool
+    {
+        return $this->groupRepository->countUsersByGroupId((int) $group->getId()) >= self::GROUP_MAX_SIZE;
     }
 
     public function registerStudent(User $student): User
@@ -65,8 +77,6 @@ class InscriptionServiceImpl implements InscriptionService
 
         $student->setAuthority($authority);
 
-        // si un autre élève a pris ce pseudo entre l'affichage et la soumission
-        // réassignation transparente côté serveur
         if ($this->userRepository->findByPseudo((string) $student->getPseudo()) !== null) {
             $student->setPseudo($this->generateUniquePseudo());
         }
@@ -74,7 +84,7 @@ class InscriptionServiceImpl implements InscriptionService
         return $this->userService->insertStudent($student);
     }
 
-    private function generateRandomPseudo(): string
+    private function randomPseudo(): string
     {
         return self::ANIMALS[array_rand(self::ANIMALS)]
             . ' '
