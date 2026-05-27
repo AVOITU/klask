@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Establishment;
 use App\Entity\User;
 use App\Form\InscriptionFormType;
-use App\Repository\GroupRepository;
 use App\Service\InscriptionService;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,18 +21,14 @@ class InscriptionController extends AbstractController
         private readonly LoggerInterface $logger,
         private readonly InscriptionService $inscriptionService,
         private readonly Security $security,
-        private readonly GroupRepository $groupRepository, // P9
-    ) {
-    }
+    ) {}
 
     #[Route('/inscription', name: 'app_inscription_show', methods: ['GET'])]
     public function show(): Response
     {
         $pseudo = $this->inscriptionService->generateUniquePseudo();
 
-        return $this->renderInscriptionForm(
-            $this->buildForm(new User(), $pseudo)
-        );
+        return $this->renderForm($this->buildForm(new User(), $pseudo));
     }
 
     #[Route('/inscription/save', name: 'app_inscription_save', methods: ['POST'])]
@@ -41,61 +36,47 @@ class InscriptionController extends AbstractController
     {
         $user = new User();
         $form = $this->buildForm($user);
-
         $form->handleRequest($request);
 
         if (!$form->isSubmitted() || !$form->isValid()) {
-            return $this->renderInscriptionForm($form);
+            return $this->renderForm($form);
         }
 
-        $selectedEstablishment = $form->get('establishment')->getData();
-        if (!$selectedEstablishment instanceof Establishment) {
+        $establishment = $form->get('establishment')->getData();
+        if (!$establishment instanceof Establishment) {
             $this->addFlash('error', 'Veuillez sélectionner un établissement.');
-
-            return $this->renderInscriptionForm($form);
+            return $this->renderForm($form);
         }
-        $selectedLevel         = (string) $form->get('groupLevel')->getData();
-        $groupCode             = trim((string) $user->getGroupCode());
 
-        $group = $this->inscriptionService->findGroupByCode($groupCode);
+        $group = $this->inscriptionService->findGroupByCode(trim((string) $user->getGroupCode()));
 
         if ($group === null) {
             $this->addFlash('error', 'Code de groupe invalide. Vérifiez le code avec votre accompagnateur.');
-
-            return $this->renderInscriptionForm($form);
+            return $this->renderForm($form);
         }
 
-        // Le code doit correspondre à l'établissement ET au groupe de classe sélectionnés
-        $codeMatchesSelection =
-            $group->getEstablishment()?->getId() === $selectedEstablishment->getId()
-            && $group->getName() === $selectedLevel;
+        $level = (string) $form->get('groupLevel')->getData();
 
-        if (!$codeMatchesSelection) {
+        if (!$this->inscriptionService->validateGroupForRegistration($group, $establishment, $level)) {
             $this->addFlash('error', 'Ce code de groupe ne correspond pas à votre établissement ou à votre groupe de classe.');
-
-            return $this->renderInscriptionForm($form);
+            return $this->renderForm($form);
         }
 
-        // évite de charger toute la collection users en mémoire
-        if ($this->groupRepository->countUsersByGroupId($group->getId()) >= 40) {
+        if ($this->inscriptionService->isGroupFull($group)) {
             $this->addFlash('error', 'Ce groupe est complet (40 élèves maximum).');
-
-            return $this->renderInscriptionForm($form);
+            return $this->renderForm($form);
         }
 
         $user->setGroup($group);
 
         try {
             $created = $this->inscriptionService->registerStudent($user);
-
-            // Connexion automatique du student après inscription
             $this->security->login($created, 'form_login', 'main');
-
             $this->addFlash('success', sprintf(
                 'Bienvenue, %s ! Tu rejoins le groupe %s (%s).',
                 $created->getPseudo(),
                 $group->getName() ?? '',
-                $selectedEstablishment->getName()
+                $establishment->getName()
             ));
 
             return $this->redirectToRoute('app_bienvenue');
@@ -104,17 +85,15 @@ class InscriptionController extends AbstractController
             $this->addFlash('error', 'Erreur lors de la création. Veuillez réessayer.');
         }
 
-        return $this->renderInscriptionForm($form);
+        return $this->renderForm($form);
     }
 
     private function buildForm(User $user, string $pseudo = ''): FormInterface
     {
-        return $this->createForm(InscriptionFormType::class, $user, [
-            'nom_depart' => $pseudo,
-        ]);
+        return $this->createForm(InscriptionFormType::class, $user, ['nom_depart' => $pseudo]);
     }
 
-    private function renderInscriptionForm(FormInterface $form): Response
+    private function renderForm(FormInterface $form): Response
     {
         return $this->render('inscription/inscription.html.twig', [
             'inscriptionForm' => $form->createView(),
