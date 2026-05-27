@@ -5,10 +5,21 @@ const BUBBLE = document.getElementById("activity-bubble");
 const BUBNAME = document.getElementById("bubble-name");
 const BUBDESC = document.getElementById("bubble-desc");
 const BUBWAIT = document.getElementById("bubble-wait");
+const TOP_SPHERES = new Set(
+    JSON.parse(document.getElementById("top-spheres")?.textContent || "[]"),
+);
+const BOTTOM_SPHERES = new Set(
+    JSON.parse(document.getElementById("bottom-spheres")?.textContent || "[]"),
+);
 
 function createSphere(sphere) {
     const el = document.createElement("div");
-    el.className = "sphere-zone";
+    const cls = TOP_SPHERES.has(sphere.id)
+        ? " sphere-zone--priority"
+        : BOTTOM_SPHERES.has(sphere.id)
+          ? " sphere-zone--muted"
+          : "";
+    el.className = "sphere-zone" + cls;
     el.style.cssText = `--c:${sphere.color};left:${sphere.centerX}%;top:${sphere.centerY}%;width:${sphere.size}%`;
     el.innerHTML = `<span class="sphere-label">${sphere.name}</span>`;
     return el;
@@ -16,7 +27,7 @@ function createSphere(sphere) {
 
 function createPin(activity, color) {
     const btn = document.createElement("button");
-    btn.className = `activity-pin${activity.isAvailable ? "" : " unavailable"}`;
+    btn.className = `activity-pin${activity.isInternship ? " internship" : ""}${activity.isAvailable ? "" : " unavailable"}`;
     btn.style.cssText = `--c:${color};left:${activity.pointXActivity}%;top:${activity.pointYActivity}%`;
     btn.dataset.name = activity.name;
     btn.dataset.desc = activity.descriptionActivity;
@@ -50,7 +61,31 @@ function loadMap() {
     }
 }
 
-// Bulle d'activité -> aide par Claude
+// Bulle d'activité -> positionnée à côté du pin cliqué
+
+function positionBubble(pin) {
+    // Coordonnées locales du canvas (indépendantes du zoom/pan)
+    const cW = OVERLAY.offsetWidth;
+    const cH = OVERLAY.offsetHeight;
+    const pinLeft = (parseFloat(pin.style.left) / 100) * cW;
+    const pinTop = (parseFloat(pin.style.top) / 100) * cH;
+    const pinHalf = pin.offsetWidth / 2;
+
+    // Rendre visible hors-écran pour mesurer la bulle
+    BUBBLE.style.cssText = "left:-9999px;top:0;transform:none;bottom:auto";
+    BUBBLE.hidden = false;
+
+    const bubW = BUBBLE.offsetWidth;
+    const bubH = BUBBLE.offsetHeight;
+
+    let left = pinLeft + pinHalf + 10;
+    if (left + bubW > cW) left = pinLeft - pinHalf - bubW - 10;
+
+    let top = pinTop - bubH / 2;
+    top = Math.max(4, Math.min(top, cH - bubH - 4));
+
+    BUBBLE.style.cssText = `left:${left}px;top:${top}px;transform:none;bottom:auto`;
+}
 
 OVERLAY.addEventListener("click", (e) => {
     const pin = e.target.closest(".activity-pin");
@@ -67,7 +102,7 @@ OVERLAY.addEventListener("click", (e) => {
               ? `Temps d'attente estimé : ${pin.dataset.wait} min`
               : "";
 
-    BUBBLE.hidden = false;
+    positionBubble(pin);
 });
 
 document.getElementById("btn-close-bubble")?.addEventListener("click", (e) => {
@@ -88,13 +123,20 @@ document.getElementById("btn-help")?.addEventListener("click", () => {
 });
 
 helpModal?.addEventListener("click", (e) => {
-    if (e.target === helpModal || e.target.closest(".intro-close")) helpModal.hidden = true;
+    if (e.target === helpModal || e.target.closest(".intro-close"))
+        helpModal.hidden = true;
 });
 
-document.querySelector("[data-intro-ack]")?.addEventListener("click", function () {
-    fetch(this.dataset.introAck, { method: "POST", credentials: "same-origin" })
-        .then((r) => { if (r.ok) document.getElementById("intro-overlay")?.remove(); });
-});
+document
+    .querySelector("[data-intro-ack]")
+    ?.addEventListener("click", function () {
+        fetch(this.dataset.introAck, {
+            method: "POST",
+            credentials: "same-origin",
+        }).then((r) => {
+            if (r.ok) document.getElementById("intro-overlay")?.remove();
+        });
+    });
 
 // Pan + Zoom -> aide par Claude
 
