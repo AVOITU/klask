@@ -1,6 +1,15 @@
 <header class="site-header">
-    <a class="site-header__brand" href="/">Klask</a>
+    <a class="site-header__brand" href="/">
+        Klask
+        <img src="{{ asset('images/logoklaskfinitsombrepetit.webp') }}" alt="" class="logo logo--std">
+        <img src="{{ asset('images/logoklaskfinitclairpetit.webp') }}"  alt="" class="logo logo--dark">
+    </a>
     <nav class="site-header__nav">
-        {# Liens à ajouté ultérieurement si besoin??) #}
+        {% if is_granted('ROLE_ADMIN') and app.request.get('_route') == 'app_map' %}
+            <a href="{{ path('admin') }}" class="site-header__link">Admin</a>
+        {% endif %}
+        {% if is_granted('ROLE_ACCOMPANYING') or is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('app_logout') }}" class="site-header__link site-header__logout">Déconnexion</a>
+        {% endif %}
     </nav>
 </header>
