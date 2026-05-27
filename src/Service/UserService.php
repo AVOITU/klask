@@ -8,10 +8,18 @@ use App\Entity\User;
 interface UserService
 {
     public function insertStudent(User $student): User;
-    // jamais appelé en prod
-    // public function findUserWithGroupAndAuthority(int $idUser): ?User;
-    public function createUserDTOById(int $idUser): ?UserDTO; // I8 — renommé (b→B)
-    public function findUserStats(int $userId) : ?UserDTO;
-    // findGroupTotalScore est un doublon de GroupService::findGroupTotalScore
-    // public function findGroupTotalScore(int $groupId): int;
+    public function findById(int $id): ?User;
+    public function createUserDTOById(int $idUser): ?UserDTO;
+    // @return array<int, array{id: int, pseudo: string, score: int, pokedAt: ?int}>
+    public function getStudentScoresByGroupCode(string $groupCode): array;
+    public function pokeStudent(User $user): void;
+    public function clearPoke(User $user): void;
+    // @param array<string, int> $zoneRatings Zone name - rating (1-6)
+    public function saveRatings(User $user, array $zoneRatings): void;
+
+    // @return int[] ID des 3 sphères prioritaires
+    public function getTopSphereIds(User $user): array;
+
+    // @return int[] ID des 3 sphères les moins importantes
+    public function getBottomSphereIds(User $user): array;
 }
