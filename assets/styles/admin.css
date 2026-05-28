@@ -29,8 +29,8 @@
 .admin-dashboard h1 { margin-bottom: 1.5rem; }
 .admin-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
 .admin-card { display: block; padding: 1.5rem; color: #fff; border-radius: 8px; text-decoration: none; text-align: center; }
-.admin-card__icon { font-size: 2rem; }
-.admin-card__label { font-weight: 600; margin-top: .5rem; }
+.admin-card__icon { font-size: 1.75rem; line-height: 1; display: block; }
+.admin-card__label { font-size: .95rem; font-weight: 600; margin-top: .5rem; display: block; }
 .admin-card--activities     { background: #4A90E2; }
 .admin-card--spheres        { background: #7ED321; }
 .admin-card--categories     { background: #1ABC9C; }
