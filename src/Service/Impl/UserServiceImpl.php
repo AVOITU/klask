@@ -78,7 +78,7 @@ class UserServiceImpl implements UserService
 
     public function getBottomSphereIds(User $user): array
     {
-        return $this->userSphereRatingRepository->findTopSphereIdsByUser($user, 3, 'ASC');
+        return $this->userSphereRatingRepository->findTopSphereIdsByUser($user, 3, 'DESC');
     }
 
     public function saveRatings(User $user, array $zoneRatings): void
