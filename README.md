@@ -52,6 +52,19 @@ cp .env .env.local
 
 ---
 
+### Dépendances Symfony UX / EasyAdmin (obligatoire)
+
+S"assurer d'avoir ces bundles :
+
+| Bundle (`config/bundles.php`) | Package Composer requis |
+| ----------------------------- | ----------------------- |
+| `TwigComponentBundle`         | `symfony/ux-twig-component` |
+| `EasyAdminBundle`             | `easycorp/easyadmin-bundle` |
+
+```bash
+composer require symfony/ux-twig-component easycorp/easyadmin-bundle
+```
+
 ## Base de données — Reset complet
 
 > ** Ces commandes suppriment et recréent toutes les données.**
