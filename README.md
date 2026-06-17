@@ -43,6 +43,7 @@ composer install
 # 3. Installer les assets front (pas de npm nécessaire)
 php bin/console importmap:install
 php bin/console assets:install public
+php bin/console asset-map:compile
 
 # 4. Copier et configurer le fichier d'environnement
 cp .env .env.local
