@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class MapController extends AbstractController
 {
@@ -25,7 +26,7 @@ class MapController extends AbstractController
     ) {}
 
     #[Route('/map', name: 'app_map', methods: ['GET'])]
-    public function index(): Response
+    public function index(TokenStorageInterface $tokenStorage): Response
     {
         $user            = $this->getUser();
         $userStats       = null;
@@ -37,6 +38,19 @@ class MapController extends AbstractController
         if ($user instanceof User) {
             $roles   = $user->getRoles();
             $session = $this->requestStack->getSession();
+
+
+            if (!$this->userService->checkSessionTimeout($user, $session)) {
+                $tokenStorage->setToken(null); // Efface le token Symfony
+                $session->invalidate();       // Détruit la session
+
+
+                $this->addFlash('error', 'Votre session a expiré pour cause d\'inactivité. Veuillez vous reconnecter.');
+                return $this->redirectToRoute('app_login');
+
+            }
+
+
 
             if (in_array('ROLE_ACCOMPANYING', $roles, true)) {
                 $introImage = self::IMG_ACCOMPANYING;
@@ -52,6 +66,7 @@ class MapController extends AbstractController
             }
 
             $userStats = $this->userService->createUserDTOById($user->getId());
+
         }
 
         return $this->render('map/map.html.twig', [
@@ -62,7 +77,10 @@ class MapController extends AbstractController
             'bottomSpheresJson' => json_encode($bottomSphereIds),
             'showIntro'        => $showIntro,
             'instructionImage' => $introImage,
+
+
         ]);
+
     }
 
     #[Route('/map/intro/ack', name: 'app_map_intro_ack', methods: ['POST'])]

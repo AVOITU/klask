@@ -12,17 +12,20 @@ use App\Service\GroupService;
 use App\Service\UserService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 #[AsAlias]
 class UserServiceImpl implements UserService
 {
     public function __construct(
-        private readonly UserRepository $userRepository,
-        private readonly GroupService $groupService,
-        private readonly SphereRepository $sphereRepository,
+        private readonly UserRepository             $userRepository,
+        private readonly GroupService               $groupService,
+        private readonly SphereRepository           $sphereRepository,
         private readonly UserSphereRatingRepository $userSphereRatingRepository,
-        private readonly EntityManagerInterface $em,
-    ) {}
+        private readonly EntityManagerInterface     $em,
+    )
+    {
+    }
 
     public function insertStudent(User $student): User
     {
@@ -96,5 +99,30 @@ class UserServiceImpl implements UserService
         }
 
         $this->em->flush();
+    }
+
+
+    public function checkSessionTimeout(User $user, SessionInterface $session): bool
+    {
+        $roles = $user->getRoles();
+        $maxIdleTime = null;
+
+        if (in_array('ROLE_ADMIN', $roles, true)) {
+            $maxIdleTime = 200;
+        } elseif (in_array('ROLE_ACCOMPANYING', $roles, true)) {
+            $maxIdleTime = 200;
+        }
+
+        if ($maxIdleTime === null) {
+            return true; // Élève ou non concerné
+        }
+
+        $lastActivity = $session->get('klask_last_activity');
+        if ($lastActivity !== null && (time() - $lastActivity) > $maxIdleTime) {
+            return false; // Session expirée !
+        }
+
+        $session->set('klask_last_activity', time());
+        return true;
     }
 }

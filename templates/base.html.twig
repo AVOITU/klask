@@ -25,5 +25,12 @@
     {% block body %}{% endblock %}
 </main>
 {% include 'structure/footer.html.twig' %}
+{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_ACCOMPANYING') %}
+    <div id="session-config"
+         data-logout-url="{{ path('app_logout') }}"
+         data-timeout="{% if is_granted('ROLE_ADMIN') %}60000{% else %}120000{% endif %}"
+         hidden>
+    </div>
+{% endif %}
 </body>
 </html>

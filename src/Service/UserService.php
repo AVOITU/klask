@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\DTO\UserDTO;
 use App\Entity\User;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 interface UserService
 {
@@ -22,4 +23,6 @@ interface UserService
 
     // @return int[] ID des 3 sphères les moins importantes
     public function getBottomSphereIds(User $user): array;
+
+    public function checkSessionTimeout(User $user, SessionInterface $session): bool;
 }
