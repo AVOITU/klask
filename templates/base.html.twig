@@ -26,7 +26,7 @@
 </main>
  {% include 'structure/footer.html.twig' %}
 
-{ {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_ACCOMPANYING') %}
+ {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_ACCOMPANYING') %}
     <script>
         // Pour l'instant, j'ai pas trouvé de bonne méthode pour faire une déconnexion autre
         // que celle là, j'ai essayé de mettre le .js ailleurs pour mieux compartimenter mais
@@ -44,7 +44,7 @@
             function resetIdleTimer(e) {
                 clearTimeout(idleTimer);
                 // Pour tester les events en dessous
-                 console.log("Activité détectée : Timer remis à zéro !");
+                console.log("Activité détectée : Timer remis à zéro !");
 
                 idleTimer = setTimeout(() => {
                     console.log("Temps écoulé ! Déconnexion...");
@@ -62,6 +62,6 @@
         })();
     </script>
 {% endif %}
-}
+
 </body>
 </html>
