@@ -108,9 +108,9 @@ class UserServiceImpl implements UserService
         $maxIdleTime = null;
 
         if (in_array('ROLE_ADMIN', $roles, true)) {
-            $maxIdleTime = 200;
+            $maxIdleTime = 600;
         } elseif (in_array('ROLE_ACCOMPANYING', $roles, true)) {
-            $maxIdleTime = 200;
+            $maxIdleTime = 600;
         }
 
         if ($maxIdleTime === null) {

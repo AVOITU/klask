@@ -68,7 +68,6 @@ class DashboardController extends AbstractDashboardController
 
     public function configureAssets(): Assets
     {
-
         $logoutUrl = $this->generateUrl('app_logout');
 
         // 60000 = 60 secondes (pour tes tests).
@@ -99,5 +98,8 @@ class DashboardController extends AbstractDashboardController
 
         // On injecte le script directement à la fin du <body> de toutes les pages admin
         return parent::configureAssets()->addHtmlContentToBody($script);
+
+
+
     }
 }

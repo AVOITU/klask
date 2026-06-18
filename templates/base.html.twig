@@ -13,7 +13,7 @@
     {% endblock %}
 
     {% block javascripts %}
-        {% block importmap %}{% endblock %}
+        {{ importmap('app') }}
         <script type="module" src="{{ asset('js/shared_body.js') }}"></script>
     {% endblock %}
 </head>
@@ -26,11 +26,12 @@
 </main>
  {% include 'structure/footer.html.twig' %}
 
-{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_ACCOMPANYING') %}
+{ {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_ACCOMPANYING') %}
     <script>
         // Pour l'instant, j'ai pas trouvé de bonne méthode pour faire une déconnexion autre
         // que celle là, j'ai essayé de mettre le .js ailleurs pour mieux compartimenter mais
-        // le navigateur ne recoit jamais.
+        // le navigateur ne recoit jamais à cause d'un conflit avec l'assetMapper.
+
         (function() {
             console.log(" Système de sécurité (Timeout) activé !");
 
@@ -56,10 +57,11 @@
                 window.addEventListener(evt, resetIdleTimer, true);
             });
 
-            // On lance le minuteur au chargement de la page
+            // Ca lance le minuteur au chargement de la page
             resetIdleTimer();
         })();
     </script>
 {% endif %}
+}
 </body>
 </html>

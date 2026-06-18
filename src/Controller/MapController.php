@@ -43,19 +43,6 @@ class MapController extends AbstractController
                 return $this->redirectToRoute('admin');
             }
 
-
-            if (!$this->userService->checkSessionTimeout($user, $session)) {
-                $tokenStorage->setToken(null); // Efface le token Symfony
-                $session->invalidate();       // Détruit la session
-
-
-                $this->addFlash('error', 'Votre session a expiré pour cause d\'inactivité. Veuillez vous reconnecter.');
-                return $this->redirectToRoute('app_login');
-
-            }
-
-
-
             if (in_array('ROLE_ACCOMPANYING', $roles, true)) {
                 $introImage = self::IMG_ACCOMPANYING;
                 $showIntro  = !$session->get(self::SESSION_INTRO_ACCOMPANYING);
