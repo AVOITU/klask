@@ -24,13 +24,42 @@
 <main>
     {% block body %}{% endblock %}
 </main>
-{% include 'structure/footer.html.twig' %}
+ {% include 'structure/footer.html.twig' %}
+
 {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_ACCOMPANYING') %}
-    <div id="session-config"
-         data-logout-url="{{ path('app_logout') }}"
-         data-timeout="{% if is_granted('ROLE_ADMIN') %}60000{% else %}120000{% endif %}"
-         hidden>
-    </div>
+    <script>
+        // Pour l'instant, j'ai pas trouvé de bonne méthode pour faire une déconnexion autre
+        // que celle là, j'ai essayé de mettre le .js ailleurs pour mieux compartimenter mais
+        // le navigateur ne recoit jamais.
+        (function() {
+            console.log(" Système de sécurité (Timeout) activé !");
+
+            const logoutUrl = '{{ path('app_logout') }}';
+            // Pour le test : 60 secondes pour tout le monde
+            const timeoutMs = 60000;
+
+            let idleTimer;
+
+            function resetIdleTimer(e) {
+                clearTimeout(idleTimer);
+                // Pour tester les events en dessous
+                 console.log("Activité détectée : Timer remis à zéro !");
+
+                idleTimer = setTimeout(() => {
+                    console.log("Temps écoulé ! Déconnexion...");
+                    window.location.replace(logoutUrl);
+                }, timeoutMs);
+            }
+
+            const events = ['mousemove', 'keydown', 'mousedown','wheel', 'scroll', 'touchstart', 'touchmove',];
+            events.forEach(evt => {
+                window.addEventListener(evt, resetIdleTimer, true);
+            });
+
+            // On lance le minuteur au chargement de la page
+            resetIdleTimer();
+        })();
+    </script>
 {% endif %}
 </body>
 </html>

@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -63,5 +64,40 @@ class DashboardController extends AbstractDashboardController
 
         yield MenuItem::section('');
         yield MenuItem::linkToLogout('Déconnexion', 'fa fa-sign-out');
+    }
+
+    public function configureAssets(): Assets
+    {
+
+        $logoutUrl = $this->generateUrl('app_logout');
+
+        // 60000 = 60 secondes (pour tes tests).
+        $timeoutMs = 60000;
+
+        // C'est pareil que dans base.twig, mais coté admin, puisque visiblement EasyAdmin est à part de l'app.
+        $script = <<<HTML
+        <script>
+            (function() {
+                console.log(" Sécurité Admin (EasyAdmin) Activée !");
+                let idleTimer;
+
+                function resetIdleTimer() {
+                    clearTimeout(idleTimer);
+                    idleTimer = setTimeout(() => {
+                        console.log(" Temps écoulé ! Déconnexion de l'Admin...");
+                        window.location.replace('$logoutUrl');
+                    }, $timeoutMs);
+                }
+
+                const events = ['mousemove', 'keydown', 'mousedown', 'touchstart', 'wheel', 'touchmove', 'scroll'];
+                events.forEach(evt => window.addEventListener(evt, resetIdleTimer, true));
+
+                resetIdleTimer();
+            })();
+        </script>
+        HTML;
+
+        // On injecte le script directement à la fin du <body> de toutes les pages admin
+        return parent::configureAssets()->addHtmlContentToBody($script);
     }
 }

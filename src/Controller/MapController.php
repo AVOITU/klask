@@ -39,6 +39,10 @@ class MapController extends AbstractController
             $roles   = $user->getRoles();
             $session = $this->requestStack->getSession();
 
+            if (in_array('ROLE_ADMIN', $roles, true)) {
+                return $this->redirectToRoute('admin');
+            }
+
 
             if (!$this->userService->checkSessionTimeout($user, $session)) {
                 $tokenStorage->setToken(null); // Efface le token Symfony
