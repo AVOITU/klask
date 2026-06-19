@@ -138,4 +138,10 @@ class Group
 
         return $this;
     }
+    public function __toString(): string
+    {
+        // Remplace 'name' par la propriété qui représente le nom de ton groupe
+        // (ça peut être $this->nom, $this->code, $this->title, etc.)
+        return (string) $this->name;
+    }
 }

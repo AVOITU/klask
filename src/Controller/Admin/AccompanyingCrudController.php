@@ -41,7 +41,8 @@ class AccompanyingCrudController extends AbstractCrudController
         yield TextField::new('groupCode', 'Code groupe');
         yield AssociationField::new('group', 'Groupe')->hideOnIndex();
         if ($pageName === Crud::PAGE_NEW) {
-            yield TextField::new('password', 'Mot de passe temporaire');
+            yield TextField::new('plainPassword', 'Mot de passe temporaire')
+            ->setRequired(true);
         }
     }
 
@@ -61,11 +62,11 @@ class AccompanyingCrudController extends AbstractCrudController
         return $user;
     }
 
-    public function persistEntity(EntityManagerInterface $em, $entityInstance): void
+  /*  public function persistEntity(EntityManagerInterface $em, $entityInstance): void
     {
         /** @var User $entityInstance */
-        $plain = $entityInstance->getPassword() ?: 'TempKlask2026!';
+      /*  $plain = $entityInstance->getPassword() ?: 'TempKlask2026!';
         $entityInstance->setPassword($this->hasher->hashPassword($entityInstance, $plain));
         parent::persistEntity($em, $entityInstance);
-    }
+    } */
 }
