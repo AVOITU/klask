@@ -2,6 +2,7 @@
 
 namespace App\Service\Impl;
 
+use App\Security\RoleSecurity;
 use App\Service\StatisticsService;
 use App\Entity\Scan;
 use App\Entity\User;
@@ -28,16 +29,18 @@ class StatisticsServiceImpl implements StatisticsService
     private function getStudentsByLevel(): array
     {
         return $this->em->createQueryBuilder()
-            ->select('e.name as establishment_name, g.name as level_name, COUNT(u.id) as total_students')
+            // On utilise COALESCE pour afficher un texte propre si le groupe ou l'établissement est NULL
+            ->select("COALESCE(e.name, 'Sans établissement') as establishment_name, COALESCE(g.name, 'Sans niveau') as level_name, COUNT(u.id) as total_students")
             ->from(User::class, 'u')
-            ->join('u.group', 'g')
-            ->join('g.establishment', 'e')
+            // 2. On passe en leftJoin pour ne pas cacher les élèves sans groupe
+            ->leftJoin('u.group', 'g')
+            ->leftJoin('g.establishment', 'e')
             ->join('u.authority', 'a')
+            // 3. On utilise la VRAIE valeur de ton Enum de sécurité comme dans ton UserCrudController
             ->where('a.authorityUser = :role')
-            ->setParameter('role', 'ROLE_STUDENT')
+            ->setParameter('role', RoleSecurity::STUDENT->value)
             ->groupBy('e.id', 'g.id')
-            ->orderBy('e.name', 'ASC')
-            ->addOrderBy('g.name', 'ASC')
+            ->orderBy('establishment_name', 'ASC')
             ->getQuery()
             ->getArrayResult();
     }

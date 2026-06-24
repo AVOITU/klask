@@ -36,6 +36,7 @@ class DashboardController extends AbstractDashboardController
                 'users'          => $g->setController(UserCrudController::class)->setAction(Action::INDEX)->generateUrl(),
                 'accompanying'   => $g->setController(AccompanyingCrudController::class)->setAction(Action::INDEX)->generateUrl(),
                 'events'         => $g->setController(EventCrudController::class)->setAction(Action::INDEX)->generateUrl(),
+                'scans'          => $g->setController(ScanCrudController::class)->setAction(Action::INDEX)->generateUrl(),
             ],
         ]);
     }
@@ -67,6 +68,9 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::section('Utilisateurs');
         yield MenuItem::linkTo(UserCrudController::class, 'Élèves', 'fa fa-graduation-cap');
         yield MenuItem::linkTo(AccompanyingCrudController::class, 'Accompagnateurs', 'fa fa-user-tie');
+
+        yield MenuItem::section('Suivi Terrain');
+        yield MenuItem::linkTo(ScanCrudController::class, 'Historique des Scans', 'fas fa-qrcode');
 
         yield MenuItem::section('Bilan AJE29');
         yield MenuItem::linkToRoute('Statistiques Globales', 'fas fa-chart-pie', 'admin_stats');
