@@ -32,7 +32,7 @@ class Group
     private ?Establishment $establishment = null;
 
     #[ORM\ManyToOne(inversedBy: 'groups')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Event $event = null;
 
     //Maximum 40 élèves hors accompagnateurs, limite à revoir? 30?

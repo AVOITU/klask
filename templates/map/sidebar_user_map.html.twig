@@ -20,6 +20,13 @@
                     <p class="group-loading">Chargement..</p>
                 </div>
 
+               <!-- Partie dashboard -->
+                <div class="info-block text-center mt-3">
+                    <a href="{{ path('app_accompanying_dashboard') }}" class="btn btn-primary btn-sm w-100">
+                        📊 Voir le Bilan Complet
+                    </a>
+                </div>
+
             {% elseif currentUser and userStats %}
 
                 <div class="info-block">

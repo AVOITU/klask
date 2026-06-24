@@ -27,7 +27,7 @@ class Event
     /**
      * @var Collection<int, Group>
      */
-    #[ORM\OneToMany(targetEntity: Group::class, mappedBy: 'event')]
+    #[ORM\OneToMany(targetEntity: Group::class, mappedBy: 'event' ,cascade: ['persist'])]
     private Collection $groups;
 
     public function __construct()

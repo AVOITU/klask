@@ -11,13 +11,16 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Routing\Annotation\Route;
+use App\Service\StatisticsService;
 
 // POINT ENTREE D'EAsY AdMIN
 #[IsGranted('ROLE_ADMIN')]
 #[AdminDashboard(routePath: '/admin', routeName: 'admin')]
 class DashboardController extends AbstractDashboardController
 {
-    public function __construct(private readonly AdminUrlGenerator $urlGenerator) {}
+
+    public function __construct(private readonly AdminUrlGenerator $urlGenerator , private readonly StatisticsService $statisticsService) {}
 
     public function index(): Response
     {
@@ -32,6 +35,7 @@ class DashboardController extends AbstractDashboardController
                 'establishments' => $g->setController(EstablishmentCrudController::class)->setAction(Action::INDEX)->generateUrl(),
                 'users'          => $g->setController(UserCrudController::class)->setAction(Action::INDEX)->generateUrl(),
                 'accompanying'   => $g->setController(AccompanyingCrudController::class)->setAction(Action::INDEX)->generateUrl(),
+                'events'         => $g->setController(EventCrudController::class)->setAction(Action::INDEX)->generateUrl(),
             ],
         ]);
     }
@@ -49,18 +53,23 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
         yield MenuItem::linkToRoute('Voir la carte', 'fa fa-map', 'app_map');
 
+
         yield MenuItem::section('Carte');
         yield MenuItem::linkTo(SphereCrudController::class, 'Sphères', 'fa fa-circle');
         yield MenuItem::linkTo(ActivityCrudController::class, 'Activités / Stands', 'fa fa-star');
         yield MenuItem::linkTo(ActivityCategoryCrudController::class, 'Catégories', 'fa fa-tag');
 
         yield MenuItem::section('Event');
+        yield MenuItem::linkTo(EventCrudController::class, 'Événements', 'fas fa-calendar-alt');
         yield MenuItem::linkTo(GroupCrudController::class, 'Groupes', 'fa fa-users');
         yield MenuItem::linkTo(EstablishmentCrudController::class, 'Établissements', 'fa fa-school');
 
         yield MenuItem::section('Utilisateurs');
         yield MenuItem::linkTo(UserCrudController::class, 'Élèves', 'fa fa-graduation-cap');
         yield MenuItem::linkTo(AccompanyingCrudController::class, 'Accompagnateurs', 'fa fa-user-tie');
+
+        yield MenuItem::section('Bilan AJE29');
+        yield MenuItem::linkToRoute('Statistiques Globales', 'fas fa-chart-pie', 'admin_stats');
 
         yield MenuItem::section('');
         yield MenuItem::linkToLogout('Déconnexion', 'fa fa-sign-out');
@@ -70,8 +79,8 @@ class DashboardController extends AbstractDashboardController
     {
         $logoutUrl = $this->generateUrl('app_logout');
 
-        // 60000 = 60 secondes (pour tes tests).
-        $timeoutMs = 60000;
+        // 3600000 = 1 heure (pour les tests).
+        $timeoutMs = 3600000;
 
         // C'est pareil que dans base.twig, mais coté admin, puisque visiblement EasyAdmin est à part de l'app.
         $script = <<<HTML
@@ -101,5 +110,16 @@ class DashboardController extends AbstractDashboardController
 
 
 
+    }
+
+    #[Route('/admin/statistics', name: 'admin_stats')]
+    public function statistics(): Response
+    {
+        // Ici, on fera appel à un service ou aux Repositories pour récupérer les chiffres
+         $stats = $this->statisticsService->getGlobalStats();
+
+        return $this->render('admin/statistics.html.twig', [
+            'stats' => $stats
+        ]);
     }
 }

@@ -165,4 +165,30 @@
     });
     </script>
     {% endif %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // 1. On pointe directement sur le port 3000 de Docker en IP
+            const mercureUrl = new URL('http://127.0.0.1:3000/.well-known/mercure');
+            mercureUrl.searchParams.append('topic', 'https://klask.fr/groupe/test');
+
+            // 2. On ouvre la connexion
+            const eventSource = new EventSource(mercureUrl);
+
+            // 3. Dès qu'un message arrive
+            eventSource.onmessage = function (event) {
+                const data = JSON.parse(event.data);
+                console.log('Reçu en temps réel :', data);
+                alert(data.message + " Nouveau score : " + data.score);
+            };
+
+            eventSource.onopen = function() {
+                console.log("Connexion réussie au Hub Mercure ! En attente de messages...");
+            };
+
+            eventSource.onerror = function() {
+                console.log("Erreur de connexion ou reconnexions en cours...");
+            };
+        });
+    </script>
 {% endblock %}
