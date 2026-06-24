@@ -37,6 +37,7 @@ class DashboardController extends AbstractDashboardController
                 'accompanying'   => $g->setController(AccompanyingCrudController::class)->setAction(Action::INDEX)->generateUrl(),
                 'events'         => $g->setController(EventCrudController::class)->setAction(Action::INDEX)->generateUrl(),
                 'scans'          => $g->setController(ScanCrudController::class)->setAction(Action::INDEX)->generateUrl(),
+                'professions'    => $g->setController(ProfessionCrudController::class)->setAction(Action::INDEX)->generateUrl(),
             ],
         ]);
     }
@@ -58,6 +59,7 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::section('Carte');
         yield MenuItem::linkTo(SphereCrudController::class, 'Sphères', 'fa fa-circle');
         yield MenuItem::linkTo(ActivityCrudController::class, 'Activités / Stands', 'fa fa-star');
+        yield MenuItem::linkTo(ProfessionCrudController::class, 'Professions', 'fa fa-user-tie');
         yield MenuItem::linkTo(ActivityCategoryCrudController::class, 'Catégories', 'fa fa-tag');
 
         yield MenuItem::section('Event');
