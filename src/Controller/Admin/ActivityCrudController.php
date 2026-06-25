@@ -4,6 +4,8 @@ namespace App\Controller\Admin;
 
 use App\Entity\Activity;
 use App\Service\ActivityService;
+use App\Entity\ActivityCategory;
+
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -42,7 +44,10 @@ class ActivityCrudController extends AbstractCrudController
         yield TextField::new('name', 'Nom');
         yield TextareaField::new('description', 'Description')->hideOnIndex();
         yield AssociationField::new('sphere', 'Sphère');
-        yield AssociationField::new('category', 'Catégorie');
+        yield AssociationField::new('category', 'Catégorie')
+            ->setRequired(true)
+            ->setFormTypeOption('class', ActivityCategory::class) // VERIFIE BIEN CETTE LIGNE
+            ->setFormTypeOption('choice_label', 'type');
         yield BooleanField::new('isAvailable', 'Disponible');
         yield IntegerField::new('estimatedWaitMinutes', 'Attente (min)')->hideOnIndex();
         yield NumberField::new('pointX', 'Position X (%)')->hideOnIndex()->setNumDecimals(2);

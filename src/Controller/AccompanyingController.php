@@ -89,6 +89,8 @@ class AccompanyingController extends AbstractController
 
     }
 
+
+    // Je connais pas mercure, donc j'ai laissé ça en test pour l'instant
     #[Route('/test-mercure', name: 'test_mercure')]
     public function testMercure(): Response
     {

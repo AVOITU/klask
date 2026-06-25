@@ -54,15 +54,15 @@ class Activity
     private ?\DateTimeImmutable $standUpdatedAt = null;
 
     // Nullable pour les repères et conférences
-    #[ORM\ManyToOne(inversedBy: 'activities')]
+    #[ORM\ManyToOne(targetEntity: Sphere::class, inversedBy: 'activities')]
     #[ORM\JoinColumn(nullable: true)]
     private ?Sphere $sphere = null;
 
-    #[ORM\ManyToOne(inversedBy: 'activities')]
+    #[ORM\ManyToOne(targetEntity: ActivityCategory::class,inversedBy: 'activities')]
     #[ORM\JoinColumn(nullable: false)]
     private ?ActivityCategory $category = null;
 
-    
+
     private ?Profession $profession = null;
 
     // compteur d'occupation calculé depuis cette collection

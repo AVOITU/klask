@@ -32,5 +32,6 @@ class ActivityCategoryCrudController extends AbstractCrudController
         yield IntegerField::new('nbrMaxActivity', 'Max activités autorisées');
         yield DateTimeField::new('beginningHourCategory', 'Heure de début')->setFormat('HH:mm')->hideOnIndex();
         yield TextareaField::new('restrictions', 'Restrictions')->hideOnIndex();
+
     }
 }
