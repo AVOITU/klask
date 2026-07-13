@@ -1,25 +1,18 @@
-
 services:
-###> doctrine/doctrine-bundle ###
-  database:
-    image: postgres:${POSTGRES_VERSION:-16}-alpine
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-app}
-      # You should definitely change the password in production
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
-      POSTGRES_USER: ${POSTGRES_USER:-app}
-    healthcheck:
-      test: ["CMD", "pg_isready", "-d", "${POSTGRES_DB:-app}", "-U", "${POSTGRES_USER:-app}"]
-      timeout: 5s
-      retries: 5
-      start_period: 60s
-    volumes:
-      - database_data:/var/lib/postgresql/data:rw
-      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
-      # - ./docker/db/data:/var/lib/postgresql/data:rw
-###< doctrine/doctrine-bundle ###
+  mailer:
+    image: axllent/mailpit
+    ports:
+      - "8025:8025"
+      - "1025:1025"
 
-volumes:
-###> doctrine/doctrine-bundle ###
-  database_data:
-###< doctrine/doctrine-bundle ###
+  mercure:
+    image: dunglas/mercure
+    ports:
+      - "3000:3000"
+    environment:
+      SERVER_NAME: ':3000'
+      MERCURE_PUBLISHER_JWT_KEY: '50ebfcf315794dbe3a19ca0d2105608f164366e083a4bb1426cd72ec41c42fbd'
+      MERCURE_SUBSCRIBER_JWT_KEY: '50ebfcf315794dbe3a19ca0d2105608f164366e083a4bb1426cd72ec41c42fbd'
+      MERCURE_EXTRA_DIRECTIVES: |
+        anonymous
+        cors_origins *

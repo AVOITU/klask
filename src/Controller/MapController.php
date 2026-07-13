@@ -39,9 +39,6 @@ class MapController extends AbstractController
             $roles   = $user->getRoles();
             $session = $this->requestStack->getSession();
 
-            if (in_array('ROLE_ADMIN', $roles, true)) {
-                return $this->redirectToRoute('admin');
-            }
 
             if (in_array('ROLE_ACCOMPANYING', $roles, true)) {
                 $introImage = self::IMG_ACCOMPANYING;

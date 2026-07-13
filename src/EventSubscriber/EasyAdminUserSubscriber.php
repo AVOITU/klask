@@ -38,7 +38,7 @@ class EasyAdminUserSubscriber implements EventSubscriberInterface
         // Si un mot de passe en clair a été saisi
         if ($plainPassword) {
 
-            // 1. ENVOI DE L'EMAIL (Avant le hachage !)
+            // ENVOI DE L'EMAIL (Avant le hachage !)
             $email = (new Email())
                 ->from('admin@klask.fr')
                 ->to($entity->getEmail())
@@ -57,7 +57,7 @@ class EasyAdminUserSubscriber implements EventSubscriberInterface
 
             $this->mailer->send($email);
 
-            // 2. HACHAGE DU MOT DE PASSE (Pour la sécurité de la BDD)
+            //  HACHAGE DU MOT DE PASSE (Pour la sécurité de la BDD)
             $hashedPassword = $this->passwordHasher->hashPassword($entity, $plainPassword);
             $entity->setPassword($hashedPassword);
 

@@ -38,6 +38,7 @@ class DashboardController extends AbstractDashboardController
                 'events'         => $g->setController(EventCrudController::class)->setAction(Action::INDEX)->generateUrl(),
                 'scans'          => $g->setController(ScanCrudController::class)->setAction(Action::INDEX)->generateUrl(),
                 'professions'    => $g->setController(ProfessionCrudController::class)->setAction(Action::INDEX)->generateUrl(),
+                'notifications'  => $g->setController(NotificationCrudController::class)->setAction(Action::INDEX)->generateUrl(),
             ],
         ]);
     }
@@ -53,8 +54,10 @@ class DashboardController extends AbstractDashboardController
     public function configureMenuItems(): iterable
     {
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
-        yield MenuItem::linkToRoute('Voir la carte', 'fa fa-map', 'app_map');
+        $mapUrl = $this->generateUrl('app_map');
 
+        // On force l'ouverture de cette URL directement
+        yield MenuItem::linkToUrl('Voir la carte', 'fa fa-map', $mapUrl)->setLinkTarget('_blank');
 
         yield MenuItem::section('Carte');
         yield MenuItem::linkTo(SphereCrudController::class, 'Sphères', 'fa fa-circle');
@@ -76,6 +79,9 @@ class DashboardController extends AbstractDashboardController
 
         yield MenuItem::section('Bilan AJE29');
         yield MenuItem::linkToRoute('Statistiques Globales', 'fas fa-chart-pie', 'admin_stats');
+
+        yield MenuItem::section('Notifications');
+        yield MenuItem::linkTo( NotificationCrudController::class, 'Notifications', '');
 
         yield MenuItem::section('');
         yield MenuItem::linkToLogout('Déconnexion', 'fa fa-sign-out');
