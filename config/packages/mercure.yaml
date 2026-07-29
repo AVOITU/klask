@@ -2,8 +2,8 @@ mercure:
     enable_profiler: '%kernel.debug%'
     hubs:
         default:
-            url: '%env(default::MERCURE_URL)%'
-            public_url: '%env(default::MERCURE_PUBLIC_URL)%'
+            url: 'http://127.0.0.1:3000/.well-known/mercure'
+            public_url: 'http://127.0.0.1:3000/.well-known/mercure'
             jwt:
                 secret: '%env(MERCURE_JWT_SECRET)%'
                 publish: '*'

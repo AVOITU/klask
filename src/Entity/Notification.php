@@ -32,6 +32,18 @@ class Notification
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $complementaryInfo = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTime $startTime = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTime $endTime = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $actionText = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $actionType = null;
+
     public function __construct()
     {
 
@@ -123,6 +135,54 @@ class Notification
     public function setDescription(string $description): static
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getStartTime(): ?\DateTime
+    {
+        return $this->startTime;
+    }
+
+    public function setStartTime(?\DateTime $startTime): static
+    {
+        $this->startTime = $startTime;
+
+        return $this;
+    }
+
+    public function getEndTime(): ?\DateTime
+    {
+        return $this->endTime;
+    }
+
+    public function setEndTime(?\DateTime $endTime): static
+    {
+        $this->endTime = $endTime;
+
+        return $this;
+    }
+
+    public function getActionText(): ?string
+    {
+        return $this->actionText;
+    }
+
+    public function setActionText(?string $actionText): static
+    {
+        $this->actionText = $actionText;
+
+        return $this;
+    }
+
+    public function getActionType(): ?string
+    {
+        return $this->actionType;
+    }
+
+    public function setActionType(?string $actionType): static
+    {
+        $this->actionType = $actionType;
 
         return $this;
     }

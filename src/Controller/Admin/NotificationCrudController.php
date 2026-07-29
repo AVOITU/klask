@@ -18,6 +18,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use Symfony\Component\HttpFoundation\Response;
+use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 
 class NotificationCrudController extends AbstractCrudController
 {
@@ -70,7 +71,11 @@ class NotificationCrudController extends AbstractCrudController
         $data = json_encode([
             'title' => $notification->getTitle(),
             'message' => $notification->getMessage(),
-            'colorCode' => $notification->getColorCode()
+            'colorCode' => $notification->getColorCode(),
+            'startTime' => $notification->getStartTime() ? $notification->getStartTime()->format('c') : null,
+            'endTime' => $notification->getEndTime() ? $notification->getEndTime()->format('c') : null,
+            'actionText' => $notification->getActionText(),
+            'actionType' => $notification->getActionType(),
         ]);
 
         //  On publie le Pop-up en temps réel (Mercure)
@@ -114,5 +119,25 @@ class NotificationCrudController extends AbstractCrudController
 
         yield BooleanField::new('isActive', 'Notification Active')
             ->setHelp('Si coché, la notification apparaîtra sur la carte.');
+
+        yield DateTimeField::new('startTime', 'Heure de début')
+            ->setRequired(false) // C'est ça qui le rend optionnel !
+            ->setHelp('Laissez vide pour un affichage immédiat sans compte à rebours.');
+
+        yield DateTimeField::new('endTime', 'Heure de fin')
+            ->setRequired(false)
+            ->setHelp('Optionnel. Heure à laquelle l\'événement se termine.');
+
+        yield TextField::new('actionText', 'Texte du bouton d\'action')
+            ->setHelp('Laissez vide si vous ne voulez pas de bouton supplémentaire.')
+            ->setRequired(false);
+
+        yield ChoiceField::new('actionType', 'Action du bouton')
+            ->setChoices([
+                'Fermer la notification' => 'close',
+                'Ouvrir la sidebar' => 'open_sidebar',
+                'Afficher un chemin sur la carte' => 'show_path',
+            ])
+            ->setRequired(false);
     }
 }

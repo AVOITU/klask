@@ -26,6 +26,28 @@
 </main>
  {% include 'structure/footer.html.twig' %}
 
+
+{# --- 1. MODALE MERCURE GLOBALE (HTML) --- #}
+<div id="push-notification-modal" class="push-modal" hidden role="dialog" aria-modal="true">
+    <div class="push-modal-content" id="push-modal-content">
+        <button id="btn-close-push" class="push-close" aria-label="Fermer">✕</button>
+        <h2 id="push-title" class="push-title">Alerte</h2>
+        <p id="push-message" class="push-message"></p>
+        <p id="push-times" class="push-times" style="font-weight: bold; margin-top: 15px; color: #333;"></p>
+        <p id="push-countdown" class="push-countdown" style="font-size: 1.5rem; font-weight: bold; color: #dc3545;"></p>
+        <button id="push-action-btn" class="push-action-btn" style="display: block !important; visibility: visible !important; opacity: 1 !important; background-color: red !important; color: white !important; font-size: 20px; padding: 20px;">
+            BOUTON TEST FORCE
+        </button>    </div>
+</div>
+{# --- 2. SCRIPT MERCURE GLOBAL (JS) --- #}
+
+
+<script type="module" src="{{ asset('js/notifications.js') }}"></script>
+
+{# --- FIN MODALE MERCURE --- #}
+
+
+
  {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_ACCOMPANYING') %}
     <script>
         // Pour l'instant, j'ai pas trouvé de bonne méthode pour faire une déconnexion autre
@@ -37,7 +59,7 @@
 
             const logoutUrl = '{{ path('app_logout') }}';
             // Pour le test : 60 secondes pour tout le monde
-            const timeoutMs = 60000;
+            const timeoutMs = 3600000;
 
             let idleTimer;
 
