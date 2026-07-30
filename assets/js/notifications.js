@@ -32,7 +32,8 @@ if (pushModal) {
 
             // 3. Gestion des horaires
             const formatTime = (dateString) => {
-                const date = new Date(dateString);
+                const cleanDate = dateString.substring(0, 19);
+                const date = new Date(cleanDate);
                 return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }).replace(':', 'h');
             };
 
@@ -46,7 +47,7 @@ if (pushModal) {
 
             // 4. Compte à rebours
             if (data.startTime) {
-                const targetDate = new Date(data.startTime).getTime();
+                const targetDate = new Date(data.startTime.substring(0, 19)).getTime();
                 clearInterval(countdownInterval);
 
                 countdownInterval = setInterval(function() {
