@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Bilan de fin de journée - Klask{% endblock %}
+
+{% block body %}
+    <div class="container mt-5" style="max-width: 800px;">
+        {% if not hasGroup %}
+            <div class="alert alert-warning">Vous n'avez aucun groupe attribué.</div>
+        {% else %}
+
+            <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
+                <h1>Bilan Final : {{ group }}</h1>
+                <a href="{{ path('app_accompanying_dashboard') }}" class="btn btn-outline-secondary">← Retour au Live</a>
+            </div>
+
+            <div class="row text-center mb-4">
+                <div class="col-md-6 mb-3">
+                    <div class="card p-3 shadow-sm bg-light border-0">
+                        <h3 class="h5 text-muted">Score Total</h3>
+                        <div class="fs-1 fw-bold text-success">{{ totalScore }} pts</div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card p-3 shadow-sm bg-light border-0">
+                        <h3 class="h5 text-muted">Stands Visités</h3>
+                        <div class="fs-1 fw-bold text-primary">{{ totalScans }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-5">
+                    <h4>Par Sphère</h4>
+                    <ul class="list-group mb-4">
+                        {% for sphereName, count in spheresStats %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ sphereName }} <span class="badge bg-info rounded-pill">{{ count }}</span>
+                            </li>
+                        {% else %}
+                            <li class="list-group-item text-muted">Aucune donnée</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="col-md-7">
+                    <h4>Top Stands</h4>
+                    <ul class="list-group mb-4">
+                        {% for activityName, stats in activitiesStats %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div><strong>{{ activityName }}</strong> <br><small class="text-muted">{{ stats.category }}</small></div>
+                                <span class="badge bg-secondary">{{ stats.count }} visites</span>
+                            </li>
+                        {% else %}
+                            <li class="list-group-item text-muted">Aucune donnée</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="text-center mt-4 p-4 bg-light rounded">
+                {% if isPdfUnlocked %}
+                    <p class="text-success fw-bold">Parcours validé ! Vous pouvez récupérer le bilan du parcours.</p>
+                    <a href="{{ path('app_bilan_groupe_pdf') }}" class="btn btn-primary btn-lg">📄 Télécharger le PDF</a>
+                {% else %}
+                    <p class="text-danger fw-bold"><i class="fa fa-lock"></i> Bilan verrouillé (3 scans minimum par la classe).</p>
+                    <button class="btn btn-secondary btn-lg" disabled>📄 PDF Indisponible</button>
+                {% endif %}
+            </div>
+
+        {% endif %}
+    </div>
+{% endblock %}

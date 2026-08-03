@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Bilan AJE29{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1>Bilan de {{ user.userIdentifier }}</h1>
+
+        <div class="bilan-scores">
+            <div class="score-card">
+                <h3>Mon Score Personnel</h3>
+                <p class="score">{{ scorePerso }} points</p>
+            </div>
+
+            {% if group %}
+                <div class="score-card">
+                    <h3>Score de mon Équipe ({{ group.name | default('Mon Groupe') }})</h3>
+                    <p class="score">{{ scoreGroupe }} points</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="bilan-parcours mt-4">
+            <h2>Mon Parcours</h2>
+            {% if scans is empty %}
+                <p>Tu n'as pas encore visité de stands !</p>
+            {% else %}
+                <ul>
+                    {% for scan in scans %}
+                        <li>
+                            <strong>{{ scan.activity.name }}</strong>
+                            (Catégorie : {{ scan.activity.category.type }} - {{ scan.activity.category.nbrPoints }} pts)
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="mt-4 text-center">
+            {% if isPdfUnlocked %}
+                <div class="alert alert-success">Bravo, ton parcours est validé !</div>
+                <a href="{{ path('app_bilan_eleve_pdf') }}" class="btn btn-primary btn-lg">
+                    📄 Télécharger mon bilan (PDF)
+                </a>
+            {% else %}
+                <div class="alert alert-warning">
+                    <i class="fa fa-lock"></i> Ton bilan PDF est verrouillé.
+                    <br>
+                    <small>Visite encore quelques stands (3 minimum) ou continue ton exploration (1h) pour le débloquer !</small>
+                </div>
+                <button class="btn btn-secondary btn-lg" disabled>
+                    📄 Bilan indisponible
+                </button>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

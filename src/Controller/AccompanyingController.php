@@ -12,6 +12,8 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 #[IsGranted('ROLE_ACCOMPANYING')]
 class AccompanyingController extends AbstractController
@@ -56,41 +58,46 @@ class AccompanyingController extends AbstractController
     }
 
 // Pour l'instant, j'ai mis là pour le dashboard accompagnateur, à voir si on fait un AccompanyingDashboardController
-#[Route('/espace-accompagnateur', name: 'app_accompanying_dashboard', methods: ['GET'])]
+    #[Route('/espace-accompagnateur', name: 'app_accompanying_dashboard', methods: ['GET'])]
     public function index(UserRepository $userRepository): Response
     {
         /** @var User $user */
         $user = $this->getUser();
-        $group = $user->getGroup(); // Récupère l'entité Group de l'accompagnateur
+        $groupCode = $user->getGroupCode();
 
         $students = [];
         $totalScore = 0;
 
-        if ($group) {
-            // On récupère tous les utilisateurs qui appartiennent à ce groupe
-            $students = $userRepository->findBy(['group' => $group]);
+        if ($groupCode) {
+            $students = $userRepository->findBy(['groupCode' => $groupCode]);
 
-            // On calcule le score collectif du groupe
             foreach ($students as $student) {
-                // On évite de compter les points de l'accompagnateur lui-même s'il est dans la liste
                 if ($student !== $user) {
-                    $totalScore += $student->getScore() ?? 0;
+                    // CORRECTION ICI : On calcule le score via les scans de l'élève
+                    $studentScore = 0;
+                    foreach ($student->getScans() as $scan) {
+                        $studentScore += $scan->getActivity()->getCategory()->getNbrPoints();
+                    }
+
+                    // On ajoute le score de l'élève au score total du groupe
+                    $totalScore += $studentScore;
+
+
+                    $student->scoreDynamique = $studentScore;
                 }
             }
         }
 
-        // On envoie TOUTES les variables nécessaires au template Twig
         return $this->render('accompanying_dashboard/index.html.twig', [
             'accompanying' => $user,
-            'group' => $group,
+            'group' => $groupCode,
             'students' => $students,
             'totalScore' => $totalScore,
         ]);
-
     }
 
 
-    // Je connais pas mercure, donc j'ai laissé ça en test pour l'instant
+    // Pas totalement fonctionnel pour l'instant. (J'ai demandé à Gemini pour comprendre comment ça marche)
     #[Route('/test-mercure', name: 'test_mercure')]
     public function testMercure(): Response
     {

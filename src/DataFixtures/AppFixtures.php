@@ -26,6 +26,8 @@ class AppFixtures extends Fixture implements DependentFixtureInterface
             SphereFixtures::class,
             ActivityCategoryFixtures::class,
             ActivityFixtures::class,
+            StudentFixtures::class,
+            ScanFixtures::class,
         ];
     }
 }
