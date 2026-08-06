@@ -38,3 +38,17 @@
 .admin-card--establishments { background: #E74C3C; }
 .admin-card--users          { background: #9B59B6; }
 .admin-card--accompanying   { background: #2C3E50; }
+.admin-card--alert         { background: #6b7280; border: 2px solid transparent; cursor: pointer; }
+.admin-card--alert-on      { background: #dc2626; border-color: #fca5a5; animation: pulse-alert 1.5s ease-in-out infinite; }
+@keyframes pulse-alert { 0%,100% { opacity: 1; } 50% { opacity: .75; } }
+
+.admin-params { margin-top: 2.5rem; max-width: 720px; }
+.admin-params h2 { margin-bottom: 1rem; font-size: 1.1rem; }
+.admin-params__group { border: 1px solid #ddd; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+.admin-params__group legend { font-weight: 600; padding: 0 .5rem; }
+.admin-params__row { display: grid; grid-template-columns: 1fr auto; gap: .25rem 1rem; align-items: center; margin-bottom: .75rem; }
+.admin-params__row small { grid-column: 1 / -1; color: #666; font-size: .8rem; }
+.admin-params__key { font-size: .9rem; }
+.admin-params__row input[type="number"] { width: 5rem; padding: .3rem .5rem; }
+.admin-params__save { margin-top: .5rem; padding: .5rem 1.25rem; background: #2563eb; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
+.admin-params__save:hover { background: #1d4ed8; }

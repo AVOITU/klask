@@ -7,6 +7,13 @@
     --c-sb-soft:  #5d4037;
 }
 
+[data-theme="dark"] {
+    --c-sb-bg:    #1e1010;
+    --c-sb-panel: #2a1a0e;
+    --c-sb-ink:   #f5deb3;
+    --c-sb-soft:  #d4b896;
+}
+
 /* ── Trigger (toggle unique) ── */
 .trigger-tab {
     position: fixed;
@@ -45,6 +52,7 @@
 
 .sidebar-main-box {
     flex: 1;
+    min-height: 0;
     margin: 10px;
     background: var(--c-sb-panel);
     border-radius: 3px;
@@ -58,10 +66,12 @@
 /* ── Contenu ── */
 .sidebar-content {
     flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     padding: 16px 14px 12px;
     overflow-y: auto;
+    overscroll-behavior: contain;
     gap: 10px;
 }
 
@@ -91,11 +101,6 @@
     font-weight: 700;
     word-break: break-word;
 }
-.value.score {
-    font: 900 2rem/1 'Courier New', monospace;
-    color: #8B0000;
-    text-shadow: 0 0 12px rgba(139,0,0,.55), 0 0 30px rgba(139,0,0,.2);
-}
 
 .avatar-block { display: flex; justify-content: center; padding: 6px 0; }
 
@@ -123,8 +128,6 @@
     gap: 10px;
     justify-content: center;
     padding: 8px 4px;
-    overflow-y: auto;
-    max-height: calc(100vh - 170px);
 }
 .student-card {
     display: flex;
@@ -139,22 +142,4 @@
 .student-pseudo { font: .62rem/1.2 'Courier New', monospace; font-weight: 600; text-align: center; word-break: break-word; color: var(--c-sb-ink); }
 .student-score  { font: .62rem/1 'Courier New', monospace; color: #8B0000; }
 
-.group-loading,
-.group-empty,
-.group-error { width: 100%; text-align: center; font: .8rem/1.5 'Courier New', monospace; color: #888; padding: 1rem 0; }
-
-/* ── Poke ── */
-.btn-poke {
-    background: #8B0000;
-    color: #fff;
-    border: none;
-    border-radius: 2px;
-    padding: 6px 12px;
-    font: 700 .75rem/1 'Courier New', monospace;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    cursor: pointer;
-    box-shadow: 0 0 0 1px rgba(139,0,0,.5), 0 0 8px rgba(139,0,0,.5);
-    transition: box-shadow .15s;
-}
-.btn-poke:hover { box-shadow: 0 0 0 1px #b50000, 0 0 16px rgba(181,0,0,.75); }
+.group-loading { width: 100%; text-align: center; font: .8rem/1.5 'Courier New', monospace; color: #888; padding: 1rem 0; }
