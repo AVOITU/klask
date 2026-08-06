@@ -19,7 +19,6 @@ class Group
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $name = null;
 
-    // Couleur hexadécimale de l'équipe
     #[ORM\Column(length: 50)]
     private string $color;
 
@@ -34,6 +33,10 @@ class Group
     #[ORM\ManyToOne(inversedBy: 'groups')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Event $event = null;
+
+    // Score total du groupe,màJ à chaque scan d'un membre
+    #[ORM\Column(nullable: true)]
+    private ?int $score = null;
 
     //Maximum 40 élèves hors accompagnateurs, limite à revoir? 30?
     /**
@@ -86,6 +89,23 @@ class Group
         $this->code = $code;
 
         return $this;
+    }
+
+    public function getScore(): ?int
+    {
+        return $this->score;
+    }
+
+    public function setScore(?int $score): static
+    {
+        $this->score = $score;
+
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->code . ($this->name ? ' — ' . $this->name : '');
     }
 
     public function getEstablishment(): ?Establishment

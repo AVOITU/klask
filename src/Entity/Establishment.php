@@ -21,7 +21,8 @@ class Establishment
     /**
      * @var Collection<int, Group>
      */
-    #[ORM\OneToMany(targetEntity: Group::class, mappedBy: 'establishment', orphanRemoval: true)]
+    // cascade persist : les classes ajoutées depuis le formulaire Établissement sont enregistrées avec lui
+    #[ORM\OneToMany(targetEntity: Group::class, mappedBy: 'establishment', cascade: ['persist'], orphanRemoval: true)]
     private Collection $groups;
 
     public function __construct()
@@ -44,6 +45,11 @@ class Establishment
         $this->name = $name;
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->name;
     }
 
     /**

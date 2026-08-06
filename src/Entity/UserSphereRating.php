@@ -12,7 +12,7 @@ class UserSphereRating
 {
     #[ORM\Id]
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private User $user;
 
     #[ORM\Id]
@@ -43,12 +43,5 @@ class UserSphereRating
     public function getRating(): int
     {
         return $this->rating;
-    }
-
-    public function setRating(int $rating): static
-    {
-        $this->rating = $rating;
-
-        return $this;
     }
 }

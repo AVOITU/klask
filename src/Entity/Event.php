@@ -24,6 +24,9 @@ class Event
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $endHourEvent = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $resetAt = null;
+
     /**
      * @var Collection<int, Group>
      */
@@ -52,6 +55,11 @@ class Event
         return $this;
     }
 
+    public function __toString(): string
+    {
+        return $this->name;
+    }
+
     public function getBeginningHourEvent(): ?\DateTimeImmutable
     {
         return $this->beginningHourEvent;
@@ -74,6 +82,23 @@ class Event
         $this->endHourEvent = $endHourEvent;
 
         return $this;
+    }
+
+    public function getResetAt(): ?\DateTimeImmutable
+    {
+        return $this->resetAt;
+    }
+
+    public function setResetAt(?\DateTimeImmutable $resetAt): static
+    {
+        $this->resetAt = $resetAt;
+
+        return $this;
+    }
+
+    public function isReset(): bool
+    {
+        return $this->resetAt !== null;
     }
 
     /**

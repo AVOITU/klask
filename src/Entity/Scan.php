@@ -7,6 +7,7 @@ use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ScanRepository::class)]
+#[ORM\UniqueConstraint(name: 'scan_user_activity_uniq', columns: ['user_id', 'activity_id'])]
 class Scan
 {
     #[ORM\Id]
@@ -14,21 +15,23 @@ class Scan
     #[ORM\Column]
     private ?int $id = null;
 
-    //Immuable "normalement" (c'est à dire non modifiable) - plus le cas si on démarre avec un timestamp à 0
+    //Immuable, non modifiable
     #[ORM\Column]
     private DateTimeImmutable $hourValidation;
 
     #[ORM\ManyToOne(inversedBy: 'scans')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Activity $activity = null;
+    private Activity $activity;
 
     #[ORM\ManyToOne(inversedBy: 'scans')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $user = null;
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    private User $user;
 
-    public function __construct(DateTimeImmutable $hourValidation)
+    public function __construct(DateTimeImmutable $hourValidation, Activity $activity, User $user)
     {
         $this->hourValidation = $hourValidation;
+        $this->activity       = $activity;
+        $this->user           = $user;
     }
 
     public function getId(): ?int
@@ -41,27 +44,13 @@ class Scan
         return $this->hourValidation;
     }
 
-    public function getActivity(): ?Activity
+    public function getActivity(): Activity
     {
         return $this->activity;
     }
 
-    public function setActivity(?Activity $activity): static
-    {
-        $this->activity = $activity;
-
-        return $this;
-    }
-
-    public function getUser(): ?User
+    public function getUser(): User
     {
         return $this->user;
-    }
-
-    public function setUser(?User $user): static
-    {
-        $this->user = $user;
-
-        return $this;
     }
 }

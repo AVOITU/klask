@@ -26,17 +26,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $password = null;
 
-    // Null = non bloqué
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $blockedUntil = null;
-
-    // horodatage du dernier poke envoyé par l'accompagnateur. Null = pas de poke en attente
-    #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $pokedAt = null;
 
     //compteur de scans invalides consécutifs. Remis à 0 après tout scan valide
     #[ORM\Column(options: ['default' => 0])]
     private int $invalidScanCount = 0;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $score = null;
 
     #[ORM\Column(length: 10, nullable: true)]
     private ?string $groupCode = null;
@@ -62,22 +60,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->scans = new ArrayCollection();
     }
 
+    public function __toString(): string
+    {
+        return $this->pseudo ?? $this->email ?? 'User #' . $this->id;
+    }
+
     // id unique Security : email pour staff, pseudo pour les élèves (pas d'email)
     public function getUserIdentifier(): string
     {
         return $this->email ?? $this->pseudo ?? '';
     }
 
-    // La BDD stocke STUDENT/ADMIN — Symfony exige le préfixe ROLE_
+    // La BDD stocke STUDENT/ADMIN - Symfony exige le préfixe ROLE_
     public function getRoles(): array
     {
         $roles = [];
 
         foreach ($this->authority?->getAuthorityRoles() ?? [] as $authorityRole) {
-            $name = $authorityRole->getRole()?->getNameRole();
-            if ($name !== null) {
-                $roles[] = 'ROLE_' . $name;
-            }
+            $roles[] = 'ROLE_' . $authorityRole->getRole()->getNameRole();
         }
 
         return $roles ?: ['ROLE_STUDENT'];
@@ -153,14 +153,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getPokedAt(): ?\DateTimeImmutable
+    public function getScore(): ?int
     {
-        return $this->pokedAt;
+        return $this->score;
     }
 
-    public function setPokedAt(?\DateTimeImmutable $pokedAt): static
+    public function setScore(?int $score): static
     {
-        $this->pokedAt = $pokedAt;
+        $this->score = $score;
 
         return $this;
     }
@@ -197,34 +197,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setGroup(?Group $group): static
     {
         $this->group = $group;
-
-        return $this;
-    }
-
-
-    /**
-     * @return Collection<int, Scan>
-     */
-    public function getScans(): Collection
-    {
-        return $this->scans;
-    }
-
-    public function addScan(Scan $scan): static
-    {
-        if (!$this->scans->contains($scan)) {
-            $this->scans->add($scan);
-            $scan->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeScan(Scan $scan): static
-    {
-        if ($this->scans->removeElement($scan) && $scan->getUser() === $this) {
-            $scan->setUser(null);
-        }
 
         return $this;
     }

@@ -5,7 +5,7 @@ namespace App\Entity;
 use App\Repository\AppParameterRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-//Paramètres métier dynamiques, modifiables sans redéploiement
+//paramètres métier dynamique, modifiables sans redéploiement!!
 #[ORM\Entity(repositoryClass: AppParameterRepository::class)]
 class AppParameter
 {
@@ -93,7 +93,7 @@ class AppParameter
         return $this->updatedAt;
     }
 
-    // Retourne la valeur castée selon paramType
+    // retourne la valeur selon paramType
     public function getCastedValue(): int|float|bool|string
     {
         return match ($this->paramType) {

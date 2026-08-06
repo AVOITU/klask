@@ -10,6 +10,14 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: ActivityCategoryRepository::class)]
 class ActivityCategory
 {
+    public const TYPE_STAND      = 'Stand';
+    public const TYPE_ATELIER    = 'Atelier';
+    public const TYPE_CONFERENCE = 'Conférence';
+    public const TYPE_PROFESSION = 'Profession';
+
+    //catégories dont les activités ont un horaire fixe
+    public const SCHEDULED_TYPES = [self::TYPE_ATELIER, self::TYPE_CONFERENCE];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -21,14 +29,8 @@ class ActivityCategory
     #[ORM\Column(options: ['unsigned' => true])]
     private int $nbrPoints;
 
-    #[ORM\Column]
-    private int $nbrMaxActivity;
-
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $beginningHourCategory = null;
-
-    #[ORM\Column(type: 'text', length: 500, nullable: true)]
-    private ?string $restrictions = null;
 
     /**
      * @var Collection<int, Activity>
@@ -36,21 +38,19 @@ class ActivityCategory
     #[ORM\OneToMany(targetEntity: Activity::class, mappedBy: 'category', orphanRemoval: true)]
     private Collection $activities;
 
-    /**
-     * @var Collection<int, Sphere>
-     */
-    #[ORM\OneToMany(targetEntity: Sphere::class, mappedBy: 'category')]
-    private Collection $spheres;
-
     public function __construct()
     {
         $this->activities = new ArrayCollection();
-        $this->spheres = new ArrayCollection();
     }
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function isStand(): bool
+    {
+        return $this->type === self::TYPE_STAND;
     }
 
     public function getType(): string
@@ -65,6 +65,11 @@ class ActivityCategory
         return $this;
     }
 
+    public function __toString(): string
+    {
+        return $this->type;
+    }
+
     public function getNbrPoints(): int
     {
         return $this->nbrPoints;
@@ -77,18 +82,6 @@ class ActivityCategory
         return $this;
     }
 
-    public function getNbrMaxActivity(): int
-    {
-        return $this->nbrMaxActivity;
-    }
-
-    public function setNbrMaxActivity(int $nbrMaxActivity): static
-    {
-        $this->nbrMaxActivity = $nbrMaxActivity;
-
-        return $this;
-    }
-
     public function getBeginningHourCategory(): ?\DateTimeImmutable
     {
         return $this->beginningHourCategory;
@@ -97,18 +90,6 @@ class ActivityCategory
     public function setBeginningHourCategory(?\DateTimeImmutable $beginningHourCategory): static
     {
         $this->beginningHourCategory = $beginningHourCategory;
-
-        return $this;
-    }
-
-    public function getRestrictions(): ?string
-    {
-        return $this->restrictions;
-    }
-
-    public function setRestrictions(?string $restrictions): static
-    {
-        $this->restrictions = $restrictions;
 
         return $this;
     }
@@ -135,33 +116,6 @@ class ActivityCategory
     {
         if ($this->activities->removeElement($activity) && $activity->getCategory() === $this) {
             $activity->setCategory(null);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Sphere>
-     */
-    public function getSpheres(): Collection
-    {
-        return $this->spheres;
-    }
-
-    public function addSphere(Sphere $sphere): static
-    {
-        if (!$this->spheres->contains($sphere)) {
-            $this->spheres->add($sphere);
-            $sphere->setCategory($this);
-        }
-
-        return $this;
-    }
-
-    public function removeSphere(Sphere $sphere): static
-    {
-        if ($this->spheres->removeElement($sphere) && $sphere->getCategory() === $this) {
-            $sphere->setCategory(null);
         }
 
         return $this;

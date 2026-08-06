@@ -36,10 +36,6 @@ class Sphere
     #[ORM\Column]
     private float $radius = 10.0;
 
-    #[ORM\ManyToOne(inversedBy: 'spheres')]
-    #[ORM\JoinColumn(nullable: true)]
-    private ?ActivityCategory $category = null;
-
     /**
      * @var Collection<int, Activity>
      */
@@ -66,6 +62,11 @@ class Sphere
         $this->name = $name;
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->name;
     }
 
     public function getColor(): string
@@ -136,18 +137,6 @@ class Sphere
     public function setRadius(float $radius): static
     {
         $this->radius = $radius;
-
-        return $this;
-    }
-
-    public function getCategory(): ?ActivityCategory
-    {
-        return $this->category;
-    }
-
-    public function setCategory(?ActivityCategory $category): static
-    {
-        $this->category = $category;
 
         return $this;
     }

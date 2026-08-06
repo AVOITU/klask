@@ -53,23 +53,4 @@ class Role
     {
         return $this->authorityRoles;
     }
-
-    public function addAuthorityRole(AuthorityRole $authorityRole): static
-    {
-        if (!$this->authorityRoles->contains($authorityRole)) {
-            $this->authorityRoles->add($authorityRole);
-            $authorityRole->setRole($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAuthorityRole(AuthorityRole $authorityRole): static
-    {
-        if ($this->authorityRoles->removeElement($authorityRole) && $authorityRole->getRole() === $this) {
-            $authorityRole->setRole(null);
-        }
-
-        return $this;
-    }
 }

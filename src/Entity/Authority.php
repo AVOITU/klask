@@ -53,6 +53,11 @@ class Authority
         return $this;
     }
 
+    public function __toString(): string
+    {
+        return $this->authorityUser;
+    }
+
     /**
      * @return Collection<int, User>
      */
@@ -86,24 +91,5 @@ class Authority
     public function getAuthorityRoles(): Collection
     {
         return $this->authorityRoles;
-    }
-
-    public function addAuthorityRole(AuthorityRole $authorityRole): static
-    {
-        if (!$this->authorityRoles->contains($authorityRole)) {
-            $this->authorityRoles->add($authorityRole);
-            $authorityRole->setAuthority($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAuthorityRole(AuthorityRole $authorityRole): static
-    {
-        if ($this->authorityRoles->removeElement($authorityRole) && $authorityRole->getAuthority() === $this) {
-            $authorityRole->setAuthority(null);
-        }
-
-        return $this;
     }
 }

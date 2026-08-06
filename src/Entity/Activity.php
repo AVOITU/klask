@@ -24,7 +24,7 @@ class Activity
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $qrcode = null;
 
-   // Token secret encodé dans le QR code physique qui protège contre les soumissions de scans MANUELS
+   //token secret encodé dans le QR code physique qui protège contre les soumissions de scans MANUELS
     #[ORM\Column(length: 255, unique: true, nullable: true)]
     private ?string $qrcodeToken = null;
 
@@ -49,11 +49,6 @@ class Activity
     #[ORM\Column(nullable: true)]
     private ?int $estimatedWaitMinutes = null;
 
-    //Dernière mise à jour des infos stand (dispo / attente)
-    #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $standUpdatedAt = null;
-
-    // Nullable pour les repères et conférences
     #[ORM\ManyToOne(inversedBy: 'activities')]
     #[ORM\JoinColumn(nullable: true)]
     private ?Sphere $sphere = null;
@@ -62,11 +57,7 @@ class Activity
     #[ORM\JoinColumn(nullable: false)]
     private ?ActivityCategory $category = null;
 
-    
-    private ?Profession $profession = null;
-
-    // compteur d'occupation calculé depuis cette collection
-    /*
+    /** scans récents
      * @var Collection<int, Scan>
      */
     #[ORM\OneToMany(targetEntity: Scan::class, mappedBy: 'activity')]
@@ -82,6 +73,11 @@ class Activity
         return $this->id;
     }
 
+    public function isStand(): bool
+    {
+        return $this->category?->isStand() ?? false;
+    }
+
     public function getName(): string
     {
         return $this->name;
@@ -92,6 +88,11 @@ class Activity
         $this->name = $name;
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->name;
     }
 
     public function getDescription(): ?string
@@ -214,19 +215,6 @@ class Activity
         return $this;
     }
 
-    // À utiliser quand la gestion "dispo/indispo" des stands sera active (dans admin)
-    public function getStandUpdatedAt(): ?\DateTimeImmutable
-    {
-        return $this->standUpdatedAt;
-    }
-
-    public function setStandUpdatedAt(?\DateTimeImmutable $standUpdatedAt): static
-    {
-        $this->standUpdatedAt = $standUpdatedAt;
-
-        return $this;
-    }
-
     public function getSphere(): ?Sphere
     {
         return $this->sphere;
@@ -247,37 +235,6 @@ class Activity
     public function setCategory(?ActivityCategory $category): static
     {
         $this->category = $category;
-
-        return $this;
-    }
-
-    // getter/setter Profession jamais appelés, à voir si on les garde
-    // public function getProfession(): ?Profession { return $this->profession; }
-    // public function setProfession(?Profession $profession): static { $this->profession = $profession; return $this; }
-
-    /**
-     * @return Collection<int, Scan>
-     */
-    public function getScans(): Collection
-    {
-        return $this->scans;
-    }
-
-    public function addScan(Scan $scan): static
-    {
-        if (!$this->scans->contains($scan)) {
-            $this->scans->add($scan);
-            $scan->setActivity($this);
-        }
-
-        return $this;
-    }
-
-    public function removeScan(Scan $scan): static
-    {
-        if ($this->scans->removeElement($scan) && $scan->getActivity() === $this) {
-            $scan->setActivity(null);
-        }
 
         return $this;
     }
