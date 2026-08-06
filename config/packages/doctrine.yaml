@@ -13,7 +13,9 @@ doctrine:
             collate: utf8mb4_unicode_ci
             engine: InnoDB
     orm:
-        auto_generate_proxy_classes: true
+        # true régénère les proxies à CHAQUE requête (coûteux, surtout sous Windows) ;
+        # ce mode ne régénère que si le fichier est absent ou le mapping a changé.
+        auto_generate_proxy_classes: file_not_exists_or_changed
         enable_lazy_ghost_objects: true
         report_fields_where_declared: true
         validate_xml_mapping: true
