@@ -32,7 +32,10 @@ class GroupCrudController extends AbstractCrudController
         yield TextField::new('code', 'Code groupe');
         yield TextField::new('name', 'Niveau (Seconde…)');
         yield ColorField::new('color', 'Couleur');
-        yield AssociationField::new('establishment', 'Établissement');
+        // Formulaire imbriqué dans un autre CRUD (établissement)
+        if ($this->getContext()?->getCrud()?->getControllerFqcn() === self::class) {
+            yield AssociationField::new('establishment', 'Établissement');
+        }
         yield AssociationField::new('event', 'Événement');
         yield AssociationField::new('users', 'Élèves')->onlyOnIndex();
     }

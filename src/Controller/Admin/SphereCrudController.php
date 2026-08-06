@@ -3,6 +3,9 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Sphere;
+use App\Service\MapService;
+use App\Service\RealtimeNotifier;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -15,9 +18,41 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
 class SphereCrudController extends AbstractCrudController
 {
+    public function __construct(
+        private readonly MapService $mapService,
+        private readonly RealtimeNotifier $notifier,
+    ) {}
+
     public static function getEntityFqcn(): string
     {
         return Sphere::class;
+    }
+
+    public function persistEntity(EntityManagerInterface $em, mixed $entity): void
+    {
+        parent::persistEntity($em, $entity);
+        $this->mapService->invalidateCache();
+    }
+
+    public function updateEntity(EntityManagerInterface $em, mixed $entity): void
+    {
+        parent::updateEntity($em, $entity);
+        $this->mapService->invalidateCache();
+
+        if ($entity instanceof Sphere) {
+            $this->notifier->publish('map-update', [
+                'type'  => 'sphere',
+                'id'    => $entity->getId(),
+                'name'  => $entity->getName(),
+                'color' => $entity->getColor(),
+            ]);
+        }
+    }
+
+    public function deleteEntity(EntityManagerInterface $em, mixed $entity): void
+    {
+        parent::deleteEntity($em, $entity);
+        $this->mapService->invalidateCache();
     }
 
     public function configureCrud(Crud $crud): Crud
@@ -34,17 +69,18 @@ class SphereCrudController extends AbstractCrudController
         yield ColorField::new('color', 'Couleur');
         yield TextareaField::new('description', 'Description')->hideOnIndex();
         yield TextField::new('icon', 'Icône (CSS class)')->hideOnIndex();
-        yield AssociationField::new('category', 'Catégorie')->hideOnIndex();
         yield AssociationField::new('activities', 'Activités')->hideOnIndex();
-        yield NumberField::new('pointX', 'Centre X (%)')->setNumDecimals(2);
-        yield NumberField::new('pointY', 'Centre Y (%)')->setNumDecimals(2);
-        yield NumberField::new('radius', 'Rayon (%)')->setNumDecimals(2);
+        // Géométrie calculée depuis les stands / posée via « Placer sur la carte » — consultation seule
+        yield NumberField::new('pointX', 'Centre X (%)')->setNumDecimals(2)->onlyOnDetail();
+        yield NumberField::new('pointY', 'Centre Y (%)')->setNumDecimals(2)->onlyOnDetail();
+        yield NumberField::new('radius', 'Rayon (%)')->setNumDecimals(2)->onlyOnDetail();
     }
 
     public function configureActions(Actions $actions): Actions
     {
-        $place = Action::new('placeOnMap', 'Placer', 'fa fa-map-marker-alt')
-            ->linkToRoute('admin_map_placement', fn (Sphere $s) => ['type' => 'sphere', 'id' => $s->getId()]);
+        $place = Action::new('placeOnMap', 'Placer sur la carte', 'fa fa-map-marker-alt')
+            ->linkToRoute('admin_map_placement', fn (Sphere $s) => ['type' => 'sphere', 'id' => $s->getId()])
+            ->setCssClass('btn btn-success');
 
         return $actions->add(Crud::PAGE_INDEX, $place)->add(Crud::PAGE_EDIT, $place);
     }

@@ -3,8 +3,8 @@
 namespace App\Controller\Admin;
 
 use App\Entity\User;
+use App\Repository\AuthorityRepository;
 use App\Security\RoleSecurity;
-use App\Service\AuthorityService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
@@ -20,7 +20,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class AccompanyingCrudController extends AbstractCrudController
 {
     public function __construct(
-        private readonly AuthorityService $authorityService,
+        private readonly AuthorityRepository $authorityRepository,
         private readonly UserPasswordHasherInterface $hasher,
     ) {}
 
@@ -38,8 +38,8 @@ class AccompanyingCrudController extends AbstractCrudController
     {
         yield TextField::new('pseudo', 'Nom');
         yield TextField::new('email', 'Email');
-        yield TextField::new('groupCode', 'Code groupe');
-        yield AssociationField::new('group', 'Groupe')->hideOnIndex();
+        // Le groupe est la seule source pour poke et les scores temps réel
+        yield AssociationField::new('group', 'Groupe');
         if ($pageName === Crud::PAGE_NEW) {
             yield TextField::new('password', 'Mot de passe temporaire');
         }
@@ -56,7 +56,7 @@ class AccompanyingCrudController extends AbstractCrudController
     public function createEntity(string $entityFqcn): User
     {
         $user = new User();
-        $user->setAuthority($this->authorityService->findByRole(RoleSecurity::ACCOMPANYING->value));
+        $user->setAuthority($this->authorityRepository->findByRole(RoleSecurity::ACCOMPANYING->value));
 
         return $user;
     }

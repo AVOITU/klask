@@ -3,8 +3,8 @@
 namespace App\Controller\Admin;
 
 use App\Entity\User;
+use App\Repository\AuthorityRepository;
 use App\Security\RoleSecurity;
-use App\Service\AuthorityService;
 use App\Service\InscriptionService;
 use Doctrine\ORM\QueryBuilder;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
@@ -26,7 +26,7 @@ class UserCrudController extends AbstractCrudController
 {
     public function __construct(
         private readonly InscriptionService $inscriptionService,
-        private readonly AuthorityService $authorityService,
+        private readonly AuthorityRepository $authorityRepository,
     ) {}
 
     public static function getEntityFqcn(): string
@@ -40,18 +40,18 @@ class UserCrudController extends AbstractCrudController
             ->setEntityLabelInSingular('Élève')
             ->setEntityLabelInPlural('Élèves')
             ->setDefaultSort(['id' => 'DESC'])
-            ->setSearchFields(['pseudo', 'groupCode']);
+            ->setSearchFields(['pseudo', 'group.code', 'group.establishment.name']);
     }
 
     public function configureFields(string $pageName): iterable
     {
-        yield TextField::new('pseudo', 'Pseudo');
-        yield TextField::new('groupCode', 'Code groupe');
+        yield TextField::new('pseudo', 'Pseudo')->hideWhenUpdating();
         yield AssociationField::new('group', 'Groupe');
-        yield AssociationField::new('authority', 'Rôle')->hideOnIndex();
+        // Déduit du groupe : lecture seule, jointure faite dans createIndexQueryBuilder
+        yield TextField::new('group.establishment.name', 'Établissement')->hideOnForm();
+        yield AssociationField::new('authority', 'Rôle')->hideOnIndex()->hideWhenUpdating();
         yield IntegerField::new('invalidScanCount', 'Scans invalides')->hideOnForm();
         yield DateTimeField::new('blockedUntil', 'Bloqué jusqu\'au')->hideOnIndex();
-        yield DateTimeField::new('pokedAt', 'Poké à')->onlyOnDetail();
     }
 
     public function configureFilters(Filters $filters): Filters
@@ -68,8 +68,11 @@ class UserCrudController extends AbstractCrudController
 
     public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
     {
+        // addSelect sur groupe + établissement : la colonne Établissement ne coûte aucune requête par ligne
         return parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters)
             ->join('entity.authority', 'a')
+            ->leftJoin('entity.group', 'grp')->addSelect('grp')
+            ->leftJoin('grp.establishment', 'est')->addSelect('est')
             ->andWhere('a.authorityUser = :role')
             ->setParameter('role', RoleSecurity::STUDENT->value);
     }
@@ -78,7 +81,7 @@ class UserCrudController extends AbstractCrudController
     {
         $user = new User();
         $user->setPseudo($this->inscriptionService->generateUniquePseudo());
-        $user->setAuthority($this->authorityService->findByRole(RoleSecurity::STUDENT->value));
+        $user->setAuthority($this->authorityRepository->findByRole(RoleSecurity::STUDENT->value));
 
         return $user;
     }

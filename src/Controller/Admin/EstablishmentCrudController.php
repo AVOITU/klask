@@ -6,6 +6,7 @@ use App\Entity\Establishment;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
 class EstablishmentCrudController extends AbstractCrudController
@@ -26,6 +27,11 @@ class EstablishmentCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         yield TextField::new('name', 'Nom de l\'établissement');
-        yield AssociationField::new('groups', 'Groupes')->onlyOnDetail();
+        yield AssociationField::new('groups', 'Classes')->hideOnForm();
+        yield CollectionField::new('groups', 'Classes')
+            ->useEntryCrudForm(GroupCrudController::class)
+            ->allowAdd()
+            ->allowDelete()
+            ->onlyOnForms();
     }
 }

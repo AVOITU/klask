@@ -7,7 +7,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
 class ActivityCategoryCrudController extends AbstractCrudController
@@ -29,8 +28,6 @@ class ActivityCategoryCrudController extends AbstractCrudController
     {
         yield TextField::new('type', 'Type de catégorie');
         yield IntegerField::new('nbrPoints', 'Points attribués');
-        yield IntegerField::new('nbrMaxActivity', 'Max activités autorisées');
         yield DateTimeField::new('beginningHourCategory', 'Heure de début')->setFormat('HH:mm')->hideOnIndex();
-        yield TextareaField::new('restrictions', 'Restrictions')->hideOnIndex();
     }
 }
