@@ -2,13 +2,10 @@
 
 namespace App\Service\Impl;
 
-use App\DTO\UserDTO;
 use App\Entity\User;
 use App\Entity\UserSphereRating;
 use App\Repository\SphereRepository;
-use App\Repository\UserRepository;
 use App\Repository\UserSphereRatingRepository;
-use App\Service\GroupService;
 use App\Service\UserService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;
@@ -17,84 +14,53 @@ use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 class UserServiceImpl implements UserService
 {
     public function __construct(
-        private readonly UserRepository $userRepository,
-        private readonly GroupService $groupService,
         private readonly SphereRepository $sphereRepository,
         private readonly UserSphereRatingRepository $userSphereRatingRepository,
         private readonly EntityManagerInterface $em,
     ) {}
 
-    public function insertStudent(User $student): User
+    /**
+     * Top 3 ET bottom 3 sphères en une seule requête
+     * @return array{top: int[], bottom: int[]}
+     */
+    public function getTopAndBottomSphereIds(User $user): array
     {
-        return $this->userRepository->insertStudent($student);
+        $ratings = $this->userSphereRatingRepository->findRatingsOrderedByScore($user);
+        $ids     = array_column($ratings, 'sphereId');
+
+        return [
+            'top'    => array_slice($ids, 0, 3),
+            'bottom' => array_slice($ids, -3),
+        ];
     }
 
-    public function findById(int $id): ?User
+    public function hasCompletedQuestionnaire(User $user): bool
     {
-        return $this->userRepository->find($id);
+        return $this->userSphereRatingRepository->findRatingsOrderedByScore($user) !== [];
     }
 
-    public function createUserDTOById(int $idUser): ?UserDTO
-    {
-        $dto = $this->findUserStats($idUser);
-
-        if ($dto === null) {
-            return null;
-        }
-
-        $groupId = $dto->getUser()->getGroup()?->getId();
-
-        return $groupId !== null
-            ? $dto->withGroupTotalScore($this->groupService->findGroupTotalScore($groupId))
-            : $dto;
-    }
-
-    private function findUserStats(int $userId): ?UserDTO
-    {
-        return $this->userRepository->findUserStats($userId);
-    }
-
-    public function getStudentScoresByGroupCode(string $groupCode): array
-    {
-        return $this->userRepository->findStudentScoresByGroupCode($groupCode);
-    }
-
-    public function pokeStudent(User $user): void
-    {
-        $user->setPokedAt(new \DateTimeImmutable());
-        $this->em->flush();
-    }
-
-    public function clearPoke(User $user): void
-    {
-        $user->setPokedAt(null);
-        $this->em->flush();
-    }
-
-    public function getTopSphereIds(User $user): array
-    {
-        return $this->userSphereRatingRepository->findTopSphereIdsByUser($user);
-    }
-
-    public function getBottomSphereIds(User $user): array
-    {
-        return $this->userSphereRatingRepository->findTopSphereIdsByUser($user, 3, 'DESC');
-    }
-
-    public function saveRatings(User $user, array $zoneRatings): void
+    /**
+     * @param array<string, int> $zoneRatings
+     * @return array<int, array{sphereId: int, rating: int}> trié par rating DESC
+     */
+    public function saveRatings(User $user, array $zoneRatings): array
     {
         $this->em->createQuery('DELETE FROM App\Entity\UserSphereRating r WHERE r.user = :user')
             ->setParameter('user', $user)
             ->execute();
 
-        foreach ($zoneRatings as $zoneName => $rating) {
-            $sphere = $this->sphereRepository->findOneBy(['name' => $zoneName]);
-            if ($sphere === null) {
-                continue;
-            }
+        // 1 requête pour toutes les sphères
+        $spheres = $this->sphereRepository->findBy(['name' => array_keys($zoneRatings)]);
+        $result  = [];
+        foreach ($spheres as $sphere) {
+            $rating = $zoneRatings[$sphere->getName()];
             $this->em->persist(new UserSphereRating($user, $sphere, $rating));
+            $result[] = ['sphereId' => $sphere->getId(), 'rating' => $rating];
         }
 
-        $this->em->flush();
+        usort($result, fn($a, $b) => $b['rating'] <=> $a['rating']);
+
+
+        return $result;
     }
 }

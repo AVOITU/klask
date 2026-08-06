@@ -8,8 +8,8 @@ use App\Entity\User;
 use App\Repository\AuthorityRepository;
 use App\Repository\GroupRepository;
 use App\Repository\UserRepository;
+use App\Service\AppParameterService;
 use App\Service\InscriptionService;
-use App\Service\UserService;
 use RuntimeException;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 
@@ -30,25 +30,38 @@ class InscriptionServiceImpl implements InscriptionService
         'musicos', 'excentrique', 'des îles', 'cool', 'aristocrate', 'héroïque',
     ];
 
-    private const GROUP_MAX_SIZE = 40;
-
     public function __construct(
         private readonly AuthorityRepository $authorityRepository,
         private readonly UserRepository $userRepository,
         private readonly GroupRepository $groupRepository,
-        private readonly UserService $userService,
+        private readonly AppParameterService $params,
     ) {}
 
-    public function generateUniquePseudo(): string
+    //Tire une identité parmi les 400 combinaisons animal + accessoire encore libres
+     //une seule requête quel que soit le nombre d'inscriptions simultanée et pas d'échec tant qu'il reste une combinaison
+    public function generateUniquePseudo(string $preferred = ''): string
     {
-        for ($i = 0; $i < 30; $i++) {
-            $pseudo = $this->randomPseudo();
-            if ($this->userRepository->findByPseudo($pseudo) === null) {
-                return $pseudo;
+        $taken = array_flip($this->userRepository->findTakenPseudos());
+
+        if ($preferred !== '' && !isset($taken[$preferred])) {
+            return $preferred;
+        }
+
+        $free = [];
+        foreach (self::ANIMALS as $animal) {
+            foreach (self::ADJECTIVES as $adjective) {
+                $candidate = $animal . ' ' . $adjective;
+                if (!isset($taken[$candidate])) {
+                    $free[] = $candidate;
+                }
             }
         }
 
-        return $this->randomPseudo() . ' ' . time();
+        if ($free === []) {
+            throw new RuntimeException('Toutes les identités sont attribuées.');
+        }
+
+        return $free[array_rand($free)];
     }
 
     public function findGroupByCode(string $code): ?Group
@@ -56,15 +69,22 @@ class InscriptionServiceImpl implements InscriptionService
         return $this->groupRepository->findByCode($code);
     }
 
-    public function validateGroupForRegistration(Group $group, Establishment $establishment, string $level): bool
+    public function refusalReason(?Group $group, Establishment $establishment, string $level): ?string
     {
-        return $group->getEstablishment()?->getId() === $establishment->getId()
-            && $group->getName() === $level;
-    }
+        if ($group === null) {
+            return 'Code de groupe invalide. Vérifiez le code avec votre accompagnateur.';
+        }
 
-    public function isGroupFull(Group $group): bool
-    {
-        return $this->groupRepository->countUsersByGroupId((int) $group->getId()) >= self::GROUP_MAX_SIZE;
+        if ($group->getEstablishment()?->getId() !== $establishment->getId() || $group->getName() !== $level) {
+            return 'Ce code de groupe ne correspond pas à votre établissement ou à votre groupe de classe.';
+        }
+
+        $max = $this->params->getInt('MAX_STUDENTS_PER_GROUP', 40);
+        if ($this->groupRepository->countUsersByGroupId((int) $group->getId()) >= $max) {
+            return sprintf('Ce groupe est complet (%d élèves maximum).', $max);
+        }
+
+        return null;
     }
 
     public function registerStudent(User $student): User
@@ -76,18 +96,8 @@ class InscriptionServiceImpl implements InscriptionService
         }
 
         $student->setAuthority($authority);
+        $student->setPseudo($this->generateUniquePseudo((string) $student->getPseudo()));
 
-        if ($this->userRepository->findByPseudo((string) $student->getPseudo()) !== null) {
-            $student->setPseudo($this->generateUniquePseudo());
-        }
-
-        return $this->userService->insertStudent($student);
-    }
-
-    private function randomPseudo(): string
-    {
-        return self::ANIMALS[array_rand(self::ANIMALS)]
-            . ' '
-            . self::ADJECTIVES[array_rand(self::ADJECTIVES)];
+        return $this->userRepository->insertStudent($student);
     }
 }

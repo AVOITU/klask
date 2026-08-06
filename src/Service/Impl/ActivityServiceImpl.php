@@ -21,14 +21,7 @@ class ActivityServiceImpl implements ActivityService
             return;
         }
 
-        $token = Uuid::v4()->toRfc4122();
-        $activity->setQrcodeToken($token);
-        $activity->setQrcode($token);
-    }
-
-    public function updateTimestamp(Activity $activity): void
-    {
-        $activity->setStandUpdatedAt(new \DateTimeImmutable());
+        $activity->setQrcodeToken(Uuid::v4()->toRfc4122());
     }
 
     public function createFromMap(Sphere $sphere, ActivityCategory $category, string $name, ?string $description, float $x, float $y): Activity

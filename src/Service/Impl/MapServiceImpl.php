@@ -4,75 +4,115 @@ namespace App\Service\Impl;
 
 use App\Entity\Activity;
 use App\Entity\Sphere;
+use App\Repository\ActivityRepository;
+use App\Repository\ScanRepository;
 use App\Repository\SphereRepository;
+use App\Service\AppParameterService;
 use App\Service\MapService;
+use App\Service\SphereBoundsCalculator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 #[AsAlias]
 class MapServiceImpl implements MapService
 {
+    private const CACHE_KEY = 'map.spheres';
+    private const CACHE_TTL = 300;
+
     public function __construct(
         private readonly SphereRepository $sphereRepository,
+        private readonly ActivityRepository $activityRepository,
+        private readonly ScanRepository $scanRepository,
+        private readonly AppParameterService $params,
         private readonly EntityManagerInterface $em,
+        private readonly CacheInterface $cache,
     ) {}
 
-    public function getPreparedSpheres(): array
+    public function getPreparedSpheresJson(): string
     {
-        $spheres = $this->sphereRepository->findAllWithActivities();
+        return $this->cache->get(self::CACHE_KEY, function (ItemInterface $item): string {
+            $item->expiresAfter(self::CACHE_TTL);
+
+            return json_encode($this->buildSpheres(), \JSON_THROW_ON_ERROR);
+        });
+    }
+
+    public function invalidateCache(): void
+    {
+        $this->cache->delete(self::CACHE_KEY);
+    }
+
+    private function buildSpheres(): array
+    {
+        $spheres = $this->sphereRepository->findAllWithStands();
         $result  = [];
+
+        // Occupation scans récents + marge presque plein
+        $occupancy = $this->scanRepository->countRecentGroupedByActivity();
+        $marginPct = $this->params->getInt('SOFT_CAPACITY_MARGIN', 80);
 
         foreach ($spheres as $sphere) {
             $activityData = [];
 
             foreach ($sphere->getActivities() as $activity) {
-                // les clés JSON 'pointXActivity' /'pointYActivity' / 'descriptionActivity' sont des alias legacy
-                // hérités du code de devClement, entité utilise getPointX Y / getDescription
-                // map.js et map.html.twig attendent ces noms : ne pas renommer sans tout mettre à jour
-                $activityData[] = [
-                    'name'                => $activity->getName(),
-                    'pointXActivity'      => $activity->getPointX() ?? 50.0,
-                    'pointYActivity'      => $activity->getPointY() ?? 50.0,
-                    'descriptionActivity' => $activity->getDescription() ?? 'Aucune description',
-                    'isAvailable'         => $activity->isAvailable(),
-                    'isInternship'        => $activity->isInternship(),
-                    'waitMinutes'         => $activity->getEstimatedWaitMinutes(),
-                ];
+                $activityData[] = $this->activityToArray($activity, $occupancy, $marginPct);
             }
 
-            // Priorité aux coordonnées explicites de la sphère (fixées en fixtures / admin)
-            // calcul de la bounding-box des activités (code devClément conservé)
-            if ($sphere->getPointX() !== null) {
-                $centerX = $sphere->getPointX();
-                $centerY = $sphere->getPointY() ?? 50.0;
-                $size    = $sphere->getRadius();
-            } elseif (count($activityData) > 0) {
-                $xs = array_column($activityData, 'pointXActivity');
-                $ys = array_column($activityData, 'pointYActivity');
-
-                $centerX = (min($xs) + max($xs)) / 2;
-                $centerY = (min($ys) + max($ys)) / 2;
-                $diffX   = max($xs) - min($xs);
-                $diffY   = (max($ys) - min($ys)) * (1600 / 2400);
-                $size    = round(max($diffX, $diffY) + 8, 1);
-            } else {
-                $centerX = 50.0;
-                $centerY = 50.0;
-                $size    = 10.0;
-            }
+            $bounds = SphereBoundsCalculator::fromActivities($activityData);
 
             $result[] = [
                 'id'         => $sphere->getId(),
                 'name'       => $sphere->getName(),
                 'color'      => $sphere->getColor(),
-                'centerX'    => $centerX,
-                'centerY'    => $centerY,
-                'size'       => $size,
+                'centerX'    => $sphere->getPointX() ?? $bounds['centerX'] ?? 50.0,
+                'centerY'    => $sphere->getPointY() ?? $bounds['centerY'] ?? 50.0,
+                'radius'     => $sphere->getRadius(),
                 'activities' => $activityData,
             ];
         }
 
-        return $result;
+        $standalone = array_map(
+            fn(Activity $a) => $this->activityToArray($a, $occupancy, $marginPct),
+            $this->activityRepository->findStandaloneActivities()
+        );
+
+        return ['spheres' => $result, 'standalone' => $standalone];
+    }
+
+    /** @param array<int, int> $occupancy [activityId => scans récents] */
+    public function activityToArray(Activity $activity, array $occupancy = [], int $marginPct = 80): array
+    {
+        return [
+            'id'                  => $activity->getId(),
+            'name'                => $activity->getName(),
+            'pointXActivity'      => $activity->getPointX() ?? 50.0,
+            'pointYActivity'      => $activity->getPointY() ?? 50.0,
+            'descriptionActivity' => $activity->getDescription() ?? '',
+            'isAvailable'         => $activity->isAvailable(),
+            'isInternship'        => $activity->isInternship(),
+            'waitMinutes'         => $activity->getEstimatedWaitMinutes(),
+            'capacity'            => $this->capacityStatus($activity, $occupancy[$activity->getId()] ?? 0, $marginPct),
+        ];
+    }
+
+    /**
+     * statut de capacité d'un stand : ok, almost, full
+     * hardLimit = saturation
+     */
+    private function capacityStatus(Activity $activity, int $recentScans, int $marginPct): string
+    {
+        $hard = $activity->getHardLimit();
+        if ($hard <= 0) {
+            return 'ok';
+        }
+        if ($recentScans >= $hard) {
+            return 'full';
+        }
+        $soft = $activity->getSoftLimit() ?: (int) ceil($hard * $marginPct / 100);
+
+        return $recentScans >= $soft ? 'almost' : 'ok';
     }
 
     public function savePosition(Sphere|Activity $entity, float $x, float $y, ?float $radius = null): void
