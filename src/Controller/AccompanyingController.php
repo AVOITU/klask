@@ -2,10 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\Group;
 use App\Entity\User;
-use App\Service\UserService;
+use App\Repository\UserRepository;
+use App\Service\RealtimeNotifier;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -13,39 +16,40 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class AccompanyingController extends AbstractController
 {
     public function __construct(
-        private readonly UserService $userService,
+        private readonly UserRepository $userRepository,
+        private readonly RealtimeNotifier $notifier,
     ) {}
 
-    #[Route('/accompanying/group-scores', name: 'app_accompanying_group_scores', methods: ['GET'])]
-    public function groupScores(): JsonResponse
+    #[Route('/accompanying/poke/{id}', name: 'app_accompanying_poke', methods: ['POST'])]
+    public function poke(int $id, Request $request): JsonResponse
     {
-        $user      = $this->getUser();
-        $groupCode = $user instanceof User ? $user->getGroupCode() : null;
+        if (!$this->isCsrfTokenValid('poke', (string) $request->headers->get('X-CSRF-Token'))) {
+            return $this->json(['error' => 'Jeton CSRF invalide.'], 403);
+        }
 
-        if ($groupCode === null) {
+        $group = $this->currentGroup();
+
+        if ($group === null) {
             return $this->json(['error' => 'Aucun groupe assigné.'], 400);
         }
 
-        return $this->json($this->userService->getStudentScoresByGroupCode($groupCode));
-    }
-
-    #[Route('/accompanying/poke/{id}', name: 'app_accompanying_poke', methods: ['POST'])]
-    public function poke(int $id): JsonResponse
-    {
-        $user      = $this->getUser();
-        $groupCode = $user instanceof User ? $user->getGroupCode() : null;
-        $student   = $this->userService->findById($id);
+        $student = $this->userRepository->findOneBy(['id' => $id, 'group' => $group]);
 
         if ($student === null) {
-            return $this->json(['error' => 'Élève introuvable.'], 404);
+            return $this->json(['error' => 'Élève introuvable dans votre groupe.'], 404);
         }
 
-        if ($student->getGroup()?->getCode() !== $groupCode) {
-            return $this->json(['error' => 'Élève hors de votre groupe.'], 403);
+        if (!$this->notifier->publish('poke/' . $student->getId(), ['poked' => true])) {
+            return $this->json(['error' => 'Signal non envoyé : hub Mercure indisponible.'], 503);
         }
-
-        $this->userService->pokeStudent($student);
 
         return $this->json(['ok' => true]);
+    }
+
+    private function currentGroup(): ?Group
+    {
+        $user = $this->getUser();
+
+        return $user instanceof User ? $user->getGroup() : null;
     }
 }

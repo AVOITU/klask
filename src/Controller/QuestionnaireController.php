@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Service\ParcoursService;
 use App\Service\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,15 +25,24 @@ class QuestionnaireController extends AbstractController
 
     public function __construct(
         private readonly UserService $userService,
+        private readonly ParcoursService $parcoursService,
         private readonly CsrfTokenManagerInterface $csrf,
     ) {}
 
     #[Route('/questionnaire', name: 'app_questionnaire', methods: ['GET'])]
     public function show(): Response
     {
-        return $this->render('questionnaire/questionnaire.html.twig', [
+        $student = $this->getUser();
+        if ($student instanceof User && $this->userService->hasCompletedQuestionnaire($student)) {
+            return $this->redirectToRoute('app_map');
+        }
+
+        $response = $this->render('questionnaire/questionnaire.html.twig', [
             'affirmations' => self::AFFIRMATIONS,
         ]);
+        $response->headers->set('Cache-Control', 'no-store');
+
+        return $response;
     }
 
     #[Route('/questionnaire/save', name: 'app_questionnaire_save', methods: ['POST'])]
@@ -46,6 +56,10 @@ class QuestionnaireController extends AbstractController
         $student = $this->getUser();
         if (!$student instanceof User) {
             return $this->redirectToRoute('app_inscription_show');
+        }
+
+        if ($this->userService->hasCompletedQuestionnaire($student)) {
+            return $this->redirectToRoute('app_map');
         }
 
         $ratings = $request->request->all('ratings');
@@ -71,7 +85,10 @@ class QuestionnaireController extends AbstractController
             $zoneRatings[self::AFFIRMATIONS[$letter]['zone']] = (int) $ratings[$letter];
         }
 
-        $this->userService->saveRatings($student, $zoneRatings);
+        // saveRatings persiste sans flush et retourne les ratings triés
+        // generateForUser les utilise directement
+        $sortedRatings = $this->userService->saveRatings($student, $zoneRatings);
+        $this->parcoursService->generateForUser($student, $sortedRatings);
 
         return $this->redirectToRoute('app_map');
     }
