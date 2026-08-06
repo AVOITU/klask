@@ -27,10 +27,10 @@ class InscriptionFormType extends AbstractType
 
         $builder
             ->add('pseudo', TextType::class, [
-                'label'       => 'Mon identité secrète',
-                'data'        => $options['nom_depart'],
-                'attr'        => ['readonly' => true],
-                'constraints' => [new NotBlank()],
+                'label'  => 'Mon identité secrète',
+                'mapped' => false,
+                'data'   => $options['nom_depart'],
+                'attr'   => ['readonly' => true],
             ])
             ->add('establishment', EntityType::class, [
                 'label'        => 'Mon établissement',
