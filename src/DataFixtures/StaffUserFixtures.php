@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\Authority;
+use App\Entity\Group;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -28,7 +29,7 @@ class StaffUserFixtures extends Fixture implements DependentFixtureInterface
             $user->setAuthority($authority);
             $user->setPassword($this->hasher->hashPassword($user, $plainPassword));
             if ($groupCode !== null) {
-                $user->setGroupCode($groupCode);
+                $user->setGroup($manager->getRepository(Group::class)->findOneBy(['code' => $groupCode]));
             }
 
             $manager->persist($user);
@@ -39,11 +40,11 @@ class StaffUserFixtures extends Fixture implements DependentFixtureInterface
 
     public function getDependencies(): array
     {
-        return [AuthorityFixtures::class];
+        return [AuthorityFixtures::class, GroupFixtures::class];
     }
 
     /**
-     * @return array<array{string, string, string}>
+     * @return array<array{string, string, string, ?string}>
      */
     private function getStaffDefinitions(): array
     {

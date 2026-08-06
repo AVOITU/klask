@@ -23,9 +23,7 @@ class AuthorityFixtures extends Fixture implements DependentFixtureInterface
             $authority->setAuthorityUser($roleName);
             $manager->persist($authority);
 
-            $authorityRole = new AuthorityRole();
-            $authorityRole->setAuthority($authority);
-            $authorityRole->setRole($this->getReference($roleReference, Role::class));
+            $authorityRole = new AuthorityRole($authority, $this->getReference($roleReference, Role::class));
             $manager->persist($authorityRole);
 
             $this->addReference($authorityReference, $authority);

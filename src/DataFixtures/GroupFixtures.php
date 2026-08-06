@@ -6,9 +6,10 @@ use App\Entity\Establishment;
 use App\Entity\Event;
 use App\Entity\Group;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class GroupFixtures extends Fixture
+class GroupFixtures extends Fixture implements DependentFixtureInterface
 {
     public const GROUP_REFERENCE = 'group';
 
@@ -44,5 +45,10 @@ class GroupFixtures extends Fixture
         }
 
         $manager->flush();
+    }
+
+    public function getDependencies(): array
+    {
+        return [EventFixtures::class, EstablishmentFixtures::class];
     }
 }

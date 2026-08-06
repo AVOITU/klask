@@ -46,16 +46,28 @@ class AppParameterFixtures extends Fixture
             'description' => 'Maximum d\'élèves dans un groupe de classe.',
         ],
         [
-            'key'         => 'BONUS_SPHERE_COMPLETION',
+            'key'         => 'BONUS_TOP3_SPHERES',
             'value'       => '50',
             'type'        => 'integer',
-            'description' => 'Bonus de points si une sphère est complétée hors parcours.',
+            'description' => 'Bonus de points quand les 3 sphères préférées (étapes 1 à 3 du parcours) sont faites.',
         ],
         [
-            'key'         => 'BONUS_PATH_COMPLETION',
+            'key'         => 'BONUS_ALL_SPHERES',
             'value'       => '100',
             'type'        => 'integer',
-            'description' => 'Bonus de points si le parcours est entièrement terminé.',
+            'description' => 'Bonus de points quand les stands des 6 sphères sont faits.',
+        ],
+        [
+            'key'         => 'BONUS_MAX_SCORE',
+            'value'       => '150',
+            'type'        => 'integer',
+            'description' => 'Bonus de points du score maximal : toute la carte faite, ateliers et conférences compris.',
+        ],
+        [
+            'key'         => 'ALERT_MAP_ACTIVE',
+            'value'       => 'false',
+            'type'        => 'boolean',
+            'description' => 'Remplace la carte interactive par la carte évacuation/sorties de secours.',
         ],
     ];
 
