@@ -14,13 +14,7 @@
             <em>Attention : tu ne peux utiliser chaque chiffre qu'une seule fois !</em>
         </p>
 
-        {% for label, messages in app.flashes %}
-            {% for message in messages %}
-                <div class="resultat {{ label == 'success' ? 'success-anim' : 'error-anim' }}">
-                    <p><strong>{{ message }}</strong></p>
-                </div>
-            {% endfor %}
-        {% endfor %}
+        {% include 'structure/flashes.html.twig' %}
 
         {# ne pas oublier token CSRF #}
         <form method="post" action="{{ path('app_questionnaire_save') }}" id="quiz-form" novalidate>
@@ -56,55 +50,9 @@
         </form>
     </div>
 
-    {# JS pour le traitement des notes - à améliorer #}
-    <script>
-        const selects   = [...document.querySelectorAll('.rating-select')];
-        const errorEl   = document.getElementById('quiz-error');
+{% endblock %}
 
-        function getValues() {
-            return selects.map(s => s.value).filter(v => v !== '');
-        }
-
-        function isValid() {
-            const vals = getValues();
-            return vals.length === 6 && new Set(vals).size === 6;
-        }
-
-        function refreshState() {
-            const vals   = selects.map(s => s.value);
-            const counts = {};
-            vals.forEach(v => { if (v) counts[v] = (counts[v] ?? 0) + 1; });
-
-            let hasDuplicate = false;
-            selects.forEach(s => {
-                const dup = s.value && counts[s.value] > 1;
-                s.classList.toggle('duplicate', dup);
-                if (dup) hasDuplicate = true;
-            });
-
-            const filled = vals.filter(v => v !== '').length;
-
-            if (hasDuplicate) {
-                errorEl.textContent = 'Deux affirmations ont la même note — chaque chiffre doit être unique.';
-            } else if (filled > 0 && filled < 6) {
-                errorEl.textContent = '';
-            } else {
-                errorEl.textContent = '';
-            }
-        }
-
-        selects.forEach(s => s.addEventListener('change', refreshState));
-
-        document.getElementById('quiz-form').addEventListener('submit', (e) => {
-            if (!isValid()) {
-                e.preventDefault();
-                const vals = getValues();
-                if (vals.length < 6) {
-                    errorEl.textContent = 'Note toutes les affirmations avant de valider.';
-                } else {
-                    errorEl.textContent = 'Utilise chaque chiffre de 1 à 6 une seule fois.';
-                }
-            }
-        });
-    </script>
+{% block javascripts %}
+    {{ parent() }}
+    <script type="module" src="{{ asset('js/questionnaire.js') }}"></script>
 {% endblock %}

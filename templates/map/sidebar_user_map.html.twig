@@ -12,15 +12,24 @@
 
                 <div class="info-block">
                     <span class="label">MON GROUPE</span>
-                    <span class="value">{{ currentUser.groupCode ?? '-' }}</span>
+                    <span class="value">{{ currentUser.group.code ?? '-' }}</span>
                 </div>
 
-                {# Grille élèves — remplie par JS (loadGroup) #}
                 <div id="group-list" class="group-grid">
-                    <p class="group-loading">Chargement..</p>
+                    {% for student in groupStudents %}
+                        <div class="student-card" data-id="{{ student.id }}" data-pseudo="{{ student.pseudo }}">
+                            <span class="avatar avatar--sm">
+                                <img src="{{ asset('images/coccitest.webp') }}" alt="{{ student.pseudo }}">
+                            </span>
+                            <span class="student-pseudo">{{ student.pseudo }}</span>
+                            <span class="student-score">{{ student.score }} pts</span>
+                        </div>
+                    {% else %}
+                        <p class="group-loading">Aucun élève dans ce groupe.</p>
+                    {% endfor %}
                 </div>
 
-            {% elseif currentUser and userStats %}
+            {% elseif currentUser %}
 
                 <div class="info-block">
                     <span class="value">{{ currentUser.pseudo }}</span>
@@ -40,12 +49,12 @@
 
                 <div class="info-block score-block">
                     <span class="label">SCORE PERSO:</span>
-                    <span class="value">{{ userStats.totalScore|default(0) }}</span>
+                    <span class="value" id="score-perso">{{ userScore|default(0) }}</span>
                 </div>
 
                 <div class="info-block score-block">
                     <span class="label">SCORE GROUPE:</span>
-                    <span class="value">{{ userStats.totalScoreGroup|default(0) }}</span>
+                    <span class="value" id="score-groupe">{{ groupScore|default(0) }}</span>
                 </div>
 
             {% else %}

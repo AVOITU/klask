@@ -16,22 +16,27 @@
     <div id="help-modal" class="intro-overlay" hidden role="dialog" aria-modal="true" aria-label="Instructions">
         <div class="intro-panel">
             <button id="btn-close-help" class="intro-close" aria-label="Fermer">✕</button>
-            <div class="intro-scroll">
-                <img class="intro-img" src="{{ asset(instructionImage) }}" alt="Instructions">
-            </div>
+            <div class="intro-scroll" data-instruction-scroll></div>
         </div>
     </div>
+    <script type="application/json" id="instruction-image-url">{{ asset(instructionImage)|json_encode|raw }}</script>
     {% endif %}
 
-    {# wrapper principal #}
-    <div class="map-wrapper">
+    {% include 'structure/flashes.html.twig' with {variant: 'toast'} %}
+
+    {# wrapper principal — data-student pour CSS/JS conditionnel #}
+    <div class="map-wrapper"{% if is_granted('ROLE_STUDENT') %} data-student{% endif %}>
 
         <div class="map-area">
             <div class="map-canvas">
                 <img
+                    id="map-plan"
                     class="map-plan"
-                    src="{{ asset('images/Fausse_carte.png') }}"
+                    src="{{ asset(alertMapActive ? 'images/carte_alerte.webp' : 'images/carte-simple.svg') }}"
+                    data-src-normal="{{ asset('images/carte-simple.svg') }}"
+                    data-src-alert="{{ asset('images/carte_alerte.webp') }}"
                     alt="Plan de la salle"
+                    fetchpriority="high"
                     draggable="false"
                 >
                 {# Calque sphères et activités — rempli par map.js #}
@@ -53,12 +58,19 @@
 
     </div>
 
+    {% if is_granted('ROLE_STUDENT') %}
+    <button id="btn-scan" class="btn-scan" aria-label="Scanner un QR code">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3m0 3h3M20 14h.01"/>
+        </svg>
+    </button>
+    {% endif %}
+
     {% if showIntro and instructionImage %}
     <aside id="intro-overlay" class="intro-overlay" role="dialog" aria-modal="true" aria-label="Instructions">
         <div class="intro-panel">
-            <div class="intro-scroll">
-                <img class="intro-img" src="{{ asset(instructionImage) }}" alt="Instructions">
-            </div>
+            <div class="intro-scroll" data-instruction-scroll></div>
             <button type="button" class="intro-ack" data-intro-ack="{{ path('app_map_intro_ack') }}">J'ai compris</button>
         </div>
     </aside>
@@ -66,103 +78,27 @@
 
 {% endblock %}
 
-{% block importmap %}{{ importmap('app') }}{% endblock %}
+{% block importmap %}{% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
-    {# données carte : map.js les lit sans fetch supplémentaire #}
-    <script type="application/json" id="map-data">{{ spheresJson|raw }}</script>
+    <script type="application/json" id="map-bootstrap">{"mapData":{{ spheresJson|raw }},"topSpheres":{{ topSpheresJson|raw }},"bottomSpheres":{{ bottomSpheresJson|raw }},"parcours":{{ parcoursJson|raw }},"scanned":{{ scannedJson|raw }},"mercureUrl":{{ mercure(mercureTopics)|json_encode|raw }},"notification":{{ lastNotification|json_encode|raw }},"alertMapActive":{{ alertMapActive ? 'true' : 'false' }}}</script>
     <script type="module" src="{{ asset('js/map.js') }}"></script>
-    <script src="{{ asset('js/sidebarUserMap.js') }}"></script>
 
     {% if is_granted('ROLE_ACCOMPANYING') %}
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const list           = document.getElementById('group-list');
-        const studentAvatar  = '{{ asset('images/coccitest.webp') }}';
-        const pokeUrl        = '{{ path('app_accompanying_poke', {id: '__ID__'}) }}';
-        const scoresUrl      = '{{ path('app_accompanying_group_scores') }}';
-
-        if (!list) return;
-
-        list.addEventListener('click', async function (e) {
-            const card = e.target.closest('.student-card');
-            if (!card) return;
-            if (!confirm('Envoyer un signal à ' + card.dataset.pseudo + ' ?')) return;
-            await fetch(pokeUrl.replace('__ID__', card.dataset.id), { method: 'POST' });
-        });
-
-        async function loadGroup() {
-            try {
-                const res = await fetch(scoresUrl);
-                if (!res.ok) { list.innerHTML = '<p class="group-loading">Groupe non configuré.</p>'; return; }
-                const students = await res.json();
-                if (!Array.isArray(students) || !students.length) {
-                    list.innerHTML = '<p class="group-loading">Aucun élève dans ce groupe.</p>';
-                    return;
-                }
-                const frag = document.createDocumentFragment();
-                students.forEach(function (s) {
-                    const card = document.createElement('div');
-                    card.className = 'student-card';
-                    card.dataset.id     = s.id;
-                    card.dataset.pseudo = s.pseudo;
-                    card.innerHTML =
-                        '<span class="avatar avatar--sm">' +
-                            '<img src="' + studentAvatar + '" alt="' + s.pseudo + '">' +
-                        '</span>' +
-                        '<span class="student-pseudo">' + s.pseudo + '</span>' +
-                        '<span class="student-score">' + s.score + ' pts</span>';
-                    frag.appendChild(card);
-                });
-                list.innerHTML = '';
-                list.appendChild(frag);
-            } catch (err) {
-                console.error('loadGroup:', err);
-                list.innerHTML = '<p class="group-loading">Erreur de chargement.</p>';
-            }
-        }
-
-        loadGroup();
-        setInterval(loadGroup, 15000);
-    });
-    </script>
+    <script type="application/json" id="accompanying-config">{{- {
+        pokeUrl:   path('app_accompanying_poke', {id: '__ID__'}),
+        csrfToken: csrf_token('poke')
+    }|json_encode|raw -}}</script>
+    <script type="module" src="{{ asset('js/accompanying-sidebar.js') }}"></script>
     {% endif %}
 
     {% if is_granted('ROLE_STUDENT') %}
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var pokeUrl = '{{ path('app_map_poke_check') }}';
-
-        function showPokeNotif() {
-            var notif = document.getElementById('poke-notif');
-            if (!notif) {
-                notif = document.createElement('div');
-                notif.id = 'poke-notif';
-                notif.className = 'poke-notif';
-                document.body.appendChild(notif);
-            }
-            notif.textContent = 'COUCOU ! Ton accompagnateur te fait signe. BOUGE TON BOUL !';
-            notif.hidden = false;
-            setTimeout(function () { notif.hidden = true; }, 6000);
-        }
-
-        async function checkPoke() {
-            try {
-                var res  = await fetch(pokeUrl);
-                var data = await res.json();
-                if (data.poked) showPokeNotif();
-            } catch (e) { /* silencieux */ }
-        }
-
-        checkPoke();
-        setInterval(checkPoke, 20000);
-
-        // Vérification immédiate si le tab redevient actif
-        document.addEventListener('visibilitychange', function () {
-            if (!document.hidden) checkPoke();
-        });
-    });
-    </script>
+    <script type="application/json" id="scan-config">{{- {
+        scanUrl:   path('app_scan'),
+        csrfToken: csrf_token('scan'),
+        libUrl:    asset('js/vendor/html5-qrcode.min.js')
+    }|json_encode|raw -}}</script>
+    <script type="module" src="{{ asset('js/student-scan.js') }}"></script>
     {% endif %}
 {% endblock %}

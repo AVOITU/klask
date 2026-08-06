@@ -10,12 +10,7 @@
 {% block body %}
 <div class="placement-wrap">
 
-    {% for msg in app.flashes('success') %}
-        <p class="flash-success">{{ msg }}</p>
-    {% endfor %}
-    {% for msg in app.flashes('error') %}
-        <p class="flash-error">{{ msg }}</p>
-    {% endfor %}
+    {% include 'structure/flashes.html.twig' with {variant: 'admin'} %}
 
     <p class="placement-hint">Cliquez sur le plan pour positionner <strong>{{ label }}</strong>.</p>
 
@@ -27,7 +22,7 @@
     {% endif %}
 
     <div class="placement-map-box" id="map-box">
-        <img src="{{ asset('images/Fausse_carte.png') }}" alt="Plan" draggable="false">
+        <img src="{{ asset('images/carte-simple.svg') }}" alt="Plan" draggable="false">
         <div class="placement-layer" id="ghosts"></div>
         <div class="placement-marker {{ type == 'sphere' ? 'sphere' : 'pin' }}" id="marker"></div>
         {% if type == 'sphere' %}
@@ -70,100 +65,6 @@
 </div>
 
 <script type="application/json" id="map-data">{{ mapJson|raw }}</script>
-<script>
-(function () {
-    const type     = {{ type|json_encode|raw }};
-    const sphereId = {{ id }};
-    const box      = document.getElementById('map-box');
-    const img      = box.querySelector('img');
-    const marker   = document.getElementById('marker');
-    const ghosts   = document.getElementById('ghosts');
-    const inpX     = document.getElementById('pointX');
-    const inpY     = document.getElementById('pointY');
-    const inpR     = document.getElementById('radius');
-    const actPin   = document.getElementById('act-pin');
-    const actForm  = document.getElementById('activity-form');
-    const actX     = document.getElementById('act-x');
-    const actY     = document.getElementById('act-y');
-    const data     = JSON.parse(document.getElementById('map-data').textContent);
-    let   addMode  = false;
-
-    function place(x, y) {
-        inpX.value = x.toFixed(2);
-        inpY.value = y.toFixed(2);
-        marker.style.left = x + '%';
-        marker.style.top  = y + '%';
-        if (type === 'sphere' && inpR) {
-            marker.style.width  = inpR.value + '%';
-            marker.style.height = marker.style.width;
-        }
-    }
-
-    // mode toggle
-    document.querySelectorAll('[name="mapMode"]').forEach(r =>
-        r.addEventListener('change', e => { addMode = e.target.value === 'activity'; })
-    );
-
-    // activités de cette sphère en plus opaque
-    data.forEach(function (s) {
-        const z = document.createElement('div');
-        z.className = 'ghost sphere';
-        z.style.cssText = 'left:' + s.centerX + '%;top:' + s.centerY + '%;width:' + s.size + '%;aspect-ratio:1;background:' + s.color;
-        ghosts.appendChild(z);
-        s.activities.forEach(function (a) {
-            const p = document.createElement('div');
-            p.className = 'ghost pin';
-            if (s.id === sphereId) p.style.opacity = '0.8';
-            p.style.cssText += 'left:' + a.pointXActivity + '%;top:' + a.pointYActivity + '%';
-            ghosts.appendChild(p);
-        });
-    });
-
-    place(parseFloat(inpX.value), parseFloat(inpY.value));
-
-    if (inpR) inpR.addEventListener('input', function () {
-        marker.style.width  = inpR.value + '%';
-        marker.style.height = marker.style.width;
-    });
-
-    // Clic sur la carte
-    box.addEventListener('click', function (e) {
-        const r = img.getBoundingClientRect();
-        const x = (e.clientX - r.left) / r.width  * 100;
-        const y = (e.clientY - r.top)  / r.height * 100;
-
-        if (addMode && actPin && actForm) {
-            actX.value         = x.toFixed(2);
-            actY.value         = y.toFixed(2);
-            actPin.style.left  = x + '%';
-            actPin.style.top   = y + '%';
-            actPin.style.display = '';
-            actForm.style.display = '';
-        } else {
-            place(x, y);
-        }
-    });
-
-    // Bouton "Ajuster à mes activités"
-    const autoBoundBtn = document.getElementById('auto-bound');
-    if (autoBoundBtn) {
-        autoBoundBtn.addEventListener('click', function () {
-            const sphere = data.find(s => s.id === sphereId);
-            if (!sphere || !sphere.activities.length) {
-                alert('Aucune activité positionnée pour cette sphère.');
-                return;
-            }
-            const xs  = sphere.activities.map(a => a.pointXActivity);
-            const ys  = sphere.activities.map(a => a.pointYActivity);
-            const cx  = (Math.min(...xs) + Math.max(...xs)) / 2;
-            const cy  = (Math.min(...ys) + Math.max(...ys)) / 2;
-            const rad = Math.max(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys)) / 2 + 5;
-            inpX.value = cx.toFixed(2);
-            inpY.value = cy.toFixed(2);
-            if (inpR) inpR.value = rad.toFixed(2);
-            place(cx, cy);
-        });
-    }
-})();
-</script>
+<script type="application/json" id="placement-config">{{- { type: type, sphereId: id, suggestedBounds: suggestedBounds }|json_encode|raw -}}</script>
+<script type="module" src="{{ asset('js/admin-placement.js') }}"></script>
 {% endblock %}

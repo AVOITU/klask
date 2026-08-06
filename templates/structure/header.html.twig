@@ -11,5 +11,6 @@
         {% if is_granted('ROLE_ACCOMPANYING') or is_granted('ROLE_ADMIN') %}
             <a href="{{ path('app_logout') }}" class="site-header__link site-header__logout">Déconnexion</a>
         {% endif %}
+        <button id="theme-toggle" class="theme-toggle" aria-label="Changer de thème">🌙</button>
     </nav>
 </header>

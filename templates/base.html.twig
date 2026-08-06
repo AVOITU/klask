@@ -2,12 +2,10 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>{% block title %}Page d'accueil{% endblock %}</title>
     <link rel="icon" href="{{ asset('images/favicon.png') }}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800;900&family=Fredoka+One&family=Science+Gothic:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('styles/fonts.css') }}">
     <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
     {% block stylesheets %}
     {% endblock %}
@@ -25,5 +23,6 @@
     {% block body %}{% endblock %}
 </main>
 {% include 'structure/footer.html.twig' %}
+<script>if('serviceWorker' in navigator && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') navigator.serviceWorker.register('/sw.js');</script>
 </body>
 </html>

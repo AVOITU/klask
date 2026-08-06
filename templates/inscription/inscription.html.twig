@@ -10,25 +10,12 @@
     <div class="container">
         <h1>Création de profil</h1>
 
-        {% for label, messages in app.flashes %}
-            {% for message in messages %}
-                <div class="resultat {{ label == 'success' ? 'success-anim' : 'error-anim' }}">
-                    <h3>
-                        {% if label == 'success' %}
-                            🎉 Inscription validée !
-                        {% else %}
-                            ⚠️ Erreur
-                        {% endif %}
-                    </h3>
-                    <p><strong>{{ message }}</strong></p>
-                </div>
-            {% endfor %}
-        {% endfor %}
+        {% include 'structure/flashes.html.twig' with {showTitle: true} %}
 
         {{ form_start(inscriptionForm, {
             action: path('app_inscription_save'),
             method: 'POST',
-            attr: { 'data-turbo': 'false' }
+            attr: { novalidate: 'novalidate' }
         }) }}
 
         <div class="form-group">
