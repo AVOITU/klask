@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\ActivityCategory;
 use App\Entity\Sphere;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -16,12 +17,18 @@ class SphereRepository extends ServiceEntityRepository
         parent::__construct($registry, Sphere::class);
     }
 
-    /** @return Sphere[] */
-    public function findAllWithActivities(): array
+    /**
+     * charge uniquement les stands (TYPE_STAND) par sphère
+     * @return Sphere[]
+     */
+    public function findAllWithStands(): array
     {
         return $this->createQueryBuilder('s')
             ->leftJoin('s.activities', 'a')
-            ->addSelect('a')
+            ->leftJoin('a.category', 'c')
+            ->addSelect('a', 'c')
+            ->andWhere('a.id IS NULL OR c.type = :type')
+            ->setParameter('type', ActivityCategory::TYPE_STAND)
             ->getQuery()
             ->getResult();
     }

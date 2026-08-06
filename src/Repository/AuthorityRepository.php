@@ -14,13 +14,13 @@ class AuthorityRepository extends ServiceEntityRepository
     }
 
     public function findByRole(string $roleName): ?Authority
-        {
+    {
         return $this->createQueryBuilder('a')
-            ->innerJoin('a.authorityRoles', 'ar') // On passe par la table de liaison
-            ->innerJoin('ar.role', 'r')           // On rejoint la table Role
-            ->andWhere('r.nameRole = :roleName')  // On filtre sur le nom du rôle
+            ->innerJoin('a.authorityRoles', 'ar')
+            ->innerJoin('ar.role', 'r')
+            ->andWhere('r.nameRole = :roleName')
             ->setParameter('roleName', $roleName)
             ->getQuery()
             ->getOneOrNullResult();
-        }
+    }
 }

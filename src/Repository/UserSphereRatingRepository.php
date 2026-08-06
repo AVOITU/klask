@@ -7,7 +7,6 @@ use App\Entity\UserSphereRating;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-// enrichir si besoin (findByUser, findTopSpheresByUser…)
 /** @extends ServiceEntityRepository<UserSphereRating> */
 class UserSphereRatingRepository extends ServiceEntityRepository
 {
@@ -16,21 +15,23 @@ class UserSphereRatingRepository extends ServiceEntityRepository
         parent::__construct($registry, UserSphereRating::class);
     }
 
-    /** @return int[] */
-    public function findTopSphereIdsByUser(User $user, int $limit = 3, string $order = 'ASC'): array
+    /**
+     * les sphères notées par l'élève, triées du meilleur au pire
+     * @return array<int, array{sphereId: int, rating: int}>
+     */
+    public function findRatingsOrderedByScore(User $user): array
     {
-        $order = strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
+        $rows = $this->createQueryBuilder('r')
+            ->select('IDENTITY(r.sphere) AS sphereId', 'r.rating')
+            ->where('r.user = :user')
+            ->setParameter('user', $user)
+            ->orderBy('r.rating', 'DESC')
+            ->getQuery()
+            ->getScalarResult();
 
-        return array_map(
-            'intval',
-            $this->createQueryBuilder('r')
-                ->select('IDENTITY(r.sphere)')
-                ->where('r.user = :user')
-                ->setParameter('user', $user)
-                ->orderBy('r.rating', $order)
-                ->setMaxResults($limit)
-                ->getQuery()
-                ->getSingleColumnResult()
-        );
+        return array_map(fn(array $row) => [
+            'sphereId' => (int) $row['sphereId'],
+            'rating'   => (int) $row['rating'],
+        ], $rows);
     }
 }

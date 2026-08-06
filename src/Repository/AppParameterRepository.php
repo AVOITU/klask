@@ -15,17 +15,4 @@ class AppParameterRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, AppParameter::class);
     }
-
-    // valeur castée d'un paramètre par clé - throw si clé absente en bdd
-    /** @throws \RuntimeException */
-    public function getValue(string $key): int|float|bool|string
-    {
-        $parameter = $this->findOneBy(['paramKey' => $key]);
-
-        if ($parameter === null) {
-            throw new \RuntimeException(sprintf('AppParameter "%s" introuvable en base.', $key));
-        }
-
-        return $parameter->getCastedValue();
-    }
 }

@@ -4,7 +4,6 @@ namespace App\Repository;
 
 use App\Entity\Group;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -15,23 +14,6 @@ class GroupRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Group::class);
-    }
-
-    // queryBuilder par établissement, plus utilisé (remplacé par code groupe). Garder pour les tests.
-    public function qbByEstablishment(?string $establishmentName): QueryBuilder
-    {
-        $qb = $this->createQueryBuilder('g')
-            ->join('g.establishment', 'e')
-            ->orderBy('g.name', 'ASC');
-
-        if ($establishmentName) {
-            $qb->andWhere('e.name = :establishment')
-               ->setParameter('establishment', $establishmentName);
-        } else {
-            $qb->andWhere('1 = 0');
-        }
-
-        return $qb;
     }
 
     // niveaux distincts en bdd pour le select du formulaire d'inscription
@@ -65,18 +47,15 @@ class GroupRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
-    // somme des points de tous les scans des membres du groupe
-    public function findGroupTotalScore(int $groupId): int
+    public function findTopGroups(int $limit = 5): array
     {
-        return (int) $this->createQueryBuilder('g')
-            ->select('COALESCE(SUM(cat.nbrPoints), 0)')
-            ->join('g.users', 'u')
-            ->join('u.scans', 's')
-            ->join('s.activity', 'act')
-            ->join('act.category', 'cat')
-            ->where('g.id = :groupId')
-            ->setParameter('groupId', $groupId)
+        return $this->createQueryBuilder('g')
+            ->select('g.name', 'g.code', 'COALESCE(g.score, 0) AS score', 'COUNT(u.id) AS studentCount')
+            ->leftJoin('g.users', 'u')
+            ->groupBy('g.id')
+            ->orderBy('score', 'DESC')
+            ->setMaxResults($limit)
             ->getQuery()
-            ->getSingleScalarResult();
+            ->getScalarResult();
     }
 }
