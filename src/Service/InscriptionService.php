@@ -8,9 +8,13 @@ use App\Entity\User;
 
 interface InscriptionService
 {
-    public function generateUniquePseudo(): string;
+    // Identité libre
+    public function generateUniquePseudo(string $preferred = ''): string;
+
     public function findGroupByCode(string $code): ?Group;
-    public function validateGroupForRegistration(Group $group, Establishment $establishment, string $level): bool;
-    public function isGroupFull(Group $group): bool;
+
+    // si motif de refus d'inscription dans ce groupe
+    public function refusalReason(?Group $group, Establishment $establishment, string $level): ?string;
+
     public function registerStudent(User $student): User;
 }

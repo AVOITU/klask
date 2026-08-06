@@ -2,24 +2,18 @@
 
 namespace App\Service;
 
-use App\DTO\UserDTO;
 use App\Entity\User;
 
 interface UserService
 {
-    public function insertStudent(User $student): User;
-    public function findById(int $id): ?User;
-    public function createUserDTOById(int $idUser): ?UserDTO;
-    // @return array<int, array{id: int, pseudo: string, score: int, pokedAt: ?int}>
-    public function getStudentScoresByGroupCode(string $groupCode): array;
-    public function pokeStudent(User $user): void;
-    public function clearPoke(User $user): void;
-    // @param array<string, int> $zoneRatings Zone name - rating (1-6)
-    public function saveRatings(User $user, array $zoneRatings): void;
+    /**
+     * @param array<string, int> $zoneRatings Zone name : rating (1–6)
+     * @return array<int, array{sphereId: int, rating: int}>
+     */
+    public function saveRatings(User $user, array $zoneRatings): array;
 
-    // @return int[] ID des 3 sphères prioritaires
-    public function getTopSphereIds(User $user): array;
+    /** @return array{top: int[], bottom: int[]} Id des 3 meilleures et 3 moins bonnes sphères */
+    public function getTopAndBottomSphereIds(User $user): array;
 
-    // @return int[] ID des 3 sphères les moins importantes
-    public function getBottomSphereIds(User $user): array;
+    public function hasCompletedQuestionnaire(User $user): bool;
 }
