@@ -1,257 +1,143 @@
-# KLASK — Application Web Événementielle
+# KLASK
 
-Application Symfony permettant aux élèves de découvrir des métiers lors d'un événement,
-avec suivi en temps réel par les accompagnateurs.
+Application Symfony pour un salon d'orientation : inscription élève, questionnaire 6 sphères,
+carte interactive, scan QR, suivi accompagnateur et back-office admin.
 
----
-
-## Stack technique
-
-| Composant        | Version                       |
-| ---------------- | ----------------------------- |
-| PHP              | 8.4.x                         |
-| Symfony          | 7.4.x                         |
-| Doctrine ORM     | 3.x                           |
-| EasyAdmin        | 5.x                           |
-| MySQL (via WAMP) | 8.x                           |
-| WAMP             | 3.x (Windows)                 |
-| phpMyAdmin       | inclus avec WAMP              |
-| Twig             | 3.x                           |
-| AssetMapper      | 7.4.x (pas de Node.js requis) |
+| PHP 8.2+ | Symfony 7.4 | MySQL 8 | AssetMapper (sans Node.js) | Mercure + Caddy (Docker) |
 
 ---
 
 ## Prérequis
 
-- **WAMP** démarré (icône verte dans la barre des tâches)
-- **Symfony CLI** installé (`symfony` disponible en ligne de commande)
-- **Composer** installé
-- PHP 8.2+ dans le PATH
+Installer **avant** de cloner :
+
+- PHP 8.2+ et **Composer**
+- **Symfony CLI** — [symfony.com/download](https://symfony.com/download)
+- **MySQL 8** — WAMP suffit sous Windows (MySQL seul, pas Apache)
+- **Docker Desktop**
+- **mkcert** — **à télécharger par chaque dev** (pas sur GitHub) :
+  [releases mkcert](https://github.com/FiloSottile/mkcert/releases) → renommer en `mkcert.exe`
+  → placer dans `scripts/tools/` (dossier vide dans le repo)
+
+MySQL et Docker Desktop doivent **tourner** avant de lancer l'app.
 
 ---
 
-## Installation
+## Installation (après clone)
+
+Suivre **dans l'ordre**. Ne pas lancer `migrate` seul : toujours `composer db-reset` sur une base fraîche.
 
 ```bash
-# 1. Cloner le projet
-git clone <url-du-repo> klask-dev - branche dev
+git clone <url-du-repo> klask-dev
 cd klask-dev
-
-# 2. Installer les dépendances PHP
-composer install
-
-# 3. Installer les assets front (pas de npm nécessaire)
-php bin/console importmap:install
-php bin/console assets:install public
-php bin/console asset-map:compile
-
-# 4. Copier et configurer le fichier d'environnement
-cp .env .env.local
-# Éditer .env.local : renseigner DATABASE_URL
-# Exemple : DATABASE_URL="mysql://root:@127.0.0.1:3306/klask?serverVersion=8.0"
+composer install          # recrée vendor/ + public/bundles/ + assets/vendor/
+cp .env.example .env      # Windows CMD : copy .env.example .env
+composer db-reset         # drop + create + migrate + fixtures + QR codes
+composer db-test          # base klask_test (obligatoire avant phpunit)
+.\scripts\start-mobile-https.bat
 ```
+
+### Environnement (`.env`)
+
+Seul **`.env.example`** est sur GitHub. Après clone : `cp .env.example .env`.
+
+Adapter dans `.env` ou `.env.local` (recommandé pour l'IP mobile) :
+
+```env
+DATABASE_URL="mysql://root:@127.0.0.1:3306/klask?serverVersion=8.0.32&charset=utf8mb4"
+APP_URL=https://127.0.0.1
+```
+
+> **Ne jamais committer** `.env`, `.env.local`, `.env.test` — ni mots de passe MySQL,
+> `APP_SECRET` de prod, ni vrais JWT Mercure. Placeholders dans `.env.example` suffisent
+> (`change_me`, `!ChangeThisMercureHubJWTSecretKey!`).
+
+`composer db-reset` charge les comptes de démo et regénère les QR codes selon `APP_URL`.
+
+> Après un `git pull` qui touche `migrations/` ou les fixtures :
+> `composer install` → `composer db-reset` → `composer db-test`
 
 ---
 
-### Dépendances Symfony UX / EasyAdmin (obligatoire)
+## Tester sur PC
 
-S"assurer d'avoir ces bundles :
+1. Lancer `.\scripts\start-mobile-https.bat` (certificat + Docker + Symfony)
+2. Ouvrir **`https://127.0.0.1`** — **sans port** (le proxy écoute sur 443)
+3. Ne pas ouvrir `http://localhost:8000` (Symfony en clair, réservé au proxy)
 
-| Bundle (`config/bundles.php`) | Package Composer requis |
-| ----------------------------- | ----------------------- |
-| `TwigComponentBundle`         | `symfony/ux-twig-component` |
-| `EasyAdminBundle`             | `easycorp/easyadmin-bundle` |
-
-```bash
-composer require symfony/ux-twig-component easycorp/easyadmin-bundle
-```
-
-## Base de données — Reset complet
-
-> ** Ces commandes suppriment et recréent toutes les données.**
-> À faire lors de l'installation initiale ou après modification de fixtures.
-
-### Méthode rapide (script intégré)
+**Hors Windows** :
 
 ```bash
-composer db-reset
+docker compose up -d mercure proxy
+symfony server:start --port=8000 --listen-ip=0.0.0.0 --no-tls --no-workers
 ```
 
-Ce script exécute dans l'ordre :
-
-1. Supprime la base si elle existe
-2. La recrée
-3. Applique toutes les migrations
-4. Charge les fixtures
-
-### Méthode manuelle étape par étape
-
-```bash
-# Supprimer les bases (prod + test)
-php bin/console doctrine:database:drop --force --if-exists
-php bin/console doctrine:database:drop --env=test --force --if-exists
-
-# Créer les bases
-php bin/console doctrine:database:create
-php bin/console doctrine:database:create --env=test
-
-# Générer une migration si le schéma a changé (optionnel si déjà à jour)
-php bin/console make:migration
-
-# Appliquer les migrations
-php bin/console doctrine:migrations:migrate --no-interaction
-php bin/console doctrine:migrations:migrate --env=test --no-interaction
-
-# Charger les données de test
-php bin/console doctrine:fixtures:load --no-interaction
-```
-
-### Vérifier l'état des migrations
-
-```bash
-php bin/console doctrine:migrations:status
-```
+Toujours `docker compose up -d mercure proxy` — **pas** `up -d` seul (Postgres → `could not find driver`).
 
 ---
 
-## Comptes créés par les fixtures
+## Tester sur mobile (scan QR + caméra)
 
-| Rôle           | Email                               | Mot de passe            |
-| -------------- | ----------------------------------- | ----------------------- |
-| Admin          | `admin@klask.fr`                    | `AdminKlask2026!`       |
-| Accompagnateur | `accompagnateur@klask.fr`           | `AccKlask2026!`         |
-| Élèves de test | _(pas d'email — pseudo uniquement)_ | _(pas de mot de passe)_ |
+Le scan exige **HTTPS** et le **même WiFi** que le PC.
 
-Les élèves de test ont pour pseudos : `Renard vif`, `Lapin gris`, `Tigre calme`, `Aigle fier`, `Lynx agile`.
-Ils sont tous dans le groupe **GRP0002**, qui correspond au groupe de l'accompagnateur.
+1. Trouver l'IP LAN du PC : `ipconfig` → **Adresse IPv4** (ex. `192.168.1.17`)
+2. Mettre la même IP dans :
+    - `scripts/start-mobile-https.bat` → `set LAN_IP=...`
+    - `.env.local` → `APP_URL=https://192.168.1.17`
+3. Si l'IP a changé : supprimer `public/certs/dev.pem`, relancer le script
+4. `composer db-reset` — regénère les QR codes avec la bonne URL
+5. Relancer `.\scripts\start-mobile-https.bat`
+6. Sur le téléphone : importer `public/certs/symfony-rootCA.pem` comme certificat CA
+    - **iOS** : Réglages → Général → VPN et gestion de l'appareil, puis Réglages de confiance des certificats
+    - **Android** : Paramètres → Sécurité → Installer un certificat → CA
+7. Ouvrir **`https://<ip-lan>`** sur le mobile
 
 ---
 
-## Lancer l'application
+## Comptes de test
 
-### Option 1 — Symfony CLI (recommandé)
+| Rôle               | Parcours                                   | Identifiants                                         |
+| ------------------ | ------------------------------------------ | ---------------------------------------------------- |
+| **Élève**          | `/inscription` → `/questionnaire` → `/map` | Code **GRP0001** ou **GRP0002** (pseudo animal auto) |
+| **Accompagnateur** | `/login`                                   | `accompagnateur@klask.fr` / `AccKlask2026!`          |
+| **Admin**          | `/login` → `/admin`                        | `admin@klask.fr` / `AdminKlask2026!`                 |
 
-Ouvrir un terminal **séparé** (CMD ou PowerShell hors Cursor) et lancer :
+Session élève : 24 h. Pas d'email ni mot de passe pour les élèves.
+
+---
+
+## Commandes utiles
 
 ```bash
-cd c:\wamp64\www\klask-dev
-symfony server:start --port=8000 --no-tls
+composer db-reset                  # dev : drop + create + migrate + fixtures
+composer db-test                   # test : drop + create + migrate (klask_test)
+php bin/phpunit                    # après composer db-test
+composer refresh                   # cache + migrations + validate schema
+php bin/console app:notify-upcoming  # alertes atelier/conf (à croner)
 ```
 
-> **Important :** laisser ce terminal ouvert pendant toute la session de test.
-> L'app est accessible sur **http://127.0.0.1:8000**
-
-### Option 2 — Via WAMP / Apache
-
-Configurer un Virtual Host Apache pointant vers `c:\wamp64\www\klask-dev\public`.
-Accessible sur `http://localhost` ou un domaine local configuré.
-
-### Nettoyer le cache si nécessaire
+Qualité (`.php-cs-fixer.dist.php`, `phpstan.dist.neon`) :
 
 ```bash
-# Suppression manuelle (plus rapide que cache:clear)
-Remove-Item -Recurse -Force var\cache\dev
-```
-
----
-
-## Tester l'application
-
-### Côté étudiant (ROLE_STUDENT)
-
-**Flux complet :**
-
-| Étape | URL                        | Description                               |
-| ----- | -------------------------- | ----------------------------------------- |
-| 1     | `GET /inscription`         | Formulaire d'inscription                  |
-| 2     | `POST /inscription/save`   | Soumission du formulaire                  |
-| 3     | `GET /bienvenue`           | Page de bienvenue avec pseudo et avatar   |
-| 4     | `GET /questionnaire`       | Choix des 6 sphères (notes 1 à 6 uniques) |
-| 5     | `POST /questionnaire/save` | Soumission du questionnaire               |
-| 6     | `GET /map`                 | Carte interactive avec les stands         |
-
-**Sur le formulaire d'inscription :**
-
-- Sélectionner un établissement (ex. _Lycée Jean-Marie Le Bris - Douarnenez_)
-- Sélectionner un niveau (ex. _Première_)
-- Saisir le code de groupe : **GRP0002**
-- Le pseudo est généré automatiquement (animal + adjectif)
-
-**Sur la carte :**
-
-- Cliquer sur un pin (stand) pour voir sa description
-- Molette ou pinch pour zoomer
-- Clic + glisser pour se déplacer
-- Toutes les 30s : vérification automatique d'un éventuel poke de l'accompagnateur
-
----
-
-### Côté accompagnateur (ROLE_ACCOMPANYING)
-
-**Flux complet :**
-
-| Étape | URL                     | Description                                               |
-| ----- | ----------------------- | --------------------------------------------------------- |
-| 1     | `GET /login`            | Page de connexion                                         |
-| 2     | `POST /login`           | Connexion avec email + mot de passe                       |
-| 3     | `GET /instructions`     | Page d'instructions (affichée une seule fois par session) |
-| 4     | `GET /instructions/map` | Valide la lecture et redirige vers la carte               |
-| 5     | `GET /map`              | Carte avec sidebar groupe                                 |
-
-**Sur la carte :**
-
-- Ouvrir le sidebar (flèche `◀` à droite)
-- Les élèves du groupe **GRP0002** apparaissent avec pseudo et score
-- Rafraîchissement automatique toutes les 15 secondes
-- Cliquer sur l'avatar d'un élève → confirm → poke envoyé
-- L'élève concerné voit une notification « COUCOU ! » dans les 30 secondes
-
-**API disponibles (authentification requise) :**
-
-```
-GET  /accompanying/group-scores   → JSON des élèves du groupe avec scores
-POST /accompanying/poke/{id}      → Envoyer un poke à l'élève {id}
-GET  /map/poke-check              → Vérifie si l'élève connecté a reçu un poke
-```
-
----
-
-## Structure des dossiers principaux
-
-```
-src/
-  Controller/       — Controllers Symfony (carte, inscription, questionnaire, admin…)
-  Entity/           — Entités Doctrine (User, Group, Activity, Sphere…)
-  Repository/       — Requêtes DQL
-  Service/          — Logique métier
-  DTO/              — Data Transfer Objects
-  DataFixtures/     — Données de test
-  Security/         — Provider utilisateur + RoleSecurity enum
-
-templates/
-  map/              — Carte interactive + sidebar
-  inscription/      — Formulaire d'inscription
-  questionnaire/    — Choix des sphères
-  instructions/     — Page d'instructions accompagnateur
-  admin/            — Dashboard EasyAdmin
-  bienvenue/        — Page de bienvenue post-inscription
-
-assets/
-  js/               — map.js, sidebarUserMap.js
-  styles/           — CSS par page
-```
-
----
-
-## Qualité de code
-
-```bash
-# Analyse statique PHPStan
-vendor/bin/phpstan analyse
-
-# Formatage PHP CS Fixer
 vendor/bin/php-cs-fixer fix
-
-# Tests unitaires
-php bin/phpunit
+vendor/bin/phpstan analyse --memory-limit=1G
 ```
+
+---
+
+## Dépannage
+
+| Symptôme                      | Solution                                                   |
+| ----------------------------- | ---------------------------------------------------------- |
+| Pas de `dev.pem` / proxy KO   | `mkcert.exe` manquant dans `scripts/tools/`                |
+| `could not find driver`       | `docker compose up -d mercure proxy` (pas `up -d` seul)    |
+| 502 Bad Gateway               | Symfony arrêté, ou sans `--no-tls` / `--listen-ip=0.0.0.0` |
+| Carte / pokes figés           | `docker compose up -d mercure proxy`                       |
+| Scan caméra refusé            | URL en `http://` → passer par `https://`                   |
+| Mobile : page bloquée         | Importer `symfony-rootCA.pem` sur le téléphone             |
+| QR codes mauvaise URL         | Corriger `APP_URL` → `composer db-reset`                   |
+| Migration / table manquante   | `composer db-reset` (ne pas migrer sur une base existante) |
+| PHPUnit : colonne introuvable | `composer db-test`                                         |
+| Port 8000 occupé              | `symfony server:stop`, tuer les `php-cgi.exe`, relancer    |
+
+---
