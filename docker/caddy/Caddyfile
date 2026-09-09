@@ -24,6 +24,9 @@
 	# Application Symfony sur l'hôte, lancée en clair (--no-tls) : le TLS est terminé ici.
 	# reverse_proxy pose X-Forwarded-Proto/Host/For, lus par SYMFONY_TRUSTED_PROXIES.
 	handle {
+		# Uniquement ici : `encode` bufferise, ce qui casserait le SSE du hub ci-dessus.
+		# Caddy filtre déjà par Content-Type (pas de recompression des webp/woff2).
+		encode zstd gzip
 		reverse_proxy host.docker.internal:8000
 	}
 }
