@@ -21,13 +21,15 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\BooleanFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
 
+/** @extends AbstractCrudController<Activity> */
 class ActivityCrudController extends AbstractCrudController
 {
     public function __construct(
         private readonly ActivityService $activityService,
         private readonly MapService $mapService,
         private readonly RealtimeNotifier $notifier,
-    ) {}
+    ) {
+    }
 
     public static function getEntityFqcn(): string
     {
@@ -51,7 +53,7 @@ class ActivityCrudController extends AbstractCrudController
         yield AssociationField::new('category', 'Catégorie');
         yield BooleanField::new('isAvailable', 'Disponible');
         yield IntegerField::new('estimatedWaitMinutes', 'Attente (min)')->hideOnIndex();
-        // Position posée via « Placer sur la carte » — consultation seule
+        // position posée via « placer sur la carte », consultation seule
         yield NumberField::new('pointX', 'Position X (%)')->setNumDecimals(2)->onlyOnDetail();
         yield NumberField::new('pointY', 'Position Y (%)')->setNumDecimals(2)->onlyOnDetail();
         yield IntegerField::new('softLimit', 'Limite souple')->hideOnIndex();
@@ -83,7 +85,6 @@ class ActivityCrudController extends AbstractCrudController
 
     public function persistEntity(EntityManagerInterface $entityManager, mixed $entityInstance): void
     {
-        $this->guardStandSphere($entityInstance);
         $this->activityService->initQrCode($entityInstance);
         parent::persistEntity($entityManager, $entityInstance);
         $this->mapService->invalidateCache();
@@ -91,16 +92,15 @@ class ActivityCrudController extends AbstractCrudController
 
     public function updateEntity(EntityManagerInterface $entityManager, mixed $entityInstance): void
     {
-        $this->guardStandSphere($entityInstance);
         parent::updateEntity($entityManager, $entityInstance);
         $this->mapService->invalidateCache();
 
-        // Notifie tous les clients en temps réel : position, dispo, attente...
+        // notifie tous les clients en temps réel : position, dispo, attente
         if ($entityInstance instanceof Activity) {
             $this->notifier->publish('map-update', [
                 ...$this->mapService->activityToArray($entityInstance),
                 'action' => 'update',
-                'type'   => 'activity',
+                'type' => 'activity',
             ]);
         }
     }
@@ -109,12 +109,5 @@ class ActivityCrudController extends AbstractCrudController
     {
         parent::deleteEntity($entityManager, $entityInstance);
         $this->mapService->invalidateCache();
-    }
-
-    private function guardStandSphere(mixed $activity): void
-    {
-        if ($activity instanceof Activity && $activity->isStand() && $activity->getSphere() === null) {
-            throw new \LogicException('Un Stand doit obligatoirement être rattaché à une sphère.');
-        }
     }
 }

@@ -12,7 +12,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ColorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
@@ -20,13 +19,15 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\UrlField;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\HttpFoundation\Response;
 
+/** @extends AbstractCrudController<Notification> */
 class NotificationCrudController extends AbstractCrudController
 {
     public function __construct(
         private readonly RealtimeNotifier $notifier,
         private readonly EntityManagerInterface $em,
         private readonly AdminUrlGenerator $urlGenerator,
-    ) {}
+    ) {
+    }
 
     public static function getEntityFqcn(): string
     {
@@ -47,17 +48,17 @@ class NotificationCrudController extends AbstractCrudController
     {
         parent::persistEntity($em, $entity);
 
-        if ($entity instanceof Notification && $entity->getScheduledAt() === null) {
+        if ($entity instanceof Notification && null === $entity->getScheduledAt()) {
             $this->send($entity);
         }
     }
 
-    // Retirer la date programmée d'une notif jamais envoyée déclenche l'envoi
+    // retirer la date programmée d'une notif jamais envoyée déclenche l'envoi
     public function updateEntity(EntityManagerInterface $em, mixed $entity): void
     {
         parent::updateEntity($em, $entity);
 
-        if ($entity instanceof Notification && $entity->getScheduledAt() === null && !$entity->isSent()) {
+        if ($entity instanceof Notification && null === $entity->getScheduledAt() && !$entity->isSent()) {
             $this->send($entity);
         }
     }
@@ -69,25 +70,23 @@ class NotificationCrudController extends AbstractCrudController
         yield UrlField::new('link', 'Lien (optionnel)')->setRequired(false)->hideOnIndex()
             ->setHelp('Affiché comme « En savoir plus » dans la bannière.');
         yield ChoiceField::new('type', 'Type')
+            ->setHelp('Détermine la couleur de la bannière : bleu, vert, orange, rouge.')
             ->setChoices([
-                'Information'   => 'info',
-                'Succès'        => 'success',
+                'Information' => 'info',
+                'Succès' => 'success',
                 'Avertissement' => 'warning',
-                'Alerte'        => 'alert',
+                'Alerte' => 'alert',
             ]);
-        yield ColorField::new('color', 'Couleur (optionnelle)')->setRequired(false)->hideOnIndex()
-            ->setHelp('Prime sur la couleur du type.');
         yield ChoiceField::new('recipientType', 'Destinataires')
             ->setChoices([
-                'Tout le monde'     => 'all',
-                'Étudiants'         => 'student',
-                'Accompagnateurs'   => 'accompagnateur',
-                'Individuel'        => 'individual',
-                'Classe'            => 'class',
+                'Tout le monde' => 'all',
+                'Étudiants' => 'student',
+                'Accompagnateurs' => 'accompagnateur',
+                'Classe' => 'class',
             ]);
         yield TextField::new('recipientValue', 'Valeur destinataire')
             ->setRequired(false)
-            ->setHelp('Pseudo ou e-mail pour "Individuel", code classe pour "Classe". Laisser vide sinon.');
+            ->setHelp('Code classe pour "Classe". Laisser vide sinon.');
         yield DateTimeField::new('scheduledAt', 'Envoi programmé')->setRequired(false)
             ->setHelp('Laisser vide pour envoyer manuellement.');
         yield DateTimeField::new('sentAt', 'Envoyé le')->onlyOnIndex()->setDisabled(true);
@@ -99,13 +98,14 @@ class NotificationCrudController extends AbstractCrudController
         $send = Action::new('sendNow', 'Envoyer maintenant', 'fa fa-paper-plane')
             ->linkToCrudAction('sendNow')
             ->setCssClass('btn btn-success')
-            ->displayIf(static fn(Notification $n) => !$n->isSent());
+            ->displayIf(static fn (Notification $n) => !$n->isSent());
 
         return $actions
             ->add(Crud::PAGE_INDEX, $send)
             ->add(Crud::PAGE_DETAIL, $send);
     }
 
+    /** @param AdminContext<Notification> $context */
     #[AdminRoute(path: '/send-now', name: 'send_now')]
     public function sendNow(AdminContext $context): Response
     {
@@ -122,7 +122,6 @@ class NotificationCrudController extends AbstractCrudController
             $this->urlGenerator->setController(self::class)->setAction(Action::INDEX)->generateUrl()
         );
     }
-
 
     private function send(Notification $notification): bool
     {

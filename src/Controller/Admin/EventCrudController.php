@@ -14,15 +14,18 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/** @extends AbstractCrudController<Event> */
 class EventCrudController extends AbstractCrudController
 {
     public function __construct(
         private readonly EventResetService $resetService,
         private readonly EntityManagerInterface $em,
         private readonly AdminUrlGenerator $urlGenerator,
-    ) {}
+    ) {
+    }
 
     public static function getEntityFqcn(): string
     {
@@ -50,16 +53,22 @@ class EventCrudController extends AbstractCrudController
         $reset = Action::new('resetEvent', 'Réinitialiser', 'fa fa-refresh')
             ->linkToCrudAction('resetEvent')
             ->setCssClass('btn btn-warning')
-            ->displayIf(static fn(Event $e) => !$e->isReset());
+            ->setTemplatePath('admin/actions/reset_event.html.twig')
+            ->displayIf(static fn (Event $e) => !$e->isReset());
 
         return $actions
             ->add(Crud::PAGE_INDEX, $reset)
             ->add(Crud::PAGE_DETAIL, $reset);
     }
 
-    #[AdminRoute(path: '/reset-event', name: 'reset_event')]
-    public function resetEvent(AdminContext $context): Response
+    /** @param AdminContext<Event> $context */
+    #[AdminRoute(path: '/reset-event', name: 'reset_event', options: ['methods' => ['POST']])]
+    public function resetEvent(AdminContext $context, Request $request): Response
     {
+        if (!$this->isCsrfTokenValid('reset_event', (string) $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Jeton CSRF invalide.');
+        }
+
         /** @var Event $event */
         $event = $context->getEntity()->getInstance();
 
