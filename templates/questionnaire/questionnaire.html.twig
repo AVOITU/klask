@@ -2,7 +2,6 @@
 
 {% block title %}Choisis ton parcours{% endblock %}
 
-{% block stylesheets %}{{ parent() }}{% endblock %}
 
 {% block body %}
     <div class="container">
@@ -16,7 +15,6 @@
 
         {% include 'structure/flashes.html.twig' %}
 
-        {# ne pas oublier token CSRF #}
         <form method="post" action="{{ path('app_questionnaire_save') }}" id="quiz-form" novalidate>
 
             <table class="quiz-table">
@@ -24,7 +22,7 @@
                     {% for letter, affirmation in affirmations %}
                         <tr>
                             <td>
-                                <strong>{{ letter }}.</strong> {{ affirmation.text }}
+                                <strong>{{ letter }}</strong>{{ affirmation.text }}
                             </td>
                             <td>
                                 <select name="ratings[{{ letter }}]" class="rating-select" required>
@@ -48,6 +46,12 @@
             </button>
 
         </form>
+
+        {% include 'structure/confirm_dialog.html.twig' with {
+            id: 'quiz-confirm',
+            message: 'Es-tu sûr(e) de tes réponses ? Tu ne pourras plus revenir en arrière.',
+            ok: 'Valider'
+        } %}
     </div>
 
 {% endblock %}
