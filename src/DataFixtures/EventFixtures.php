@@ -12,7 +12,7 @@ class EventFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-        // Event principal (après-midi) : 13h30 → 17h00
+        // event principal (après-midi) : 13h30 → 17h00
         $event = new Event();
         $event->setName('Klask 2026 — Après-midi');
         $event->setBeginningHourEvent(new \DateTimeImmutable('today 13:30'));

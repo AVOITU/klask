@@ -44,7 +44,7 @@ class EstablishmentFixtures extends Fixture
             $establishment->setName($name);
 
             $manager->persist($establishment);
-            $this->addReference(self::ESTABLISHMENT_REFERENCE . '_' . $index, $establishment);
+            $this->addReference(self::ESTABLISHMENT_REFERENCE.'_'.$index, $establishment);
         }
 
         $manager->flush();
