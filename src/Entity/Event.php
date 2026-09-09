@@ -98,7 +98,7 @@ class Event
 
     public function isReset(): bool
     {
-        return $this->resetAt !== null;
+        return null !== $this->resetAt;
     }
 
     /**
