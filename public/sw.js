@@ -1,5 +1,5 @@
 // Service Worker Klask — cache statique runtime
-const CACHE = "klask-v4";
+const CACHE = "klask-v5";
 
 // extensions statiques à cacher (même origine)
 const STATIC_RE = /\.(js|css|svg|webp|png|woff2|ico)(\?.*)?$/;
