@@ -57,6 +57,7 @@ services:
     volumes:
       - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       - ./public/certs:/etc/caddy/certs:ro
+      - ./public:/public:ro
     extra_hosts:
       # Permet d'atteindre le serveur Symfony qui tourne sur l'hôte
       - "host.docker.internal:host-gateway"
