@@ -13,6 +13,12 @@
 :443 {
 	tls /etc/caddy/certs/dev.pem /etc/caddy/certs/dev-key.pem
 
+	# asset-map:compile → public/assets/ : servi par Caddy (bon Content-Type), pas via PHP
+	handle /assets/* {
+		root * /public
+		file_server
+	}
+
 	# Hub Mercure — joint par le réseau Docker interne, jamais exposé directement.
 	# flush_interval -1 : obligatoire en SSE, sinon les événements restent bufferisés.
 	handle /.well-known/mercure* {
