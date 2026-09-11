@@ -70,9 +70,13 @@ footer {
 .hud-window {
     width: 100%;
     max-width: 500px;
-    background: var(--panel-bg);
+
     color: var(--panel-txt);
-    border: var(--frame-bd);
+
+    border: 4px solid transparent;
+    background:
+        linear-gradient(var(--panel-bg), var(--panel-bg)) padding-box,
+        var(--metal-grad) border-box;
     border-radius: 18px;
     box-shadow: var(--frame-sh);
     overflow: hidden;
@@ -109,7 +113,7 @@ footer {
 .modal::backdrop { background: rgba(0, 0, 0, .6); }
 .modal-msg { font-size: .95rem; line-height: 1.5; text-align: center; margin-bottom: 1.4rem; }
 .modal-actions { display: flex; gap: 10px; }
-.modal-actions .btn { flex: 1; margin: 0; letter-spacing: 1px; }
+.modal-actions .btn { flex: 1; margin: 0; letter-spacing: 0.5px; min-width: 0; padding-inline: 8px; font-size: 0.85rem; white-space: nowrap; }
 
 .hud-cap {
     border-bottom: 3px solid var(--c-metal);
@@ -191,9 +195,12 @@ input[type="submit"],
     align-items: center;
     justify-content: center;
     width: 100%;
-    background: var(--cockpit-bg);
+
     color: var(--cockpit-txt);
-    border: 2px solid var(--c-metal);
+    border: 2px solid transparent;
+    background:
+        linear-gradient(var(--cockpit-bg), var(--cockpit-bg)) padding-box,
+        var(--metal-grad) border-box;
     padding: 15px 24px;
     font: 800 .92rem/1 var(--f-body);
     border-radius: 999px;
@@ -208,7 +215,9 @@ input[type="submit"],
 .btn:not([disabled]):hover,
 input[type="submit"]:hover,
 .btn-submit:hover,
-.btn-continuer:hover { border-color: var(--c-gold); }
+.btn-continuer:hover { background:
+    linear-gradient(var(--cockpit-bg), var(--cockpit-bg)) padding-box,
+    linear-gradient(var(--c-gold), var(--c-gold)) border-box; }
 .btn:disabled, .btn-submit:disabled { opacity: .45; cursor: not-allowed; }
 .btn--ghost { background: none; color: var(--panel-txt); box-shadow: none; }
 .btn--ghost:not([disabled]):hover { border-color: var(--c-gold); }
@@ -229,8 +238,10 @@ input[type="submit"]:hover,
 .error-anim   { background: rgba(192,57,43,.15); border-color: var(--c-err); }
 
 .theme-toggle {
-    background: var(--cockpit-bg);
-    border: 2px solid var(--c-metal);
+    border: 2px solid transparent;
+    background:
+        linear-gradient(var(--cockpit-bg), var(--cockpit-bg)) padding-box,
+        var(--metal-grad) border-box;
     border-radius: 50%;
     width: 44px; height: 44px;
     cursor: pointer;
@@ -241,7 +252,9 @@ input[type="submit"]:hover,
 }
 .theme-toggle::before { content: '🌙'; }
 [data-theme="dark"] .theme-toggle::before { content: '☀️'; }
-.theme-toggle:hover { border-color: var(--c-gold); }
+.theme-toggle:hover {
+    background: linear-gradient(var(--cockpit-bg), var(--cockpit-bg)) padding-box,
+    linear-gradient(var(--c-gold), var(--c-gold)) border-box; }
 
 .welcome-card { display: flex; flex-direction: column; align-items: center; gap: 1.2rem; padding: .5rem 0; }
 .welcome-score { font: 700 .82rem/1 var(--f-mono); text-transform: uppercase; letter-spacing: 2px; }

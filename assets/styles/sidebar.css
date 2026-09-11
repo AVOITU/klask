@@ -62,8 +62,10 @@
     flex: 1;
     min-height: 0;
     margin: clamp(8px, 2vw, 10px);
-    background: var(--panel-bg);
-    border: var(--frame-bd);
+    border: 4px solid transparent;
+    background:
+        linear-gradient(var(--panel-bg), var(--panel-bg)) padding-box,
+        var(--metal-grad) border-box;
     border-radius: 18px;
     box-shadow: var(--frame-sh);
     display: flex;
